@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  postgres:
+    container_name: postgres_local
+    image: postgres:15
+    environment:
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpass
+      POSTGRES_DB: OFFICEZIP
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/config/postgresql.conf:/var/lib/postgresql/data_custom/postgresql.conf
+    command: postgres -c config_file=/var/lib/postgresql/data_custom/postgresql.conf
+
+  redis:
+    container_name: redis_local
+    image: redis:7
+    volumes:
+      - ./redis/config/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    restart: always
