@@ -15,13 +15,22 @@ spring:
       password: redis@local
 
   jpa:
-    show-sql: true
     database: postgresql
     defer-datasource-initialization: true
+    open-in-view: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true
-    open-in-view: false
+        use_sql_comments: true
+        transaction:
+          jta:
+            platform: org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform
 
+logging:
+  level:
+    com.zaxxer.hikari: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: OFF
+    p6spy: DEBUG

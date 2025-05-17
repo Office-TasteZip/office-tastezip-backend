@@ -42,3 +42,4 @@ out/
 /gradlew
 /gradlew.bat
 /gradle/
+/src/main/generated
