@@ -3,7 +3,9 @@ version: "3.8"
 services:
   postgres:
     container_name: postgres_local
-    image: postgres:15
+    build:
+      dockerfile: Dockerfile
+      context: ./database
     environment:
       POSTGRES_USER: devuser
       POSTGRES_PASSWORD: devpass
@@ -16,7 +18,9 @@ services:
 
   redis:
     container_name: redis_local
-    image: redis:7
+    build:
+      dockerfile: Dockerfile
+      context: ./redis
     volumes:
       - ./redis/config/redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
