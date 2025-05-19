@@ -1,0 +1,36 @@
+name: Improvement
+description: 기존 기능 개선, 리팩토링, 성능 향상 등을 제안
+title: "[REFACTOR] 설명 요약"
+
+body:
+  - type: textarea
+    id: improvement-description
+    attributes:
+      label: 🛠 개선 내용
+      description: 개선이 필요한 부분에 대해 설명해주세요.
+      placeholder: |
+        - 어떤 점이 불편했는지  
+        - 어떤 식으로 바꾸면 나아질지  
+        - (예: 응답 구조가 중복되어 공통 클래스 필요함)
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: 💡 개선 이유
+      description: 개선이 필요한 배경이나 목적을 작성해주세요.
+      placeholder: |
+        - 코드 중복이 많아 유지보수 어려움  
+        - 성능 저하 발견  
+        - 가독성이 떨어짐
+
+  - type: textarea
+    id: related-code
+    attributes:
+      label: 🔍 관련 코드/파일
+      description: 관련된 클래스, 엔티티, 컨트롤러 등을 명시해주세요.
+      placeholder: |
+        -   
+        -   
+        - 

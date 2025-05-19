@@ -1,0 +1,62 @@
+name: Feature request
+description: 기능 개발 이슈 등록용 템플릿
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📄 개요  
+        구현할 기능에 대한 간략한 설명을 작성합니다.
+
+  - type: textarea
+    id: flow
+    attributes:
+      label: ✅ 주요 흐름
+      description: 사용자의 주요 동작 시나리오 또는 기능 처리 흐름
+      placeholder: |
+        1. 
+        2. 
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: 🔧 작업 범위
+      description: 실제로 구현할 작업 단위
+      placeholder: |
+        - [ ] 
+        - [ ]   
+        - [ ]
+    validations:
+      required: true
+
+  - type: textarea
+    id: table
+    attributes:
+      label: 🗃 관련 테이블 / 객체
+      description: 사용하는 DB 테이블, Entity, Util 클래스 등
+      placeholder: |
+        -   
+        - 
+        - 
+
+  - type: textarea
+    id: test
+    attributes:
+      label: 🧪 테스트 항목
+      description: 필수 확인/테스트 항목
+      placeholder: |
+        - [ ] 
+        - [ ]
+        - [ ] 
+
+  - type: textarea
+    id: note
+    attributes:
+      label: 📎 참고
+      description: 참고할 이슈, 문서, MVP ID 등
+      placeholder: |
+        - 
+        - 

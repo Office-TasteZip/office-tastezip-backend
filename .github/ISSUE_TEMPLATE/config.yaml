@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links: []
+issue_templates:
+  - name: MVP 기능 요청
+    description: MVP 기능 개발 이슈입니다.
+    file: feature-request.yaml
+
+  - name: 버그 리포트
+    description: 서비스의 문제나 오류를 보고합니다.
+    file: bug-report.yaml
+
+  - name: 기능 개선 / 리팩토링
+    description: 기존 기능을 개선하거나 리팩토링합니다.
+    file: improvement.yaml

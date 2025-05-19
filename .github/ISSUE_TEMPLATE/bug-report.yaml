@@ -1,0 +1,24 @@
+name: Bug report
+description: 서비스 내 발생한 버그 신고
+title: "[BUG] 설명 요약"
+
+body:
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: 🐞 버그 설명
+      placeholder: |
+        언제, 어디서, 어떤 문제가 발생했는지 간략히 작성해주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: 🔁 재현 방법
+      placeholder: |
+        1. 어떤 화면으로 감  
+        2. 어떤 버튼을 클릭함  
+        3. 어떤 에러가 발생함
+    validations:
+      required: false
