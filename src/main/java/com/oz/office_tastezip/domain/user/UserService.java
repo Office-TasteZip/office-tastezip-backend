@@ -17,4 +17,8 @@ public class UserService {
         User user = User.create(userInsertRequest);
         return userRepository.save(user);
     }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(RuntimeException::new);
+    }
 }

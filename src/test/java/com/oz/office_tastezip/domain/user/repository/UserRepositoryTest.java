@@ -59,6 +59,26 @@ class UserRepositoryTest {
         assertThat(result.getDeletedAt()).isNull();
     }
 
+    @Test
+    @DisplayName("사용자 정보(내정보) 조회 테스트")
+    void selectMyInfoTest() {
+        // given
+        User user = User.create(getUserInsertRequest());
+        userRepository.save(user);
+        userRepository.flush();
+
+        // when
+        Optional<User> found = userRepository.findByEmail(user.getEmail());
+
+        // then
+        assertThat(found).isPresent();
+        User result = found.get();
+        assertThat(result.getId()).isEqualTo(user.getId());
+        assertThat(result.getNickname()).isEqualTo("tester");
+        assertThat(result.getStatus()).isEqualTo(UserStatus.ACTIVE);
+        assertThat(result.getDeletedAt()).isNull();
+    }
+
     private UserRequestDto.UserInsertRequest getUserInsertRequest() {
         return new UserRequestDto.UserInsertRequest(
                 "tester@example.com",
