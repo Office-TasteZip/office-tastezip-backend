@@ -1,6 +1,6 @@
 package com.oz.office_tastezip.domain.user;
 
-import com.oz.office_tastezip.domain.user.dto.UserRequest;
+import com.oz.office_tastezip.domain.user.dto.UserRequestDto;
 import com.oz.office_tastezip.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User insertUser(UserRequest.UserInsertRequest userInsertRequest) {
+    public User register(UserRequestDto.UserInsertRequest userInsertRequest) {
         User user = User.create(userInsertRequest);
         return userRepository.save(user);
     }

@@ -1,7 +1,7 @@
 package com.oz.office_tastezip.domain.user;
 
 import com.oz.office_tastezip.domain.BaseEntity;
-import com.oz.office_tastezip.domain.user.dto.UserRequest;
+import com.oz.office_tastezip.domain.user.dto.UserRequestDto;
 import com.oz.office_tastezip.domain.user.enums.UserJob;
 import com.oz.office_tastezip.domain.user.enums.UserPosition;
 import com.oz.office_tastezip.global.emums.UserRole;
@@ -40,7 +40,7 @@ public class User extends BaseEntity {
     @Column(name = "position", nullable = false, length = 50)
     private UserPosition position;
 
-    @Column(name = "join_year", nullable = false, length = 10)
+    @Column(name = "join_year", nullable = false, length = 4)
     private String joinYear;
 
     @Column(name = "marketing_opt_in")
@@ -68,7 +68,7 @@ public class User extends BaseEntity {
     protected User() {
     }
 
-    public static User create(UserRequest.UserInsertRequest userInsertRequest) {
+    public static User create(UserRequestDto.UserInsertRequest userInsertRequest) {
         return User.builder()
                 .email(userInsertRequest.getEmail())
                 .passwordHash(userInsertRequest.getPassword())  // TODO BCrypt

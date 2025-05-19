@@ -1,7 +1,7 @@
 package com.oz.office_tastezip.domain.user.repository;
 
 import com.oz.office_tastezip.domain.user.User;
-import com.oz.office_tastezip.domain.user.dto.UserRequest;
+import com.oz.office_tastezip.domain.user.dto.UserRequestDto;
 import com.oz.office_tastezip.domain.user.enums.UserJob;
 import com.oz.office_tastezip.domain.user.enums.UserPosition;
 import com.oz.office_tastezip.global.emums.UserRole;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,17 +27,7 @@ class UserRepositoryTest {
     @DisplayName("사용자 저장 테스트")
     void insertUserTest() {
         // given
-        LocalDateTime now = LocalDateTime.of(2025, 1, 1, 12, 0);
-        User user = User.create(new UserRequest.UserInsertRequest(
-                "tester@example.com",
-                "password",
-                "tester",
-                "production",
-                "senior",
-                "2025",
-                false,
-                null
-        ));
+        User user = User.create(getUserInsertRequest());
 
         // when
         User saved = userRepository.save(user);
@@ -68,5 +57,18 @@ class UserRepositoryTest {
         assertThat(result.getCreatedAt()).isNotNull();
         assertThat(result.getUpdatedAt()).isNotNull();
         assertThat(result.getDeletedAt()).isNull();
+    }
+
+    private UserRequestDto.UserInsertRequest getUserInsertRequest() {
+        return new UserRequestDto.UserInsertRequest(
+                "tester@example.com",
+                "password",
+                "tester",
+                "production",
+                "senior",
+                "2025",
+                false,
+                null
+        );
     }
 }
