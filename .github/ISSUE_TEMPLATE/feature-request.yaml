@@ -1,5 +1,6 @@
 name: Feature request
 description: 기능 개발 이슈 등록용 템플릿
+title: "[FEATURE] 개발 내용"
 
 body:
   - type: textarea
@@ -11,8 +12,6 @@ body:
         -   
         - 
         -
-    validations:
-      required: true
 
   - type: textarea
     id: flow
