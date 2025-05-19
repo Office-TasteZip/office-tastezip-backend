@@ -1,10 +1,10 @@
 name: Feature request
 description: 기능 개발 이슈 등록용 템플릿
-title: "[FEATURE] 개발 내용"
+title: "[FEATURE] 개발 내용 요약"
 
 body:
   - type: textarea
-    id: flow
+    id: feature_description
     attributes:
       label: 📄 개요
       description: 구현할 기능에 대한 간략한 설명을 작성
