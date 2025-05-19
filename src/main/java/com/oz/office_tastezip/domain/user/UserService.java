@@ -1,9 +1,8 @@
 package com.oz.office_tastezip.domain.user;
 
+import com.oz.office_tastezip.domain.user.dto.UserRequest;
 import com.oz.office_tastezip.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserService {
@@ -14,7 +13,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> searchByName(String name) {
-        return userRepository.findByName(name);
+    public User insertUser(UserRequest.UserInsertRequest userInsertRequest) {
+        User user = User.create(userInsertRequest);
+        return userRepository.save(user);
     }
 }
