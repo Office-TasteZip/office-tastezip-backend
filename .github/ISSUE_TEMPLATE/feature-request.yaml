@@ -2,11 +2,17 @@ name: Feature request
 description: 기능 개발 이슈 등록용 템플릿
 
 body:
-  - type: markdown
+  - type: textarea
+    id: flow
     attributes:
-      value: |
-        ## 📄 개요  
-        구현할 기능에 대한 간략한 설명을 작성합니다.
+      label: 📄 개요
+      description: 구현할 기능에 대한 간략한 설명을 작성
+      placeholder: |
+        -   
+        - 
+        -
+    validations:
+      required: true
 
   - type: textarea
     id: flow
