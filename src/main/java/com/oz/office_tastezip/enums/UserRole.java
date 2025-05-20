@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.global.emums;
+package com.oz.office_tastezip.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

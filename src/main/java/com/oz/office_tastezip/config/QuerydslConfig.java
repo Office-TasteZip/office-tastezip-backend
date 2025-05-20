@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.global.config;
+package com.oz.office_tastezip.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
