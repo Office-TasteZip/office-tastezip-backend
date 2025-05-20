@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.common.response;
+package com.oz.office_tastezip.global.response;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;

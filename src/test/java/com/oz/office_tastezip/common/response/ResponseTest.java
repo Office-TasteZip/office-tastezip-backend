@@ -1,5 +1,9 @@
 package com.oz.office_tastezip.common.response;
 
+import com.oz.office_tastezip.global.response.Response;
+import com.oz.office_tastezip.global.response.ResponseCode;
+import com.oz.office_tastezip.global.response.ResponseFail;
+import com.oz.office_tastezip.global.response.ResponseSuccess;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

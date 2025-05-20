@@ -1,7 +1,7 @@
 package com.oz.office_tastezip.api.user;
 
-import com.oz.office_tastezip.common.response.Response;
-import com.oz.office_tastezip.common.response.ResponseSuccess;
+import com.oz.office_tastezip.global.response.Response;
+import com.oz.office_tastezip.global.response.ResponseSuccess;
 import com.oz.office_tastezip.domain.user.UserService;
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto;
 import com.oz.office_tastezip.domain.user.dto.UserResponseDto;
