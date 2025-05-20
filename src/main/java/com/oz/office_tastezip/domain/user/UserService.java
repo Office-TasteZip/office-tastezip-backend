@@ -13,9 +13,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User register(UserRequestDto.UserInsertRequest userInsertRequest) {
-        User user = User.create(userInsertRequest);
-        return userRepository.save(user);
+    public void register(UserRequestDto.UserInsertRequest userInsertRequest) {
+        userRepository.save(User.create(userInsertRequest));
     }
 
     public User findByEmail(String email) {
