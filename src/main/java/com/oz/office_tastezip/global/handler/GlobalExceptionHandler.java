@@ -53,7 +53,6 @@ public class GlobalExceptionHandler {
      * 시스템은 이슈 없고, 비즈니스 로직 처리에서 에러 발생
      */
     @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(value = GlobalException.class)
     public ResponseEntity<Response.Body<Object>> onGlobalException(GlobalException e, HttpServletRequest request) {
         String eventId = MDC.get(REQUEST_UUID);
@@ -68,12 +67,11 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * http status: 200 AND result: FAIL
+     * http status: 400
      * <p>
      * Validation error
      */
     @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<Response.Body<Object>> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String eventId = MDC.get(REQUEST_UUID);

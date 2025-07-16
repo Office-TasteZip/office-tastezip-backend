@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 
 services:
   postgres:
@@ -15,6 +15,7 @@ services:
     volumes:
       - ./database/config/postgresql.conf:/var/lib/postgresql/data_custom/postgresql.conf
     command: postgres -c config_file=/var/lib/postgresql/data_custom/postgresql.conf
+    restart: always
 
   redis:
     container_name: redis_local
