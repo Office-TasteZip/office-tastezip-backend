@@ -2,11 +2,17 @@ package com.oz.office_tastezip.domain.user.repository;
 
 import com.oz.office_tastezip.domain.user.QUser;
 import com.oz.office_tastezip.domain.user.User;
+import com.oz.office_tastezip.enums.UserStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
+@Slf4j
 @Repository
 public class UserRepositoryImpl implements UserRepositoryCustom {
 
@@ -17,13 +23,37 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public Optional<User> findByUserUUID(String uuid) {
         QUser user = QUser.user;
 
         User result = queryFactory.selectFrom(user)
-                .where(user.deletedAt.isNull().and(user.email.eq(email)))
+                .where(user.deletedAt.isNull().and(user.id.eq(UUID.fromString(uuid))))
                 .fetchOne();
 
         return Optional.ofNullable(result);
+    }
+
+    @Override
+    public int countByEmail(String email) {
+        QUser user = QUser.user;
+
+        List<User> result = queryFactory.selectFrom(user)
+                .where(user.email.eq(email))
+                .fetch();
+
+        return result.size();
+    }
+
+    @Override
+    public void deleteByUserUUID(String uuid) {
+        QUser user = QUser.user;
+
+        long updated = queryFactory.update(user)
+                .set(user.deletedAt, LocalDateTime.now())
+                .set(user.status, UserStatus.WITHDRAWN)
+                .where(user.id.eq(UUID.fromString(uuid)))
+                .execute();
+
+        log.info("Updated rows: {}", updated);
     }
 }

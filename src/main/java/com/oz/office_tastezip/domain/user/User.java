@@ -84,4 +84,26 @@ public class User extends BaseEntity {
                 .build();
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", passwordHash='" + passwordHash + '\'' +
+                ", passwordUpdatedAt=" + passwordUpdatedAt +
+                ", nickname='" + nickname + '\'' +
+                ", job=" + job +
+                ", position=" + position +
+                ", joinYear='" + joinYear + '\'' +
+                ", marketingOptIn=" + marketingOptIn +
+                ", role=" + role +
+                ", status=" + status +
+                ", lastLoginAt=" + lastLoginAt +
+                ", lastFailedLoginAt=" + lastFailedLoginAt +
+                ", profileImageUrl='" + profileImageUrl + '\'' +
+                ", id=" + id +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", deletedAt=" + deletedAt +
+                '}';
+    }
 }
