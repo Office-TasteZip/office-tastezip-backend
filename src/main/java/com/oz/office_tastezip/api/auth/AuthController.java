@@ -1,6 +1,6 @@
 package com.oz.office_tastezip.api.auth;
 
-import com.oz.office_tastezip.common.util.RSAUtils;
+import com.oz.office_tastezip.global.util.RSAUtils;
 import com.oz.office_tastezip.global.response.Response;
 import com.oz.office_tastezip.global.response.ResponseSuccess;
 import lombok.extern.slf4j.Slf4j;
