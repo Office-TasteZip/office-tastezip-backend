@@ -109,6 +109,31 @@ class UserRepositoryTest {
         assertThat(result.getStatus()).isEqualTo(UserStatus.WITHDRAWN);
     }
 
+    @Test
+    @DisplayName("사용자 수정 테스트")
+    void updateUserTest() {
+        // Given
+        User user = User.create(getUserInsertRequest());
+        userRepository.save(user);
+        userRepository.flush();
+
+        UserRequestDto.UserUpdateRequest updateRequest = getUserUpdateRequest(String.valueOf(user.getId()));
+        userRepository.updateByUserUUID(updateRequest);
+
+        em.clear();
+
+        Optional<User> updatedUserOpt = userRepository.findById(user.getId());
+        assertThat(updatedUserOpt).isPresent();
+
+        User updatedUser = updatedUserOpt.get();
+
+        assertThat(updatedUser.getNickname()).isEqualTo(updateRequest.getNickname());
+        assertThat(updatedUser.getJob().name()).isEqualToIgnoringCase(updateRequest.getJob());
+        assertThat(updatedUser.getPosition().name()).isEqualToIgnoringCase(updateRequest.getPosition());
+        assertThat(updatedUser.getJoinYear()).isEqualTo(updateRequest.getJoinYear());
+        assertThat(updatedUser.getProfileImageUrl()).isEqualTo(updateRequest.getProfileImageUrl());
+    }
+
     private UserRequestDto.UserInsertRequest getUserInsertRequest() {
         return new UserRequestDto.UserInsertRequest(
                 "tester@example.com",
@@ -119,6 +144,18 @@ class UserRepositoryTest {
                 "2025",
                 false,
                 null
+        );
+    }
+
+    private UserRequestDto.UserUpdateRequest getUserUpdateRequest(String id) {
+        return new UserRequestDto.UserUpdateRequest(
+                id,
+                "닉네임234",
+                "rnd",
+                "head",
+                "2024",
+                false,
+                "image"
         );
     }
 }
