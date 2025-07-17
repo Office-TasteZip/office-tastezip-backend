@@ -6,21 +6,16 @@ import com.oz.office_tastezip.common.util.JsonUtil;
 import com.oz.office_tastezip.global.auth.dto.TokenDto;
 import com.oz.office_tastezip.global.exception.InvalidTokenException;
 import com.oz.office_tastezip.global.util.RedisUtils;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SecureDigestAlgorithm;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
-import java.util.*;
+import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static com.oz.office_tastezip.global.constant.AuthConstants.Jwt.AUTHORITIES_KEY;
 import static com.oz.office_tastezip.global.constant.AuthConstants.Jwt.SERIAL_KEY;
