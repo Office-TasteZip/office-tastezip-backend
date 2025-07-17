@@ -1,12 +1,16 @@
 package com.oz.office_tastezip.api.user;
 
-import com.oz.office_tastezip.global.response.Response;
-import com.oz.office_tastezip.global.response.ResponseSuccess;
 import com.oz.office_tastezip.domain.user.UserService;
-import com.oz.office_tastezip.domain.user.dto.UserRequestDto;
+import com.oz.office_tastezip.domain.user.dto.UserRequestDto.UserInsertRequest;
 import com.oz.office_tastezip.domain.user.dto.UserResponseDto;
+import com.oz.office_tastezip.global.response.Response;
+import com.oz.office_tastezip.global.response.ResponseCode;
+import com.oz.office_tastezip.global.response.ResponseFail;
+import com.oz.office_tastezip.global.response.ResponseSuccess;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,14 +21,24 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/my-info")
-    public ResponseEntity<Response.Body<UserResponseDto>> getMyInfo(@RequestParam(name = "email") String email) {
-        return new ResponseSuccess<UserResponseDto>().success(UserResponseDto.of(userService.findByEmail(email)));
+    public ResponseEntity<Response.Body<UserResponseDto>> getMyInfo(@RequestParam(name = "uuid") String uuid) {
+        return new ResponseSuccess<UserResponseDto>().success(UserResponseDto.of(userService.findByUserUUID(uuid)));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Response.Body<String>> register(@RequestBody UserRequestDto.UserInsertRequest userInsertRequest) {
-        // TODO Validation check
+    public ResponseEntity<Response.Body<String>> register(@RequestBody @Valid UserInsertRequest userInsertRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getFieldErrors().get(0).getDefaultMessage();
+            return new ResponseFail<String>(ResponseCode.VALIDATION_ERROR, errorMessage).fail();
+        }
+
         userService.register(userInsertRequest);
-        return new ResponseSuccess<String>().success("회원가입 되었습니다.");
+        return new ResponseSuccess<String>().success("회원 가입 되었습니다.");
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Response.Body<String>> withdraw(@PathVariable String userId) {
+        userService.withdrawUser(userId);
+        return new ResponseSuccess<String>().success("회원 탈퇴 되었습니다.");
     }
 }

@@ -6,7 +6,10 @@ import com.oz.office_tastezip.domain.user.enums.UserJob;
 import com.oz.office_tastezip.domain.user.enums.UserPosition;
 import com.oz.office_tastezip.enums.UserRole;
 import com.oz.office_tastezip.enums.UserStatus;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +19,16 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 @SpringBootTest
 @Transactional
 class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
+    @PersistenceContext
+    private EntityManager em;
+
 
     @Test
     @DisplayName("사용자 저장 테스트")
@@ -68,7 +75,7 @@ class UserRepositoryTest {
         userRepository.flush();
 
         // when
-        Optional<User> found = userRepository.findByEmail(user.getEmail());
+        Optional<User> found = userRepository.findByUserUUID(String.valueOf(user.getId()));
 
         // then
         assertThat(found).isPresent();
@@ -77,6 +84,29 @@ class UserRepositoryTest {
         assertThat(result.getNickname()).isEqualTo("tester");
         assertThat(result.getStatus()).isEqualTo(UserStatus.ACTIVE);
         assertThat(result.getDeletedAt()).isNull();
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 테스트")
+    void test() {
+        // Given
+        User user = User.create(getUserInsertRequest());
+        userRepository.save(user);
+        userRepository.flush();
+
+        userRepository.deleteByUserUUID(String.valueOf(user.getId()));
+
+        em.clear();
+
+        // When
+        Optional<User> byUserUUID = userRepository.findById(user.getId());
+
+        // Then
+        assertThat(byUserUUID).isPresent();
+        User result = byUserUUID.get();
+        log.info("result user info: {}", result);
+        assertThat(result.getDeletedAt()).isNotNull();
+        assertThat(result.getStatus()).isEqualTo(UserStatus.WITHDRAWN);
     }
 
     private UserRequestDto.UserInsertRequest getUserInsertRequest() {
