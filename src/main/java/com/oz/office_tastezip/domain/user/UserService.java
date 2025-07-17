@@ -2,6 +2,7 @@ package com.oz.office_tastezip.domain.user;
 
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto;
 import com.oz.office_tastezip.domain.user.repository.UserRepository;
+import com.oz.office_tastezip.global.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,7 @@ public class UserService {
     }
 
     public User findByUserUUID(String id) {
-        return userRepository.findByUserUUID(id).orElseThrow(RuntimeException::new);
+        return userRepository.findByUserUUID(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional

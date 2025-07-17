@@ -88,7 +88,7 @@ class UserRepositoryTest {
 
     @Test
     @DisplayName("회원 탈퇴 테스트")
-    void test() {
+    void userWithdrawTest() {
         // Given
         User user = User.create(getUserInsertRequest());
         userRepository.save(user);
