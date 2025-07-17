@@ -9,11 +9,12 @@ services:
     environment:
       POSTGRES_USER: devuser
       POSTGRES_PASSWORD: devpass
-      POSTGRES_DB: OFFICEZIP
+      POSTGRES_DB: officezip
     ports:
       - "5432:5432"
     volumes:
       - ./database/config/postgresql.conf:/var/lib/postgresql/data_custom/postgresql.conf
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     command: postgres -c config_file=/var/lib/postgresql/data_custom/postgresql.conf
     restart: always
 
