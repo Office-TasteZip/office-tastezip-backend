@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.common.util;
+package com.oz.office_tastezip.global.util;
 
 import com.oz.office_tastezip.global.exception.RequestFailureException;
 import lombok.extern.slf4j.Slf4j;
