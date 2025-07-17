@@ -26,7 +26,8 @@ public class UserService {
         // TODO image > s3
     }
 
-    public boolean findByEmail(String email) {
+    public boolean countByEmail(String email) {
+        log.info("count by email, target: {}", email);
         return userRepository.countByEmail(email) == 0;
     }
 
@@ -35,8 +36,14 @@ public class UserService {
     }
 
     @Transactional
-    public void withdrawUser(String id) {
+    public void withdraw(String id) {
         log.info("withdraw user, id: {}", id);
         userRepository.deleteByUserUUID(id);
+    }
+
+    @Transactional
+    public void update(UserRequestDto.UserUpdateRequest userUpdateRequest) {
+        log.info("update user info: {}", userUpdateRequest);
+        userRepository.updateByUserUUID(userUpdateRequest);
     }
 }

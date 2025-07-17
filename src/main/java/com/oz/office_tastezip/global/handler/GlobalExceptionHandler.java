@@ -11,16 +11,10 @@ import org.slf4j.MDC;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.oz.office_tastezip.global.interceptor.GlobalRequestInterceptor.REQUEST_UUID;
 
@@ -64,38 +58,6 @@ public class GlobalExceptionHandler {
                 request.getRequestURI(),
                 ExceptionUtils.getStackTrace(NestedExceptionUtils.getMostSpecificCause(e)));
         return new ResponseFail<>(e.getResponseCode(), errMsg).fail();
-    }
-
-    /**
-     * http status: 400
-     * <p>
-     * Validation error
-     */
-    @ResponseBody
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<Response.Body<Object>> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        String eventId = MDC.get(REQUEST_UUID);
-        String errMsg = NestedExceptionUtils.getMostSpecificCause(e).getMessage();
-
-        List<String> defaultMessages = new ArrayList<>();
-        Pattern pattern = Pattern.compile("default message \\[(.*?)]");
-        Matcher matcher = pattern.matcher(errMsg);
-        while (matcher.find()) {
-            defaultMessages.add(matcher.group(1));
-        }
-
-        List<String> messages = new ArrayList<>();
-        for (int i = 1; i < defaultMessages.size(); i += 2) {
-            messages.add(defaultMessages.get(i));
-        }
-
-        log.error("[MethodArgumentNotValidException] eventId = {}, cause = {}, errMsg = {}",
-                eventId,
-                NestedExceptionUtils.getMostSpecificCause(e).getStackTrace()[0],
-                messages
-        );
-
-        return new ResponseFail<>(ResponseCode.FAIL, !messages.isEmpty() ? messages.toString() : "Invalid parameters").fail();
     }
 
     /**
