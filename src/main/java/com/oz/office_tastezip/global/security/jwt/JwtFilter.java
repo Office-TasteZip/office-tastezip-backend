@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.global.auth.jwt;
+package com.oz.office_tastezip.global.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,7 +33,7 @@ public class JwtFilter extends GenericFilterBean {
         String jwt = resolveToken(httpServletRequest);
         String requestUri = httpServletRequest.getRequestURI();
 
-        log.info("[JwtFilter] Request uri: {}, Request user ip: {}", requestUri, httpServletRequest.getRemoteAddr());
+        log.info("Request uri: {}, Request user ip: {}", requestUri, httpServletRequest.getRemoteAddr());
         if (StringUtils.hasText(jwt) && jwtTokenValidator.validateToken(jwt)) {
             Authentication authentication = jwtTokenValidator.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);

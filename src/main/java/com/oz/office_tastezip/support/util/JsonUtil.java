@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.common.util;
+package com.oz.office_tastezip.support.util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

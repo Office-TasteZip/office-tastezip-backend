@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.global.auth.filter;
+package com.oz.office_tastezip.global.security.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;

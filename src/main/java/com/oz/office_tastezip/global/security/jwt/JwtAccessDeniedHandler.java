@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.global.auth.jwt;
+package com.oz.office_tastezip.global.security.jwt;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

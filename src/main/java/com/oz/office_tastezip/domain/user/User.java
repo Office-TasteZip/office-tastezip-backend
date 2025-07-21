@@ -4,8 +4,8 @@ import com.oz.office_tastezip.domain.BaseEntity;
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto;
 import com.oz.office_tastezip.domain.user.enums.UserJob;
 import com.oz.office_tastezip.domain.user.enums.UserPosition;
-import com.oz.office_tastezip.enums.UserRole;
-import com.oz.office_tastezip.enums.UserStatus;
+import com.oz.office_tastezip.domain.auth.enums.UserRole;
+import com.oz.office_tastezip.domain.auth.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,6 +53,9 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private UserStatus status;
+
+    @Column(name = "last_login_ip")
+    private String lastLoginIp;
 
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;

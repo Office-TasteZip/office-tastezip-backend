@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.global.auth.jwt;
+package com.oz.office_tastezip.global.security.jwt;
 
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

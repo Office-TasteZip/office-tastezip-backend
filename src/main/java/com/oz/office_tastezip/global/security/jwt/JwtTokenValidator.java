@@ -1,7 +1,7 @@
-package com.oz.office_tastezip.global.auth.jwt;
+package com.oz.office_tastezip.global.security.jwt;
 
-import com.oz.office_tastezip.common.util.JsonUtil;
-import com.oz.office_tastezip.global.auth.dto.TokenDto;
+import com.oz.office_tastezip.support.util.JsonUtil;
+import com.oz.office_tastezip.global.security.dto.TokenDto;
 import com.oz.office_tastezip.global.exception.DataNotFoundException;
 import com.oz.office_tastezip.global.exception.InvalidTokenException;
 import com.oz.office_tastezip.global.response.ResponseCode;

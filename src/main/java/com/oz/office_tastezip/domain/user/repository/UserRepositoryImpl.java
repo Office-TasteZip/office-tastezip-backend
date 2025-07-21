@@ -5,7 +5,7 @@ import com.oz.office_tastezip.domain.user.User;
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto;
 import com.oz.office_tastezip.domain.user.enums.UserJob;
 import com.oz.office_tastezip.domain.user.enums.UserPosition;
-import com.oz.office_tastezip.enums.UserStatus;
+import com.oz.office_tastezip.domain.auth.enums.UserStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;

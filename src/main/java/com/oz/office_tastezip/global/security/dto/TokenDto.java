@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.global.auth.dto;
+package com.oz.office_tastezip.global.security.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

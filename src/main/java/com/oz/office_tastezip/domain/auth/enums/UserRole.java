@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.enums;
+package com.oz.office_tastezip.domain.auth.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.api.auth;
+package com.oz.office_tastezip.domain.auth.controller;
 
 import com.oz.office_tastezip.global.response.Response;
 import com.oz.office_tastezip.global.response.ResponseSuccess;

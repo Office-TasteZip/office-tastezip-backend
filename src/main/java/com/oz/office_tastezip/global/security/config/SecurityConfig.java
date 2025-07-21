@@ -1,10 +1,10 @@
-package com.oz.office_tastezip.global.config;
+package com.oz.office_tastezip.global.security.config;
 
-import com.oz.office_tastezip.global.auth.filter.CustomAuthenticationProvider;
-import com.oz.office_tastezip.global.auth.jwt.JwtAccessDeniedHandler;
-import com.oz.office_tastezip.global.auth.jwt.JwtAuthenticationEntryPoint;
-import com.oz.office_tastezip.global.auth.jwt.JwtSecurityConfig;
-import com.oz.office_tastezip.global.auth.jwt.JwtTokenValidator;
+import com.oz.office_tastezip.global.security.filter.CustomAuthenticationProvider;
+import com.oz.office_tastezip.global.security.jwt.JwtAccessDeniedHandler;
+import com.oz.office_tastezip.global.security.jwt.JwtAuthenticationEntryPoint;
+import com.oz.office_tastezip.global.security.jwt.JwtSecurityConfig;
+import com.oz.office_tastezip.global.security.jwt.JwtTokenValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

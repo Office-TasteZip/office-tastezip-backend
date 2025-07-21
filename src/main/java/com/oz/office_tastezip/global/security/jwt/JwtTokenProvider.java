@@ -1,9 +1,9 @@
-package com.oz.office_tastezip.global.auth.jwt;
+package com.oz.office_tastezip.global.security.jwt;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oz.office_tastezip.common.util.JsonUtil;
-import com.oz.office_tastezip.global.auth.dto.TokenDto;
+import com.oz.office_tastezip.support.util.JsonUtil;
+import com.oz.office_tastezip.global.security.dto.TokenDto;
 import com.oz.office_tastezip.global.exception.InvalidTokenException;
 import com.oz.office_tastezip.global.util.RedisUtils;
 import io.jsonwebtoken.Claims;
