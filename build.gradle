@@ -9,7 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -17,7 +17,12 @@ ext {
     querydslVersion = "5.0.0"
 }
 
+bootJar {
+    archiveFileName = 'app.jar'
+}
+
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -39,11 +44,12 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
     // swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
 
     // objectMapper
     implementation 'com.fasterxml.jackson.core:jackson-core:2.19.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.1'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.19.1'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.19.1'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1'
 
