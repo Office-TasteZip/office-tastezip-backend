@@ -49,8 +49,8 @@ class UserRepositoryTest {
         User result = found.get();
 
         // 핵심 필드 검증
-        assertThat(result.getEmail()).isEqualTo("tester@example.com");
-        assertThat(result.getPasswordHash()).isEqualTo("password");
+        assertThat(result.getEmail()).isEqualTo("tester333@example.com");
+        assertThat(passwordEncoder.matches("password", result.getPasswordHash())).isTrue();
         assertThat(result.getNickname()).isEqualTo("tester");
 
         // Enum 필드 검증
@@ -139,7 +139,7 @@ class UserRepositoryTest {
 
     private UserRequestDto.UserInsertRequest getUserInsertRequest() {
         return new UserRequestDto.UserInsertRequest(
-                "tester@example.com",
+                "tester333@example.com",
                 "password",
                 "tester",
                 "production",
