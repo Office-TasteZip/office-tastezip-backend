@@ -4,7 +4,7 @@ import com.oz.office_tastezip.global.auth.filter.CustomAuthenticationProvider;
 import com.oz.office_tastezip.global.auth.jwt.JwtAccessDeniedHandler;
 import com.oz.office_tastezip.global.auth.jwt.JwtAuthenticationEntryPoint;
 import com.oz.office_tastezip.global.auth.jwt.JwtSecurityConfig;
-import com.oz.office_tastezip.global.auth.jwt.JwtTokenProvider;
+import com.oz.office_tastezip.global.auth.jwt.JwtTokenValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenValidator jwtTokenValidator;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomAuthenticationProvider customAuthenticationProvider;
@@ -40,7 +40,7 @@ public class SecurityConfig {
             "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources", "/swagger-resources/**"
     };
     private static final String[] OTZ_WHITE_LIST_URI = {
-            "로그인"
+            "/api/v1/otz/auth/login", "/api/v1/otz/auth/rsa"
     };
     private final String[] ALLOWED_HEADERS = {
             "Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "x-request-id",
@@ -82,9 +82,8 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .with(new JwtSecurityConfig(jwtTokenProvider), customizer -> {
+                .with(new JwtSecurityConfig(jwtTokenValidator), customizer -> {
                 })
-
                 .build();
     }
 
