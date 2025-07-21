@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.api.auth.dto;
+package com.oz.office_tastezip.domain.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
