@@ -11,6 +11,8 @@ import org.slf4j.MDC;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -78,4 +80,23 @@ public class GlobalExceptionHandler {
         return new ResponseFail<>(ResponseCode.FORBIDDEN, e.getMessage()).fail();
     }
 
+    /**
+     * http status: 400
+     * <p>
+     * Validation Error
+     */
+    @ResponseBody
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Response.Body<String>> onValidationException(MethodArgumentNotValidException ex) {
+        BindingResult bindingResult = ex.getBindingResult();
+        String errorMessage = bindingResult.getFieldErrors().get(0).getDefaultMessage();
+
+        log.error("[onValidationException] eventId : {}, errMsg : {}, cause : {} stackTrace : {}",
+                MDC.get(REQUEST_UUID),
+                errorMessage,
+                NestedExceptionUtils.getMostSpecificCause(ex).getStackTrace()[0],
+                ExceptionUtils.getStackTrace(NestedExceptionUtils.getMostSpecificCause(ex)));
+
+        return new ResponseFail<String>(ResponseCode.VALIDATION_ERROR, errorMessage).fail();
+    }
 }

@@ -22,7 +22,8 @@ public enum ResponseCode {
     USER_NOT_FOUND("2001", "User does not exist", HttpStatus.NOT_FOUND),
     DATA_NOT_FOUND("2002", "Data does not exist", HttpStatus.NOT_FOUND),
     DUPLICATED_EMAIL("2003", "Token does not exist", HttpStatus.NOT_FOUND),
-    INVALID_PASSWORD("2004", "Email is already in use", HttpStatus.CONFLICT),
+    DATA_EXIST("2004", "Token does not exist", HttpStatus.CONFLICT),
+    INVALID_PASSWORD("2005", "Email is already in use", HttpStatus.CONFLICT),
 
     // 3xxx: Validation
     VALIDATION_ERROR("3001", "Invalid request input", HttpStatus.BAD_REQUEST),
