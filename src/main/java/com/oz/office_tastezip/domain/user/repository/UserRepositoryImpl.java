@@ -9,6 +9,7 @@ import com.oz.office_tastezip.domain.auth.enums.UserStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Slf4j
 @Repository
+@Transactional
 public class UserRepositoryImpl implements UserRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
@@ -26,6 +28,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> findByUserUUID(String uuid) {
         QUser user = QUser.user;
 
@@ -37,6 +40,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public int countByEmail(String email) {
         QUser user = QUser.user;
 
@@ -76,4 +80,17 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
         log.info("Updated rows: {}", updated);
     }
+
+    @Override
+    public void updateLastLoginAtByUserUUID(String uuid) {
+        QUser user = QUser.user;
+
+        log.info("Update last login at by user uuid: {}", uuid);
+
+        queryFactory.update(user)
+                .set(user.lastLoginAt, LocalDateTime.now())
+                .where(user.deletedAt.isNull().and(user.id.eq(UUID.fromString(uuid))))
+                .execute();
+    }
+
 }

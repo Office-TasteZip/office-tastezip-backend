@@ -1,15 +1,17 @@
-package com.oz.office_tastezip.global.security.config;
+package com.oz.office_tastezip.global.config;
 
 import com.oz.office_tastezip.global.security.filter.CustomAuthenticationProvider;
 import com.oz.office_tastezip.global.security.jwt.JwtAccessDeniedHandler;
 import com.oz.office_tastezip.global.security.jwt.JwtAuthenticationEntryPoint;
 import com.oz.office_tastezip.global.security.jwt.JwtSecurityConfig;
 import com.oz.office_tastezip.global.security.jwt.JwtTokenValidator;
+import com.oz.office_tastezip.global.security.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -29,10 +31,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CustomUserDetailService customUserDetailService;
     private final JwtTokenValidator jwtTokenValidator;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final CustomAuthenticationProvider customAuthenticationProvider;
 
     private static final String[] SYSTEM_WHITE_LIST_URL = {
             "/v2/api-docs", "/v3/api-docs", "/v3/api-docs/**", "/configuration/ui", "/configuration/security",
@@ -53,9 +55,14 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationProvider customAuthenticationProvider() {
+        return new CustomAuthenticationProvider(passwordEncoder(), customUserDetailService);
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         AuthenticationManagerBuilder sharedObject = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
-        sharedObject.authenticationProvider(customAuthenticationProvider);
+        sharedObject.authenticationProvider(customAuthenticationProvider());
         AuthenticationManager authenticationManager = sharedObject.build();
 
         return httpSecurity
@@ -82,7 +89,7 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .with(new JwtSecurityConfig(jwtTokenValidator), customizer -> {
+                .with(new JwtSecurityConfig(customUserDetailService, jwtTokenValidator), customizer -> {
                 })
                 .build();
     }

@@ -1,9 +1,6 @@
 package com.oz.office_tastezip.global.security.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -17,6 +14,7 @@ public class TokenDto {
     private String refreshToken;
     private String email;
     private String nickname;
+    private String organizationName;
     private LocalDateTime lastLoginAt;
 
     @Getter
@@ -32,6 +30,22 @@ public class TokenDto {
                     "accessSerial='" + accessSerial + '\'' +
                     ", refreshSerial='" + refreshSerial + '\'' +
                     '}';
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class TokenResponse {
+        private String accessToken;
+        private String email;
+        private String nickname;
+        private LocalDateTime lastLoginAt;
+
+        public TokenResponse(String accessToken, String email) {
+            this.accessToken = accessToken;
+            this.email = email;
         }
     }
 }

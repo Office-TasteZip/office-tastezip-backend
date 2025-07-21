@@ -4,6 +4,7 @@ import com.oz.office_tastezip.domain.user.dto.UserRequestDto;
 import com.oz.office_tastezip.domain.user.repository.UserRepository;
 import com.oz.office_tastezip.global.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,15 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public void register(UserRequestDto.UserInsertRequest userInsertRequest) {
-        User user = User.create(userInsertRequest);
+        User user = User.create(userInsertRequest, passwordEncoder);
         log.info("Insert user info: {}", user);
+        // TODO 해당 UUID 존재 여부 확인할 것
         userRepository.save(user);
 
         // TODO image > s3

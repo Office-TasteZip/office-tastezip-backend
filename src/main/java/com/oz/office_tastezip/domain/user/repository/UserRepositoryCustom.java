@@ -13,4 +13,6 @@ public interface UserRepositoryCustom {
     void deleteByUserUUID(String uuid);
 
     void updateByUserUUID(UserRequestDto.UserUpdateRequest userUpdateRequest);
+
+    void updateLastLoginAtByUserUUID(String uuid);
 }

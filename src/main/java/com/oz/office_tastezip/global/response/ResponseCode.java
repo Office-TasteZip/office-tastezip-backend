@@ -24,6 +24,7 @@ public enum ResponseCode {
     DUPLICATED_EMAIL("2003", "Token does not exist", HttpStatus.NOT_FOUND),
     DATA_EXIST("2004", "Token does not exist", HttpStatus.CONFLICT),
     INVALID_PASSWORD("2005", "Email is already in use", HttpStatus.CONFLICT),
+    ACCOUNT_LOCK("2006", "User account is locked", HttpStatus.LOCKED),
 
     // 3xxx: Validation
     VALIDATION_ERROR("3001", "Invalid request input", HttpStatus.BAD_REQUEST),

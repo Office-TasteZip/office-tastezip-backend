@@ -1,15 +1,16 @@
 package com.oz.office_tastezip.domain.user;
 
 import com.oz.office_tastezip.domain.BaseEntity;
-import com.oz.office_tastezip.domain.user.dto.UserRequestDto;
-import com.oz.office_tastezip.domain.user.enums.UserJob;
-import com.oz.office_tastezip.domain.user.enums.UserPosition;
 import com.oz.office_tastezip.domain.auth.enums.UserRole;
 import com.oz.office_tastezip.domain.auth.enums.UserStatus;
+import com.oz.office_tastezip.domain.user.dto.UserRequestDto.UserInsertRequest;
+import com.oz.office_tastezip.domain.user.enums.UserJob;
+import com.oz.office_tastezip.domain.user.enums.UserPosition;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -63,6 +64,9 @@ public class User extends BaseEntity {
     @Column(name = "last_failed_login_at")
     private LocalDateTime lastFailedLoginAt;
 
+    @Column(name = "login_fail_count", columnDefinition = "int default 0")
+    private int loginFailCount;
+
     @Column(name = "profile_image_url", columnDefinition = "TEXT")
     private String profileImageUrl;
 
@@ -71,10 +75,10 @@ public class User extends BaseEntity {
     protected User() {
     }
 
-    public static User create(UserRequestDto.UserInsertRequest userInsertRequest) {
+    public static User create(UserInsertRequest userInsertRequest, PasswordEncoder passwordEncoder) {
         return User.builder()
                 .email(userInsertRequest.getEmail())
-                .passwordHash(userInsertRequest.getPassword())  // TODO BCrypt
+                .passwordHash(passwordEncoder.encode(userInsertRequest.getPassword()))
                 .passwordUpdatedAt(LocalDateTime.now())
                 .nickname(userInsertRequest.getNickname())
                 .job(UserJob.fromJobName(userInsertRequest.getJob()))
@@ -100,13 +104,11 @@ public class User extends BaseEntity {
                 ", marketingOptIn=" + marketingOptIn +
                 ", role=" + role +
                 ", status=" + status +
+                ", lastLoginIp='" + lastLoginIp + '\'' +
                 ", lastLoginAt=" + lastLoginAt +
                 ", lastFailedLoginAt=" + lastFailedLoginAt +
+                ", loginFailCount=" + loginFailCount +
                 ", profileImageUrl='" + profileImageUrl + '\'' +
-                ", id=" + id +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", deletedAt=" + deletedAt +
                 '}';
     }
 }

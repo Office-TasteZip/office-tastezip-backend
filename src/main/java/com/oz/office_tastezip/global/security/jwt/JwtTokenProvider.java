@@ -2,20 +2,23 @@ package com.oz.office_tastezip.global.security.jwt;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oz.office_tastezip.support.util.JsonUtil;
-import com.oz.office_tastezip.global.security.dto.TokenDto;
 import com.oz.office_tastezip.global.exception.InvalidTokenException;
+import com.oz.office_tastezip.global.security.dto.TokenDto;
 import com.oz.office_tastezip.global.util.RedisUtils;
+import com.oz.office_tastezip.support.util.JsonUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.oz.office_tastezip.global.constant.AuthConstants.Jwt.AUTHORITIES_KEY;
 import static com.oz.office_tastezip.global.constant.AuthConstants.Jwt.SERIAL_KEY;
@@ -25,6 +28,7 @@ import static com.oz.office_tastezip.global.constant.AuthConstants.Jwt.SERIAL_KE
 public class JwtTokenProvider {
 
     private final RedisUtils redisUtils;
+    private final ObjectMapper objectMapper;
     private final JwtTokenValidator jwtTokenValidator;
 
     private final long accessTokenValidityTime;
@@ -34,29 +38,43 @@ public class JwtTokenProvider {
             @Value("${jwt.access-token-expiration}") long accessTokenValidityTime,
             @Value("${jwt.refresh-token-expiration}") long refreshTokenValidityTime,
             RedisUtils redisUtils,
+            ObjectMapper objectMapper,
             JwtTokenValidator jwtTokenValidator
     ) {
         this.accessTokenValidityTime = accessTokenValidityTime * 1000;
         this.refreshTokenValidityTime = refreshTokenValidityTime * 1000;
         this.redisUtils = redisUtils;
+        this.objectMapper = objectMapper;
         this.jwtTokenValidator = jwtTokenValidator;
     }
 
-    public TokenDto generateToken(String userId, String authority, String keyPrefix) throws Exception {
+    public TokenDto generateToken(Authentication authentication, String keyPrefix) {
         String accessSerial = String.valueOf(UUID.randomUUID());
         String refreshSerial = String.valueOf(UUID.randomUUID());
 
-        setSerialToRedis(accessSerial, refreshSerial, keyPrefix + userId);
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        String email = authentication.getName();
+        setSerialToRedis(accessSerial, refreshSerial, keyPrefix + email);
 
         return TokenDto.builder()
-                .accessToken(buildAccessToken(userId, authority, accessSerial))
-                .refreshToken(buildRefreshToken(userId, refreshSerial))
+                .accessToken(buildAccessToken(email, authorities, accessSerial))
+                .refreshToken(buildRefreshToken(email, refreshSerial))
                 .build();
     }
 
-    private void setSerialToRedis(String accessSerial, String refreshSerial, String redisTokenKey) throws JsonProcessingException {
-        redisUtils.set(redisTokenKey, new ObjectMapper().writeValueAsString(new TokenDto.SerialDto(accessSerial, refreshSerial)));
-        redisUtils.setExpiredTime(redisTokenKey, refreshTokenValidityTime, TimeUnit.SECONDS);
+    private void setSerialToRedis(String accessSerial, String refreshSerial, String redisTokenKey) {
+        try {
+            String serialJson = objectMapper.writeValueAsString(new TokenDto.SerialDto(accessSerial, refreshSerial));
+
+            redisUtils.set(redisTokenKey, serialJson);
+            redisUtils.setExpiredTime(redisTokenKey, refreshTokenValidityTime, TimeUnit.SECONDS);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to serialize TokenDto.SerialDto to JSON: {}", e.getMessage(), e);
+            throw new IllegalStateException("Failed to store token serials to Redis.", e);
+        }
     }
 
     public String refreshTokenValidCheck(String refresh, String keyPrefix) {

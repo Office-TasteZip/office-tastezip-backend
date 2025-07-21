@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -26,6 +27,8 @@ class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @PersistenceContext
     private EntityManager em;
 
@@ -34,7 +37,7 @@ class UserRepositoryTest {
     @DisplayName("사용자 저장 테스트")
     void insertUserTest() {
         // given
-        User user = User.create(getUserInsertRequest());
+        User user = User.create(getUserInsertRequest(), passwordEncoder);
 
         // when
         User saved = userRepository.save(user);
@@ -70,7 +73,7 @@ class UserRepositoryTest {
     @DisplayName("사용자 정보(내정보) 조회 테스트")
     void selectMyInfoTest() {
         // given
-        User user = User.create(getUserInsertRequest());
+        User user = User.create(getUserInsertRequest(), passwordEncoder);
         userRepository.save(user);
         userRepository.flush();
 
@@ -90,7 +93,7 @@ class UserRepositoryTest {
     @DisplayName("회원 탈퇴 테스트")
     void userWithdrawTest() {
         // Given
-        User user = User.create(getUserInsertRequest());
+        User user = User.create(getUserInsertRequest(), passwordEncoder);
         userRepository.save(user);
         userRepository.flush();
 
@@ -113,7 +116,7 @@ class UserRepositoryTest {
     @DisplayName("사용자 수정 테스트")
     void updateUserTest() {
         // Given
-        User user = User.create(getUserInsertRequest());
+        User user = User.create(getUserInsertRequest(), passwordEncoder);
         userRepository.save(user);
         userRepository.flush();
 

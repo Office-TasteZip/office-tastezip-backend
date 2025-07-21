@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -25,107 +26,111 @@ import java.util.Map;
 @Slf4j
 public class JsonUtil {
 
+    private static final ObjectMapper objectMapper;
     private static final ObjectMapper prettyMapper;
-    private static final TypeReference<List<Object>> typeRefList;
-    private static final TypeReference<Map<String, Object>> typeRefMap;
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final TypeReference<List<Object>> typeRefList = new TypeReference<>() {
+    };
+    private static final TypeReference<Map<String, Object>> typeRefMap = new TypeReference<>() {
+    };
 
     private JsonUtil() {
     }
 
     static {
-        prettyMapper = (new ObjectMapper()).enable(SerializationFeature.INDENT_OUTPUT);
-        typeRefMap = new TypeReference<>() {
-        };
-        typeRefList = new TypeReference<>() {
-        };
-        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
+        objectMapper = new ObjectMapper();
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
                 .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .registerModule(new JavaTimeModule());
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .registerModules(new JavaTimeModule(), new Jdk8Module());
+
+        prettyMapper = new ObjectMapper();
+        prettyMapper.enable(SerializationFeature.INDENT_OUTPUT)
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .registerModules(new JavaTimeModule(), new Jdk8Module());
     }
 
-    public static String getJson(Object _obj) {
+    public static String getJson(Object obj) {
         try {
-            return mapper.writeValueAsString(_obj);
+            return objectMapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
-            log.error(ExceptionUtils.getStackTrace(e));
+            log.error("Json serialize error: {}", ExceptionUtils.getStackTrace(e));
             return null;
         }
     }
 
-    public static <T> T getObject(String _json, Class<T> _clazz) {
+    public static <T> T getObject(String json, Class<T> clazz) {
         try {
-            return mapper.readValue(_json, _clazz);
+            return objectMapper.readValue(json, clazz);
         } catch (JsonProcessingException e) {
-            log.error(ExceptionUtils.getStackTrace(e));
+            log.error("Json deserialize error: {}", ExceptionUtils.getStackTrace(e));
             return null;
         }
     }
 
-    public static <T> T getObject(Map<String, Object> dataMap, Class<T> _clazz) {
-        return mapper.convertValue(dataMap, _clazz);
+    public static <T> T getObject(Map<String, Object> dataMap, Class<T> clazz) {
+        return objectMapper.convertValue(dataMap, clazz);
     }
 
-    public static Map<String, Object> toMap(String _json) {
+    public static Map<String, Object> toMap(String json) {
         try {
-            return mapper.readValue(_json, typeRefMap);
+            return objectMapper.readValue(json, typeRefMap);
         } catch (JsonProcessingException e) {
-            log.error(ExceptionUtils.getStackTrace(e));
+            log.error("Json toMap error: {}", ExceptionUtils.getStackTrace(e));
             return null;
         }
     }
 
-    public static Map<String, Object> toMap(Object _obj) {
-        return mapper.convertValue(_obj, typeRefMap);
+    public static Map<String, Object> toMap(Object obj) {
+        return objectMapper.convertValue(obj, typeRefMap);
     }
 
-    public static List<?> toList(String _json) {
+    public static List<?> toList(String json) {
         try {
-            return mapper.readValue(_json, typeRefList);
+            return objectMapper.readValue(json, typeRefList);
         } catch (JsonProcessingException e) {
-            log.error(ExceptionUtils.getStackTrace(e));
+            log.error("Json toList error: {}", ExceptionUtils.getStackTrace(e));
             return null;
         }
     }
 
-    public static List<Object> toList(File _jsonFile) {
+    public static List<Object> toList(File jsonFile) {
         try {
-            return mapper.readValue(_jsonFile, typeRefList);
+            return objectMapper.readValue(jsonFile, typeRefList);
         } catch (IOException e) {
-            log.error(ExceptionUtils.getStackTrace(e));
+            log.error("Json file toList error: {}", ExceptionUtils.getStackTrace(e));
             return null;
         }
     }
 
-    public static List<?> toList(Object _obj) {
-        return mapper.convertValue(_obj, typeRefList);
+    public static List<?> toList(Object obj) {
+        return objectMapper.convertValue(obj, typeRefList);
     }
 
-    public static Map<String, Object> toMap(File _jsonFile) {
+    public static Map<String, Object> toMap(File jsonFile) {
         try {
-            return mapper.readValue(_jsonFile, typeRefMap);
+            return objectMapper.readValue(jsonFile, typeRefMap);
         } catch (IOException e) {
-            log.error(ExceptionUtils.getStackTrace(e));
+            log.error("Json file toMap error: {}", ExceptionUtils.getStackTrace(e));
             return null;
         }
     }
 
-    public static Map<String, Object> toMap(InputStream _jsonStream) {
+    public static Map<String, Object> toMap(InputStream jsonStream) {
         try {
-            return mapper.readValue(_jsonStream, typeRefMap);
+            return objectMapper.readValue(jsonStream, typeRefMap);
         } catch (IOException e) {
-            log.error(ExceptionUtils.getStackTrace(e));
+            log.error("Json stream toMap error: {}", ExceptionUtils.getStackTrace(e));
             return null;
         }
     }
 
-    public static <T> T treeToValue(JsonNode _jsonNode, Class<T> _clazz) {
+    public static <T> T treeToValue(JsonNode jsonNode, Class<T> clazz) {
         try {
-            return mapper.treeToValue(_jsonNode, _clazz);
+            return objectMapper.treeToValue(jsonNode, clazz);
         } catch (IOException e) {
-            log.error(ExceptionUtils.getStackTrace(e));
+            log.error("Json treeToValue error: {}", ExceptionUtils.getStackTrace(e));
             return null;
         }
     }
@@ -135,29 +140,23 @@ public class JsonUtil {
             Object jsonValue;
             try {
                 jsonValue = prettyMapper.readValue(jsonString, Map.class);
-            } catch (JsonProcessingException var3) {
+            } catch (JsonProcessingException ex) {
                 jsonValue = prettyMapper.readValue(jsonString, Collection.class);
             }
-
             return prettyMapper.writeValueAsString(jsonValue);
         } catch (JsonProcessingException e) {
-            log.error("{} - {}", e.getMessage(), jsonString);
+            log.error("prettyPrint error: {} - input: {}", e.getMessage(), jsonString);
             return "{}";
         }
     }
 
     public static boolean isJsonFormat(String payload) {
         try {
-            if (StringUtils.isBlank(payload)) {
-                return false;
-            } else {
-                JsonElement jsonElement = JsonParser.parseString(payload);
-                return jsonElement != null && jsonElement.isJsonObject();
-            }
-        } catch (Exception var2) {
+            if (StringUtils.isBlank(payload)) return false;
+            JsonElement jsonElement = JsonParser.parseString(payload);
+            return jsonElement != null && jsonElement.isJsonObject();
+        } catch (Exception e) {
             return false;
         }
     }
-
 }
-

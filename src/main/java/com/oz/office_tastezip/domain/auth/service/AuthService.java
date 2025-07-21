@@ -1,6 +1,6 @@
 package com.oz.office_tastezip.domain.auth.service;
 
-import com.oz.office_tastezip.global.security.dto.UserDetails;
+import com.oz.office_tastezip.domain.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -8,8 +8,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-    public UserDetails loadUserByUserEmail(String email) {
+    private final UserRepository userRepository;
 
-        return new UserDetails();
+    public AuthService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
+
+    public void updateLastLoginAt(String uuid) {
+        userRepository.updateLastLoginAtByUserUUID(uuid);
+    }
+
 }
