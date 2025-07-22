@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collection;
 
-import static com.oz.office_tastezip.global.response.ResponseCode.FORBIDDEN;
+import static com.oz.office_tastezip.global.response.ResponseCode.INVALID_PASSWORD;
 
 @Slf4j
 public class CustomAuthenticationProvider implements AuthenticationProvider {
@@ -42,7 +42,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         CustomUserDetails customUserDetails = customUserDetailService.loadUserByEmail(email);
 
         if (!passwordEncoder.matches(password, customUserDetails.getPasswordHash())) {
-            throw new ValidationFailureException(FORBIDDEN, "아이디 또는 비밀번호가 일치하지 않습니다.");
+            throw new ValidationFailureException(INVALID_PASSWORD, "아이디 또는 비밀번호가 일치하지 않습니다.");
         }
 
         Collection<? extends GrantedAuthority> authorities = customUserDetails.getAuthorities();
