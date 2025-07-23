@@ -17,6 +17,7 @@ public enum ResponseCode {
     FORBIDDEN("1002", "You do not have permission", HttpStatus.FORBIDDEN),
     TOKEN_EXPIRED("1003", "Token has expired", HttpStatus.UNAUTHORIZED),
     INVALID_TOKEN("1004", "Invalid token", HttpStatus.UNAUTHORIZED),
+    TOKEN_DOES_NOT_EXIST("1005", "Token does not exist", HttpStatus.UNAUTHORIZED),
 
     // 2xxx: User Related
     USER_NOT_FOUND("2001", "User does not exist", HttpStatus.NOT_FOUND),

@@ -1,6 +1,8 @@
 package com.oz.office_tastezip.domain.auth.service;
 
+import com.oz.office_tastezip.domain.user.User;
 import com.oz.office_tastezip.domain.user.repository.UserRepository;
+import com.oz.office_tastezip.global.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,10 @@ public class AuthService {
 
     public void updateLastLoginAt(String uuid) {
         userRepository.updateLastLoginAtByUserUUID(uuid);
+    }
+
+    public User selectUser(String email) {
+        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
 }

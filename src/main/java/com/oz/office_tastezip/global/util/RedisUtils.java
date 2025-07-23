@@ -1,5 +1,6 @@
 package com.oz.office_tastezip.global.util;
 
+import com.oz.office_tastezip.support.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -32,7 +33,37 @@ public class RedisUtils {
         return Optional.ofNullable(valueOperations.get(key));
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> get(String key, Class<T> type) {
+        Object value = valueOperations.get(key);
+        if (value == null) return Optional.empty();
+
+        if (value instanceof String str) {
+            try {
+                return Optional.ofNullable(JsonUtil.getObject(str, type));
+            } catch (Exception e) {
+                log.error("Redis value deserialization failed. key: [{}], type: [{}]", key, type.getName(), e);
+                throw new IllegalStateException("Redis deserialization error", e);
+            }
+        }
+
+        if (type.isInstance(value)) {
+            return Optional.of((T) value);
+        }
+
+        log.error("Stored value type [{}] cannot be cast to [{}]", value.getClass().getName(), type.getName());
+        throw new ClassCastException("Stored value is not of type " + type.getName());
+    }
+
+    public Object getOrNull(String key) {
+        return valueOperations.get(key);
+    }
+
     public void setExpiredTime(String key, long tokenValidityTime, TimeUnit timeUnit) {
         redisTemplate.expire(key, tokenValidityTime, timeUnit);
+    }
+
+    public void delete(String key) {
+        redisTemplate.delete(key);
     }
 }

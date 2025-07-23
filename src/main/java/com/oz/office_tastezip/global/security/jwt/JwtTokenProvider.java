@@ -2,26 +2,22 @@ package com.oz.office_tastezip.global.security.jwt;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oz.office_tastezip.global.exception.DataNotFoundException;
 import com.oz.office_tastezip.global.exception.InvalidTokenException;
 import com.oz.office_tastezip.global.security.dto.TokenDto;
 import com.oz.office_tastezip.global.util.RedisUtils;
-import com.oz.office_tastezip.support.util.JsonUtil;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static com.oz.office_tastezip.global.constant.AuthConstants.Jwt.AUTHORITIES_KEY;
 import static com.oz.office_tastezip.global.constant.AuthConstants.Jwt.SERIAL_KEY;
+import static com.oz.office_tastezip.global.constant.AuthConstants.RedisKey.JWT_KEY_PREFIX;
 
 @Slf4j
 @Component
@@ -35,69 +31,73 @@ public class JwtTokenProvider {
     private final long refreshTokenValidityTime;
 
     public JwtTokenProvider(
-            @Value("${jwt.access-token-expiration}") long accessTokenValidityTime,
-            @Value("${jwt.refresh-token-expiration}") long refreshTokenValidityTime,
             RedisUtils redisUtils,
             ObjectMapper objectMapper,
-            JwtTokenValidator jwtTokenValidator
+            JwtTokenValidator jwtTokenValidator,
+            @Value("${jwt.access-token-expiration}") long accessTokenValidityTime,
+            @Value("${jwt.refresh-token-expiration}") long refreshTokenValidityTime
     ) {
-        this.accessTokenValidityTime = accessTokenValidityTime * 1000;
-        this.refreshTokenValidityTime = refreshTokenValidityTime * 1000;
         this.redisUtils = redisUtils;
         this.objectMapper = objectMapper;
         this.jwtTokenValidator = jwtTokenValidator;
+        this.accessTokenValidityTime = accessTokenValidityTime * 1000;
+        this.refreshTokenValidityTime = refreshTokenValidityTime * 1000;
     }
 
-    public TokenDto generateToken(Authentication authentication, String keyPrefix) {
+    private String getRedisTokenKey(String email) {
+        return JWT_KEY_PREFIX + email;
+    }
+
+    public TokenDto generateToken(String email, String authority) {
         String accessSerial = String.valueOf(UUID.randomUUID());
         String refreshSerial = String.valueOf(UUID.randomUUID());
 
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
-        String email = authentication.getName();
-        setSerialToRedis(accessSerial, refreshSerial, keyPrefix + email);
+        storeTokenSerialsToRedis(email, accessSerial, refreshSerial);
 
         return TokenDto.builder()
-                .accessToken(buildAccessToken(email, authorities, accessSerial))
+                .accessToken(buildAccessToken(email, authority, accessSerial))
                 .refreshToken(buildRefreshToken(email, refreshSerial))
                 .build();
     }
 
-    private void setSerialToRedis(String accessSerial, String refreshSerial, String redisTokenKey) {
+    private void storeTokenSerialsToRedis(String email, String accessSerial, String refreshSerial) {
         try {
+            String redisTokenKey = JWT_KEY_PREFIX + email;
             String serialJson = objectMapper.writeValueAsString(new TokenDto.SerialDto(accessSerial, refreshSerial));
 
             redisUtils.set(redisTokenKey, serialJson);
             redisUtils.setExpiredTime(redisTokenKey, refreshTokenValidityTime, TimeUnit.SECONDS);
         } catch (JsonProcessingException e) {
-            log.error("Failed to serialize TokenDto.SerialDto to JSON: {}", e.getMessage(), e);
-            throw new IllegalStateException("Failed to store token serials to Redis.", e);
+            log.error("Failed to serialize TokenDto.SerialDto to JSON", e);
+            throw new IllegalStateException("Redis 저장 중 직렬화 실패", e);
         }
     }
 
-    public String refreshTokenValidCheck(String refresh, String keyPrefix) {
-        Claims claimsJws = getClaimsJws(refresh);
+    public String refreshTokenValidCheck(String refreshToken) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(jwtTokenValidator.getKey())
+                    .build()
+                    .parseClaimsJws(refreshToken)
+                    .getBody();
 
-        String userId = String.valueOf(claimsJws.get("sub"));
-        String serial = String.valueOf(claimsJws.get(SERIAL_KEY));
-        Object serialData = redisUtils.get(keyPrefix + userId).orElseThrow(() ->
-                new InvalidTokenException("Redis에 토큰 데이터가 없습니다. 로그인이 필요합니다."));
-        TokenDto.SerialDto serialDto = JsonUtil.getObject(serialData.toString(), TokenDto.SerialDto.class);
+            String email = claims.getSubject();
+            TokenDto.SerialDto serialDto = redisUtils.get(getRedisTokenKey(email), TokenDto.SerialDto.class)
+                    .orElseThrow(() -> new DataNotFoundException("세션이 만료되었습니다. 로그인이 필요합니다."));
 
-        if (serialDto == null || !serial.equals(serialDto.getRefreshSerial()))
-            throw new InvalidTokenException("Refresh Token의 Serial이 일치하지 않습니다.");
+            if (serialDto == null || !String.valueOf(claims.get(SERIAL_KEY)).equals(serialDto.getRefreshSerial())) {
+                throw new InvalidTokenException("Refresh Token의 Serial이 일치하지 않습니다.");
+            }
 
-        return userId;
-    }
+            return email;
 
-    private Claims getClaimsJws(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(jwtTokenValidator.getKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new InvalidTokenException("Refresh Token이 만료되었습니다.");
+        } catch (JwtException e) {
+            log.warn("JWT 검증 실패: {}", e.getMessage());
+            throw new InvalidTokenException("Refresh Token이 유효하지 않습니다.");
+        }
+
     }
 
     private String buildAccessToken(String userId, String authority, String accessSerial) {

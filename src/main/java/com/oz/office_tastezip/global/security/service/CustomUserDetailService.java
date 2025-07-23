@@ -2,7 +2,7 @@ package com.oz.office_tastezip.global.security.service;
 
 import com.oz.office_tastezip.domain.user.User;
 import com.oz.office_tastezip.domain.user.repository.UserRepository;
-import com.oz.office_tastezip.global.exception.DataNotFoundException;
+import com.oz.office_tastezip.global.exception.UserNotFoundException;
 import com.oz.office_tastezip.global.exception.ValidationFailureException;
 import com.oz.office_tastezip.global.response.ResponseCode;
 import com.oz.office_tastezip.global.security.dto.CustomUserDetails;
@@ -23,7 +23,7 @@ public class CustomUserDetailService {
     @Transactional(readOnly = true)
     public CustomUserDetails loadUserByEmail(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new DataNotFoundException(ResponseCode.USER_NOT_FOUND, "아이디 또는 비밀번호가 일치하지 않습니다."));
+                new UserNotFoundException("아이디 또는 비밀번호가 일치하지 않습니다."));
 
         int loginFailLimitCnt = 10;
         if (user.getLoginFailCount() >= loginFailLimitCnt) {
