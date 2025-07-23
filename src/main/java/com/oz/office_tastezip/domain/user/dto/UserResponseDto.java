@@ -6,8 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
+
+import static com.oz.office_tastezip.global.constant.TimeFormat.SEC;
 
 @Getter
 @Builder
@@ -22,8 +23,8 @@ public class UserResponseDto {
     private String joinYear;
     private boolean marketingOptIn;
     private String profileImageUrl;
-    private LocalDateTime lastLoginAt;
-    private LocalDateTime createdAt;
+    private String lastLoginAt;
+    private String createdAt;
 
     public static UserResponseDto of(User user) {
         return UserResponseDto.builder()
@@ -35,8 +36,8 @@ public class UserResponseDto {
                 .joinYear(user.getJoinYear())
                 .marketingOptIn(user.isMarketingOptIn())
                 .profileImageUrl(user.getProfileImageUrl())
-                .lastLoginAt(user.getLastLoginAt())
-                .createdAt(user.getCreatedAt())
+                .lastLoginAt(SEC.getString(user.getLastLoginAt()))
+                .createdAt(SEC.getString(user.getCreatedAt()))
                 .build();
     }
 

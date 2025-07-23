@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.support.util;
+package com.oz.office_tastezip.global.util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class JsonUtil {
+public class JsonUtils {
 
     private static final ObjectMapper objectMapper;
     private static final ObjectMapper prettyMapper;
@@ -33,7 +33,7 @@ public class JsonUtil {
     private static final TypeReference<Map<String, Object>> typeRefMap = new TypeReference<>() {
     };
 
-    private JsonUtil() {
+    private JsonUtils() {
     }
 
     static {

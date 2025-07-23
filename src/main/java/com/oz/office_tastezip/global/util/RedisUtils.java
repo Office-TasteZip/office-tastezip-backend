@@ -1,6 +1,5 @@
 package com.oz.office_tastezip.global.util;
 
-import com.oz.office_tastezip.support.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -40,7 +39,7 @@ public class RedisUtils {
 
         if (value instanceof String str) {
             try {
-                return Optional.ofNullable(JsonUtil.getObject(str, type));
+                return Optional.ofNullable(JsonUtils.getObject(str, type));
             } catch (Exception e) {
                 log.error("Redis value deserialization failed. key: [{}], type: [{}]", key, type.getName(), e);
                 throw new IllegalStateException("Redis deserialization error", e);

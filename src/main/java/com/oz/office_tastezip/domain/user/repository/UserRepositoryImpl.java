@@ -68,6 +68,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
         log.info("Update user info: {}", userUpdateRequest);
 
+        // TODO
         long updated = queryFactory.update(user)
                 .set(user.nickname, userUpdateRequest.getNickname())
                 .set(user.job, UserJob.fromJobName(userUpdateRequest.getJob()))
