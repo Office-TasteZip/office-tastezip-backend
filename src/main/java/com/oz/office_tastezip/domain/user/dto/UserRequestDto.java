@@ -23,6 +23,10 @@ public class UserRequestDto {
         @Size(min = 8, max = 20, message = "비밀번호는 8자 이상 20자 이하로 입력해주세요.")
         private String password;
 
+        @NotBlank(message = "비밀번호 확인 값은 필수 입력값입니다.")
+        @Size(min = 8, max = 20, message = "비밀번호 확인 값은 8자 이상 20자 이하로 입력해주세요.")
+        private String confirmPassword;
+
         @NotBlank(message = "닉네임은 필수 입력값입니다.")
         @Size(max = 20, message = "닉네임은 20자 이하로 입력해주세요.")
         private String nickname;
@@ -50,6 +54,7 @@ public class UserRequestDto {
             return "UserInsertRequest{" +
                     "email='" + email + '\'' +
                     ", password='" + password + '\'' +
+                    ", confirmPassword='" + confirmPassword + '\'' +
                     ", nickname='" + nickname + '\'' +
                     ", job='" + job + '\'' +
                     ", position='" + position + '\'' +

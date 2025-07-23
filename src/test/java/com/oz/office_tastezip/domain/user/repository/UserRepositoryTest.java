@@ -141,6 +141,7 @@ class UserRepositoryTest {
         return new UserRequestDto.UserInsertRequest(
                 "tester333@example.com",
                 "password",
+                "password",
                 "tester",
                 "production",
                 "senior",

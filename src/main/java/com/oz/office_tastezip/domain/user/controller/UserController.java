@@ -7,6 +7,7 @@ import com.oz.office_tastezip.domain.user.dto.UserRequestDto.UserInsertRequest;
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto.UserUpdateRequest;
 import com.oz.office_tastezip.domain.user.dto.UserResponseDto;
 import com.oz.office_tastezip.global.exception.DataExistsException;
+import com.oz.office_tastezip.global.exception.RequestFailureException;
 import com.oz.office_tastezip.global.response.Response;
 import com.oz.office_tastezip.global.response.ResponseCode;
 import com.oz.office_tastezip.global.response.ResponseSuccess;
@@ -75,6 +76,12 @@ public class UserController {
     @Operation(summary = "회원 가입")
     @PostMapping("/register")
     public ResponseEntity<Response.Body<String>> register(@RequestBody @Valid UserInsertRequest userInsertRequest) {
+        if (!userInsertRequest.getPassword().equals(userInsertRequest.getConfirmPassword())) {
+            log.info("User register failed: password and confirmation do not match. password: {}, password confirm: {}",
+                    userInsertRequest.getPassword(), userInsertRequest.getConfirmPassword());
+            throw new RequestFailureException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        }
+
         userService.register(userInsertRequest);
         return new ResponseSuccess<String>().success("회원 가입 되었습니다.");
     }
