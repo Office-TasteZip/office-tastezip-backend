@@ -42,7 +42,8 @@ public class SecurityConfig {
             "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources", "/swagger-resources/**"
     };
     private static final String[] OTZ_WHITE_LIST_URI = {
-            "/api/v1/otz/auth/login", "/api/v1/otz/auth/rsa"
+            "/api/v1/otz/auth/login", "/api/v1/otz/auth/rsa",
+            "/api/v1/otz/users/register", "/api/v1/otz/users/email/verify", "/api/v1/otz/users/email/verify/check"
     };
     private final String[] ALLOWED_HEADERS = {
             "Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "x-request-id",
