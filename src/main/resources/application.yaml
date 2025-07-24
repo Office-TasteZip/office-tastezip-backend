@@ -5,6 +5,16 @@ spring:
   profiles:
     include: local
 
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  devtools:
+    remote:
+      restart:
+        enabled: true
+
 logging:
   level:
     com.zaxxer.hikari: INFO
