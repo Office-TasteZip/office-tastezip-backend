@@ -1,0 +1,78 @@
+plugins {
+    java
+    id("org.springframework.boot") version "3.4.5"
+    id("io.spring.dependency-management") version "1.1.7"
+}
+
+group = "com.oz"
+version = "0.0.1-SNAPSHOT"
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+val querydslVersion = "5.0.0"
+
+tasks.withType<Jar> {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.bootJar {
+    archiveFileName.set("app.jar")
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-configuration-processor")
+
+    implementation("com.google.code.gson:gson:2.13.1")
+    implementation("com.google.guava:guava:33.4.8-jre")
+    implementation("org.apache.commons:commons-configuration2:2.11.0")
+
+    // JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+    // Swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
+
+    // Jackson / ObjectMapper
+    implementation("com.fasterxml.jackson.core:jackson-core:2.19.1")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.19.1")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.19.1")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.19.1")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1")
+
+    runtimeOnly("org.postgresql:postgresql")
+
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+
+    // QueryDSL
+    implementation("com.querydsl:querydsl-jpa:$querydslVersion:jakarta")
+    annotationProcessor("com.querydsl:querydsl-apt:$querydslVersion:jakarta")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+
+    testCompileOnly("org.projectlombok:lombok")
+    testAnnotationProcessor("org.projectlombok:lombok")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
