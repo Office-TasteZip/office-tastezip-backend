@@ -1,5 +1,7 @@
 package com.oz.office_tastezip.domain.user.enums
 
+import com.oz.office_tastezip.global.exception.DataNotFoundException
+
 enum class UserJob(val displayName: String) {
     DEVELOPMENT("개발"),
     PLANNING("기획"),
@@ -23,7 +25,7 @@ enum class UserJob(val displayName: String) {
     companion object {
         fun fromJobName(job: String): UserJob {
             return entries.firstOrNull { it.name.equals(job, ignoreCase = true) }
-                ?: throw IllegalArgumentException("Invalid job name: $job")
+                ?: throw DataNotFoundException("[$job]은 존재하지 않는 직업입니다.")
         }
     }
 }

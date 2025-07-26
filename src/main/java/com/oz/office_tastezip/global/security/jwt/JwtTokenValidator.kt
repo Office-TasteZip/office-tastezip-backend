@@ -78,7 +78,7 @@ class JwtTokenValidator(
         val serialDto = redisUtils.get(redisKey, TokenDto.SerialDto::class.java)
             ?: throw DataNotFoundException(ResponseCode.UNAUTHORIZED, "로그인하지 않은 사용자입니다.")
 
-        serialDto.takeIf { serialDto.accessSerial != claimsJws.body[SERIAL_KEY] }
+        serialDto.takeIf { serialDto.accessSerial == claimsJws.body[SERIAL_KEY] }
             ?: throw InvalidTokenException(ResponseCode.INVALID_TOKEN, "시리얼 번호가 일치하지 않습니다.")
     }
 }

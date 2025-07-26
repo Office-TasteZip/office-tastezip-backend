@@ -1,6 +1,5 @@
 plugins {
-    java
-    kotlin("jvm")
+    kotlin("jvm") version "1.9.23"
     kotlin("kapt") version "1.9.23"
     kotlin("plugin.jpa") version "1.9.23"
     kotlin("plugin.spring") version "1.9.23"
@@ -13,11 +12,11 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
-val querydslVersion = "5.0.0"
+val querydslVersion = "5.1.0"
 
 tasks.withType<Jar> {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -33,6 +32,7 @@ repositories {
 }
 
 dependencies {
+    // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -40,16 +40,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-configuration-processor")
 
-    implementation("com.google.code.gson:gson:2.13.1")
-    implementation("com.google.guava:guava:33.4.8-jre")
-    implementation("org.apache.commons:commons-configuration2:2.11.0")
-
     // Kotlin
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    // Kotlin Logging
+    // Logging
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     runtimeOnly("ch.qos.logback:logback-classic:1.4.14")
 
@@ -63,18 +58,19 @@ dependencies {
 
     // Jackson / ObjectMapper
     implementation("com.fasterxml.jackson.core:jackson-core:2.19.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.19.1")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.19.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.19.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1")
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    // 기타 유틸
+    implementation("com.google.code.gson:gson:2.13.1")
+    implementation("com.google.guava:guava:33.4.8-jre")
+    implementation("org.apache.commons:commons-configuration2:2.12.0")
 
+    // PostgreSQL
     runtimeOnly("org.postgresql:postgresql")
-
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
 
     // QueryDSL
     implementation("com.querydsl:querydsl-jpa:$querydslVersion:jakarta")
@@ -82,7 +78,7 @@ dependencies {
     kapt("jakarta.annotation:jakarta.annotation-api")
     kapt("jakarta.persistence:jakarta.persistence-api")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     // Kotest
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
@@ -92,12 +88,21 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
 
-    testCompileOnly("org.projectlombok:lombok")
-    testAnnotationProcessor("org.projectlombok:lombok")
-
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.test {
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.addAll("-Xjsr305=strict")
+    }
+}
+
+allOpen {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.MappedSuperclass")
+    annotation("jakarta.persistence.Embeddable")
+}
+
+tasks.withType<Test> {
     useJUnitPlatform()
 }
