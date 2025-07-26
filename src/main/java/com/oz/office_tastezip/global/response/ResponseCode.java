@@ -17,13 +17,14 @@ public enum ResponseCode {
     FORBIDDEN("1002", "You do not have permission", HttpStatus.FORBIDDEN),
     TOKEN_EXPIRED("1003", "Token has expired", HttpStatus.UNAUTHORIZED),
     INVALID_TOKEN("1004", "Invalid token", HttpStatus.UNAUTHORIZED),
+    TOKEN_DOES_NOT_EXIST("1005", "Token does not exist", HttpStatus.UNAUTHORIZED),
 
     // 2xxx: User Related
     USER_NOT_FOUND("2001", "User does not exist", HttpStatus.NOT_FOUND),
     DATA_NOT_FOUND("2002", "Data does not exist", HttpStatus.NOT_FOUND),
-    DUPLICATED_EMAIL("2003", "Token does not exist", HttpStatus.NOT_FOUND),
-    DATA_EXIST("2004", "Token does not exist", HttpStatus.CONFLICT),
-    INVALID_PASSWORD("2005", "Email is already in use", HttpStatus.CONFLICT),
+    DUPLICATED_EMAIL("2003", "Email is already in use", HttpStatus.NOT_FOUND),
+    DATA_EXIST("2004", "Data is already exist", HttpStatus.CONFLICT),
+    INVALID_PASSWORD("2005", "Invalid password", HttpStatus.NOT_FOUND),
     ACCOUNT_LOCK("2006", "User account is locked", HttpStatus.LOCKED),
 
     // 3xxx: Validation

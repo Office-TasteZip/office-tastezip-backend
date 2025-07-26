@@ -1,10 +1,9 @@
 package com.oz.office_tastezip.global.security.jwt;
 
-import com.oz.office_tastezip.support.util.JsonUtil;
-import com.oz.office_tastezip.global.security.dto.TokenDto;
 import com.oz.office_tastezip.global.exception.DataNotFoundException;
 import com.oz.office_tastezip.global.exception.InvalidTokenException;
 import com.oz.office_tastezip.global.response.ResponseCode;
+import com.oz.office_tastezip.global.security.dto.TokenDto;
 import com.oz.office_tastezip.global.util.RedisUtils;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -82,9 +81,10 @@ public class JwtTokenValidator implements InitializingBean {
     }
 
     private void serialCodeValidCheck(String userId, Jws<Claims> claimsJws) {
-        Object serial = redisUtils.get(JWT_KEY_PREFIX + userId).orElseThrow(() ->
+        String redisKey = JWT_KEY_PREFIX + userId;
+        TokenDto.SerialDto serialDto = redisUtils.get(redisKey, TokenDto.SerialDto.class).orElseThrow(() ->
                 new DataNotFoundException(ResponseCode.UNAUTHORIZED, "로그인하지 않은 사용자입니다."));
-        TokenDto.SerialDto serialDto = JsonUtil.getObject(serial.toString(), TokenDto.SerialDto.class);
+
         if (serialDto != null && !serialDto.getAccessSerial().equals(claimsJws.getBody().get(SERIAL_KEY))) {
             throw new InvalidTokenException(ResponseCode.INVALID_TOKEN, "시리얼 번호가 일치하지 않습니다.");
         }

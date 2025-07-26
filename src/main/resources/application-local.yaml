@@ -25,7 +25,17 @@ spring:
           jta:
             platform: org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform
 
+cors-config:
+  allowed-origin-pattern:
+    - http://localhost:2999
+    - http://localhost:5173
+    - http://211.236.39.250:18088
+    - http://211.236.39.250:18090
+
 jwt:
   secret: c2lsdmVy0dXRvcmlhbbmluZS10ZWNoLXNwcmluZy1ib290LWp3dC1C1ib290LWp3dC10dX1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZyRvcmlhbC1zZWNyZXQK
   access-token-expiration: 86400
   refresh-token-expiration: 1209600
+
+test:
+  server-url: 'http://localhost:'

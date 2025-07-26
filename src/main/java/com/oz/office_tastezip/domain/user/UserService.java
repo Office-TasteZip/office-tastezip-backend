@@ -24,7 +24,7 @@ public class UserService {
     public void register(UserRequestDto.UserInsertRequest userInsertRequest) {
         User user = User.create(userInsertRequest, passwordEncoder);
         log.info("Insert user info: {}", user);
-        // TODO 해당 UUID 존재 여부 확인할 것
+
         userRepository.save(user);
 
         // TODO image > s3
