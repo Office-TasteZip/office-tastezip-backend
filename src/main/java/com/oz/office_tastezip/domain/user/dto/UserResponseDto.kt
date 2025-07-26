@@ -27,8 +27,8 @@ data class UserResponseDto(
                 joinYear = user.joinYear,
                 marketingOptIn = user.marketingOptIn,
                 profileImageUrl = user.profileImageUrl,
-                lastLoginAt = SEC.getString(user.lastLoginAt),
-                createdAt = SEC.getString(user.createdAt)
+                lastLoginAt = SEC.format(user.lastLoginAt),
+                createdAt = SEC.format(user.createdAt)
             )
         }
     }
