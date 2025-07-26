@@ -1,46 +1,44 @@
-package com.oz.office_tastezip.global.config;
+package com.oz.office_tastezip.global.config
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.data.redis.connection.RedisConnectionFactory
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
+import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
+import org.springframework.data.redis.serializer.StringRedisSerializer
 
 @Configuration
-public class RedisConfig {
+class RedisConfig(
+    private val objectMapper: ObjectMapper
+) {
 
-    @Value("${spring.data.redis.host}")
-    private String redisHost;
-    @Value("${spring.data.redis.port}")
-    private int redisPort;
-    @Value("${spring.data.redis.password}")
-    private String redisPassword;
+    @Value("\${spring.data.redis.host}")
+    private lateinit var redisHost: String
 
-    private final ObjectMapper objectMapper;
+    @Value("\${spring.data.redis.port}")
+    private var redisPort: Int = 0
 
-    public RedisConfig(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    @Value("\${spring.data.redis.password}")
+    private lateinit var redisPassword: String
+
+    @Bean
+    fun redisConnectionFactory(): RedisConnectionFactory {
+        val config = RedisStandaloneConfiguration(redisHost, redisPort)
+        config.setPassword(redisPassword)
+        return LettuceConnectionFactory(config)
     }
 
     @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(redisHost, redisPort);
-        configuration.setPassword(redisPassword);
-        return new LettuceConnectionFactory(configuration);
+    fun redisTemplate(): RedisTemplate<String, Any> {
+        return RedisTemplate<String, Any>().apply {
+            connectionFactory = redisConnectionFactory()
+            keySerializer = StringRedisSerializer()
+            valueSerializer = GenericJackson2JsonRedisSerializer(objectMapper)
+            afterPropertiesSet() // 설정 초기화
+        }
     }
-
-    @Bean
-    public RedisTemplate<?, ?> redisTemplate() {
-        RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
-        return redisTemplate;
-    }
-
 }

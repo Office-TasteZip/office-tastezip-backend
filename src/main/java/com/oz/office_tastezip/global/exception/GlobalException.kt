@@ -1,27 +1,19 @@
-package com.oz.office_tastezip.global.exception;
+package com.oz.office_tastezip.global.exception
 
-import com.oz.office_tastezip.global.response.ResponseCode;
-import lombok.Getter;
+import com.oz.office_tastezip.global.response.ResponseCode
 
-@Getter
-public class GlobalException extends RuntimeException {
-    private ResponseCode responseCode;
+open class GlobalException : RuntimeException {
+    val responseCode: ResponseCode
 
-    public GlobalException() {
+    constructor(responseCode: ResponseCode) : super(responseCode.message) {
+        this.responseCode = responseCode
     }
 
-    public GlobalException(ResponseCode responseCode) {
-        super(responseCode.getMessage());
-        this.responseCode = responseCode;
+    constructor(responseCode: ResponseCode, message: String) : super(message) {
+        this.responseCode = responseCode
     }
 
-    public GlobalException(ResponseCode responseCode, String message) {
-        super(message);
-        this.responseCode = responseCode;
-    }
-
-    public GlobalException(ResponseCode responseCode, String message, Throwable throwable) {
-        super(message, throwable);
-        this.responseCode = responseCode;
+    constructor(responseCode: ResponseCode, message: String, throwable: Throwable) : super(message, throwable) {
+        this.responseCode = responseCode
     }
 }

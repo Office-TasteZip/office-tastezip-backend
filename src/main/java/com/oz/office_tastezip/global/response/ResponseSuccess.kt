@@ -1,32 +1,21 @@
-package com.oz.office_tastezip.global.response;
+package com.oz.office_tastezip.global.response
 
-import org.springframework.http.HttpStatus;
-import org.springframework.util.StringUtils;
+import org.springframework.http.HttpStatus
+import org.springframework.util.StringUtils
 
-public class ResponseSuccess<T> extends Response<T> {
+class ResponseSuccess<T>(
+    private val resultMessage: String? = null
+) : Response<T>() {
 
-    private String resultMessage;
-
-    public ResponseSuccess() {
+    override fun resultCode(): String {
+        return ResponseCode.SUCCESS.code
     }
 
-    public ResponseSuccess(String resultMessage) {
-        this.resultMessage = resultMessage;
+    override fun resultMessage(): String {
+        return if (StringUtils.hasText(resultMessage)) resultMessage!! else ResponseCode.SUCCESS.message
     }
 
-    @Override
-    protected String resultCode() {
-        return ResponseCode.SUCCESS.getCode();
+    override fun resultHttpStatus(): HttpStatus {
+        return HttpStatus.OK
     }
-
-    @Override
-    protected String resultMessage() {
-        return StringUtils.hasText(resultMessage) ? resultMessage : ResponseCode.SUCCESS.getMessage();
-    }
-
-    @Override
-    protected HttpStatus resultHttpStatus() {
-        return HttpStatus.OK;
-    }
-
 }

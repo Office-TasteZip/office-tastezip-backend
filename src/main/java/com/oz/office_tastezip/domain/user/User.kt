@@ -1,114 +1,85 @@
-package com.oz.office_tastezip.domain.user;
+package com.oz.office_tastezip.domain.user
 
-import com.oz.office_tastezip.domain.BaseEntity;
-import com.oz.office_tastezip.domain.auth.enums.UserRole;
-import com.oz.office_tastezip.domain.auth.enums.UserStatus;
-import com.oz.office_tastezip.domain.user.dto.UserRequestDto.UserInsertRequest;
-import com.oz.office_tastezip.domain.user.enums.UserJob;
-import com.oz.office_tastezip.domain.user.enums.UserPosition;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.oz.office_tastezip.domain.BaseEntity
+import com.oz.office_tastezip.domain.auth.enums.UserRole
+import com.oz.office_tastezip.domain.auth.enums.UserStatus
+import com.oz.office_tastezip.domain.user.dto.UserRequestDto.UserInsertRequest
+import com.oz.office_tastezip.domain.user.enums.UserJob
+import com.oz.office_tastezip.domain.user.enums.UserPosition
+import jakarta.persistence.*
+import org.springframework.security.crypto.password.PasswordEncoder
+import java.time.LocalDateTime
 
-import java.time.LocalDateTime;
-
-@Getter
 @Entity
-@Builder
-@AllArgsConstructor
 @Table(name = "TBL_OTZ_USER")
-public class User extends BaseEntity {
+class User(
 
     @Column(name = "email", nullable = false, unique = true, length = 100)
-    private String email;
+    val email: String,
 
     @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
+    val passwordHash: String,
 
     @Column(name = "password_updated_at", nullable = false)
-    private LocalDateTime passwordUpdatedAt;
+    val passwordUpdatedAt: LocalDateTime,
 
     @Column(name = "nickname", nullable = false, length = 100)
-    private String nickname;
+    val nickname: String,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "job", nullable = false, length = 50)
-    private UserJob job;
+    val job: UserJob,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "position", nullable = false, length = 50)
-    private UserPosition position;
+    val position: UserPosition,
 
     @Column(name = "join_year", nullable = false, length = 4)
-    private String joinYear;
+    val joinYear: String,
 
     @Column(name = "marketing_opt_in")
-    private boolean marketingOptIn;
+    val marketingOptIn: Boolean,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private UserRole role;
+    val role: UserRole,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private UserStatus status;
+    val status: UserStatus,
 
     @Column(name = "last_login_ip")
-    private String lastLoginIp;
+    val lastLoginIp: String? = null,
 
     @Column(name = "last_login_at")
-    private LocalDateTime lastLoginAt;
+    val lastLoginAt: LocalDateTime? = null,
 
     @Column(name = "last_failed_login_at")
-    private LocalDateTime lastFailedLoginAt;
+    val lastFailedLoginAt: LocalDateTime? = null,
 
     @Column(name = "login_fail_count", columnDefinition = "int default 0")
-    private int loginFailCount;
+    val loginFailCount: Int = 0,
 
     @Column(name = "profile_image_url", columnDefinition = "TEXT")
-    private String profileImageUrl;
+    val profileImageUrl: String? = null
 
-    // TODO OrganizationID
+) : BaseEntity() {
 
-    protected User() {
-    }
-
-    public static User create(UserInsertRequest userInsertRequest, PasswordEncoder passwordEncoder) {
-        return User.builder()
-                .email(userInsertRequest.getEmail())
-                .passwordHash(passwordEncoder.encode(userInsertRequest.getPassword()))
-                .passwordUpdatedAt(LocalDateTime.now())
-                .nickname(userInsertRequest.getNickname())
-                .job(UserJob.fromJobName(userInsertRequest.getJob()))
-                .position(UserPosition.fromPositionName(userInsertRequest.getPosition()))
-                .joinYear(userInsertRequest.getJoinYear())
-                .marketingOptIn(userInsertRequest.isMarketingOptIn())
-                .role(UserRole.ROLE_USER)
-                .status(UserStatus.ACTIVE)
-                .profileImageUrl(userInsertRequest.getProfileImageUrl())
-                .build();
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "email='" + email + '\'' +
-                ", passwordHash='" + passwordHash + '\'' +
-                ", passwordUpdatedAt=" + passwordUpdatedAt +
-                ", nickname='" + nickname + '\'' +
-                ", job=" + job +
-                ", position=" + position +
-                ", joinYear='" + joinYear + '\'' +
-                ", marketingOptIn=" + marketingOptIn +
-                ", role=" + role +
-                ", status=" + status +
-                ", lastLoginIp='" + lastLoginIp + '\'' +
-                ", lastLoginAt=" + lastLoginAt +
-                ", lastFailedLoginAt=" + lastFailedLoginAt +
-                ", loginFailCount=" + loginFailCount +
-                ", profileImageUrl='" + profileImageUrl + '\'' +
-                '}';
+    companion object {
+        fun create(request: UserInsertRequest, passwordEncoder: PasswordEncoder): User {
+            return User(
+                email = request.email,
+                passwordHash = passwordEncoder.encode(request.password),
+                passwordUpdatedAt = LocalDateTime.now(),
+                nickname = request.nickname,
+                job = UserJob.fromJobName(request.job),
+                position = UserPosition.fromPositionName(request.position),
+                joinYear = request.joinYear,
+                marketingOptIn = request.marketingOptIn,
+                role = UserRole.ROLE_USER,
+                status = UserStatus.ACTIVE,
+                profileImageUrl = request.profileImageUrl
+            )
+        }
     }
 }

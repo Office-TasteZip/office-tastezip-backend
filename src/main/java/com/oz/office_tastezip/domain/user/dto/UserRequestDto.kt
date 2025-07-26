@@ -1,107 +1,62 @@
-package com.oz.office_tastezip.domain.user.dto;
+package com.oz.office_tastezip.domain.user.dto
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
 
-public class UserRequestDto {
+object UserRequestDto {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class UserInsertRequest {
+    data class UserInsertRequest(
+        @field:NotBlank(message = "이메일은 필수 입력값입니다.")
+        @field:Email(message = "이메일 형식이 아닙니다.")
+        val email: String,
 
-        @NotBlank(message = "이메일은 필수 입력값입니다.")
-        @Email(message = "이메일 형식이 아닙니다.")
-        private String email;
+        @field:NotBlank(message = "비밀번호는 필수 입력값입니다.")
+        @field:Size(min = 8, max = 20, message = "비밀번호는 8자 이상 20자 이하로 입력해주세요.")
+        val password: String,
 
-        @NotBlank(message = "비밀번호는 필수 입력값입니다.")
-        @Size(min = 8, max = 20, message = "비밀번호는 8자 이상 20자 이하로 입력해주세요.")
-        private String password;
+        @field:NotBlank(message = "비밀번호 확인 값은 필수 입력값입니다.")
+        @field:Size(min = 8, max = 20, message = "비밀번호 확인 값은 8자 이상 20자 이하로 입력해주세요.")
+        val confirmPassword: String,
 
-        @NotBlank(message = "비밀번호 확인 값은 필수 입력값입니다.")
-        @Size(min = 8, max = 20, message = "비밀번호 확인 값은 8자 이상 20자 이하로 입력해주세요.")
-        private String confirmPassword;
+        @field:NotBlank(message = "닉네임은 필수 입력값입니다.")
+        @field:Size(max = 20, message = "닉네임은 20자 이하로 입력해주세요.")
+        val nickname: String,
 
-        @NotBlank(message = "닉네임은 필수 입력값입니다.")
-        @Size(max = 20, message = "닉네임은 20자 이하로 입력해주세요.")
-        private String nickname;
+        @field:NotBlank(message = "직무는 필수입니다.")
+        val job: String,
 
-        @NotBlank(message = "직무는 필수입니다.")
-        private String job;
+        @field:NotBlank(message = "직책은 필수입니다.")
+        val position: String,
 
-        @NotBlank(message = "직책은 필수입니다.")
-        private String position;
+        @field:NotBlank(message = "입사년도는 필수입니다.")
+        @field:Pattern(regexp = "^[0-9]{4}$", message = "입사년도는 4자리 숫자여야 합니다.")
+        val joinYear: String,
 
-        @NotBlank(message = "입사년도는 필수입니다.")
-        @Pattern(regexp = "^[0-9]{4}$", message = "입사년도는 4자리 숫자여야 합니다.")
-        private String joinYear;
+        val marketingOptIn: Boolean = false,
 
-        private boolean marketingOptIn;
+        val profileImageUrl: String? = null
+    )
 
-        private String profileImageUrl;
+    data class UserUpdateRequest(
+        @field:NotBlank(message = "사용자 고유 ID는 필수 입력값입니다.")
+        val id: String?,
 
-        public void passwordHashing() {
-            // TODO BCrypt
-        }
+        @field:NotBlank(message = "닉네임은 필수 입력값입니다.")
+        @field:Size(max = 20, message = "닉네임은 20자 이하로 입력해주세요.")
+        val nickname: String,
 
-        @Override
-        public String toString() {
-            return "UserInsertRequest{" +
-                    "email='" + email + '\'' +
-                    ", password='" + password + '\'' +
-                    ", confirmPassword='" + confirmPassword + '\'' +
-                    ", nickname='" + nickname + '\'' +
-                    ", job='" + job + '\'' +
-                    ", position='" + position + '\'' +
-                    ", joinYear='" + joinYear + '\'' +
-                    ", marketingOptIn=" + marketingOptIn +
-                    ", profileImageUrl='" + profileImageUrl + '\'' +
-                    '}';
-        }
-    }
+        @field:NotBlank(message = "직무는 필수입니다.")
+        val job: String,
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class UserUpdateRequest {
+        @field:NotBlank(message = "직책은 필수입니다.")
+        val position: String,
 
-        @NotBlank(message = "사용자 고유 ID는 필수 입력값입니다.")
-        private String id;
+        @field:NotBlank(message = "입사년도는 필수입니다.")
+        @field:Pattern(regexp = "^[0-9]{4}$", message = "입사년도는 4자리 숫자여야 합니다.")
+        val joinYear: String,
 
-        @NotBlank(message = "닉네임은 필수 입력값입니다.")
-        @Size(max = 20, message = "닉네임은 20자 이하로 입력해주세요.")
-        private String nickname;
-
-        @NotBlank(message = "직무는 필수입니다.")
-        private String job;
-
-        @NotBlank(message = "직책은 필수입니다.")
-        private String position;
-
-        @NotBlank(message = "입사년도는 필수입니다.")
-        @Pattern(regexp = "^[0-9]{4}$", message = "입사년도는 4자리 숫자여야 합니다.")
-        private String joinYear;
-
-        private boolean marketingOptIn;
-
-        private String profileImageUrl;
-
-        @Override
-        public String toString() {
-            return "UserUpdateRequest{" +
-                    "id='" + id + '\'' +
-                    ", nickname='" + nickname + '\'' +
-                    ", job='" + job + '\'' +
-                    ", position='" + position + '\'' +
-                    ", joinYear='" + joinYear + '\'' +
-                    ", marketingOptIn=" + marketingOptIn +
-                    ", profileImageUrl='" + profileImageUrl + '\'' +
-                    '}';
-        }
-    }
+        val marketingOptIn: Boolean = false
+    )
 }

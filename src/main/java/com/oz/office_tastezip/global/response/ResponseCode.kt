@@ -1,13 +1,12 @@
-package com.oz.office_tastezip.global.response;
+package com.oz.office_tastezip.global.response
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatus
 
-@Getter
-@AllArgsConstructor
-public enum ResponseCode {
-
+enum class ResponseCode(
+    val code: String,
+    val message: String,
+    val httpStatus: HttpStatus
+) {
     // 0xxx: General Success/Fail
     SUCCESS("0000", "Success", HttpStatus.OK),
     FAIL("0001", "Request failed to process", HttpStatus.BAD_REQUEST),
@@ -38,9 +37,5 @@ public enum ResponseCode {
     // 5xxx: Server/System
     INTERNAL_ERROR("5000", "Internal server error occurred", HttpStatus.INTERNAL_SERVER_ERROR),
     DB_ERROR("5001", "Database error occurred", HttpStatus.INTERNAL_SERVER_ERROR),
-    EXTERNAL_API_ERROR("5002", "External API request failed", HttpStatus.BAD_GATEWAY);
-
-    private final String code;
-    private final String message;
-    private final HttpStatus httpStatus;
+    EXTERNAL_API_ERROR("5002", "External API request failed", HttpStatus.BAD_GATEWAY)
 }

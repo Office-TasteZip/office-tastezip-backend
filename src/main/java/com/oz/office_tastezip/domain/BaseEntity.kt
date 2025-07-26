@@ -1,39 +1,34 @@
-package com.oz.office_tastezip.domain;
+package com.oz.office_tastezip.domain
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import jakarta.persistence.*
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDateTime
+import java.util.*
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-@Getter
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity {
+@EntityListeners(AuditingEntityListener::class)
+abstract class BaseEntity {
 
     @Id
     @GeneratedValue
-    protected UUID id;
+    lateinit var id: UUID
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
-    protected LocalDateTime createdAt;
+    lateinit var createdAt: LocalDateTime
 
     @LastModifiedDate
     @Column(name = "updated_at")
-    protected LocalDateTime updatedAt;
+    var updatedAt: LocalDateTime? = null
 
     @Column(name = "deleted_at")
-    protected LocalDateTime deletedAt;
+    var deletedAt: LocalDateTime? = null
 
-    public boolean isDeleted() {
-        return this.deletedAt != null;
-    }
+    fun isDeleted(): Boolean = deletedAt != null
 
-    public void softDelete() {
-        this.deletedAt = LocalDateTime.now();
+    fun softDelete() {
+        deletedAt = LocalDateTime.now()
     }
 }

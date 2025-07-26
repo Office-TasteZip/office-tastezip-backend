@@ -1,14 +1,6 @@
-package com.oz.office_tastezip.domain.user.enums;
+package com.oz.office_tastezip.domain.user.enums
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-import java.util.Arrays;
-
-@Getter
-@AllArgsConstructor
-public enum UserPosition {
-
+enum class UserPosition(val displayName: String) {
     INTERN("인턴"),
     JUNIOR("주니어/사원"),
     SENIOR("선임/주임/대리"),
@@ -21,12 +13,10 @@ public enum UserPosition {
     FREELANCER("프리랜서"),
     ETC("기타");
 
-    private final String displayName;
-
-    public static UserPosition fromPositionName(String position) {
-        return Arrays.stream(values())
-                .filter(userPosition -> userPosition.name().equalsIgnoreCase(position))
-                .findFirst()
-                .orElseThrow();
+    companion object {
+        fun fromPositionName(position: String): UserPosition {
+            return entries.firstOrNull { it.name.equals(position, ignoreCase = true) }
+                ?: throw IllegalArgumentException("Unknown position: $position")
+        }
     }
 }

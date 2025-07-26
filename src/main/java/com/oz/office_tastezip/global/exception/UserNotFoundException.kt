@@ -1,20 +1,10 @@
-package com.oz.office_tastezip.global.exception;
+package com.oz.office_tastezip.global.exception
 
-import com.oz.office_tastezip.global.response.ResponseCode;
+import com.oz.office_tastezip.global.response.ResponseCode
+import com.oz.office_tastezip.global.response.ResponseCode.USER_NOT_FOUND
 
-import static com.oz.office_tastezip.global.response.ResponseCode.USER_NOT_FOUND;
-
-public class UserNotFoundException extends GlobalException {
-
-    public UserNotFoundException() {
-        super(USER_NOT_FOUND);
-    }
-
-    public UserNotFoundException(String message) {
-        super(USER_NOT_FOUND, message);
-    }
-
-    public UserNotFoundException(ResponseCode responseCode, String message) {
-        super(responseCode, message);
-    }
+class UserNotFoundException : GlobalException {
+    constructor() : super(USER_NOT_FOUND)
+    constructor(message: String) : super(USER_NOT_FOUND, message)
+    constructor(responseCode: ResponseCode, message: String) : super(responseCode, message)
 }

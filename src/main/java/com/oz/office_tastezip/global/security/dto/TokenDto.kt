@@ -1,51 +1,25 @@
-package com.oz.office_tastezip.global.security.dto;
+package com.oz.office_tastezip.global.security.dto
 
-import lombok.*;
+import java.time.LocalDateTime
 
-import java.time.LocalDateTime;
+data class TokenDto(
+    val accessToken: String,
+    val refreshToken: String,
+    val email: String? = null,
+    val nickname: String? = null,
+    val organizationName: String? = null,
+    val lastLoginAt: LocalDateTime? = null
+) {
 
-@Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class TokenDto {
+    data class SerialDto(
+        val accessSerial: String = "",
+        val refreshSerial: String = ""
+    )
 
-    private String accessToken;
-    private String refreshToken;
-    private String email;
-    private String nickname;
-    private String organizationName;
-    private LocalDateTime lastLoginAt;
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class SerialDto {
-        private String accessSerial;
-        private String refreshSerial;
-
-        @Override
-        public String toString() {
-            return "SerialDto{" +
-                    "accessSerial='" + accessSerial + '\'' +
-                    ", refreshSerial='" + refreshSerial + '\'' +
-                    '}';
-        }
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class TokenResponse {
-        private String accessToken;
-        private String email;
-        private String nickname;
-        private LocalDateTime lastLoginAt;
-
-        public TokenResponse(String accessToken, String email) {
-            this.accessToken = accessToken;
-            this.email = email;
-        }
-    }
+    data class TokenResponse(
+        var accessToken: String,
+        var email: String,
+        var nickname: String? = null,
+        var lastLoginAt: LocalDateTime? = null
+    )
 }

@@ -1,53 +1,37 @@
-package com.oz.office_tastezip.global.security.filter;
+package com.oz.office_tastezip.global.security.filter
 
-import com.oz.office_tastezip.global.exception.ValidationFailureException;
-import com.oz.office_tastezip.global.security.dto.CustomUserDetails;
-import com.oz.office_tastezip.global.security.service.CustomUserDetailService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.oz.office_tastezip.global.exception.ValidationFailureException
+import com.oz.office_tastezip.global.response.ResponseCode
+import com.oz.office_tastezip.global.security.dto.CustomUserDetails
+import com.oz.office_tastezip.global.security.service.CustomUserDetailService
+import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.AuthenticationException
+import org.springframework.security.crypto.password.PasswordEncoder
 
-import java.util.Collection;
+class CustomAuthenticationProvider(
+    private val passwordEncoder: PasswordEncoder,
+    private val customUserDetailService: CustomUserDetailService
+) : AuthenticationProvider {
 
-import static com.oz.office_tastezip.global.response.ResponseCode.INVALID_PASSWORD;
-
-@Slf4j
-public class CustomAuthenticationProvider implements AuthenticationProvider {
-
-    private final PasswordEncoder passwordEncoder;
-    private final CustomUserDetailService customUserDetailService;
-
-    public CustomAuthenticationProvider(
-            PasswordEncoder passwordEncoder,
-            CustomUserDetailService customUserDetailService
-    ) {
-        this.passwordEncoder = passwordEncoder;
-        this.customUserDetailService = customUserDetailService;
+    override fun supports(authentication: Class<*>): Boolean {
+        return UsernamePasswordAuthenticationToken::class.java.isAssignableFrom(authentication)
     }
 
-    @Override
-    public boolean supports(Class<?> authentication) {
-        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
-    }
+    @Throws(AuthenticationException::class)
+    override fun authenticate(authentication: Authentication): Authentication {
+        val email = authentication.name
+        val password: String = authentication.credentials.toString()
 
-    @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String email = authentication.getName();
-        String password = String.valueOf(authentication.getCredentials());
+        val customUserDetails: CustomUserDetails = customUserDetailService.loadUserByEmail(email)
 
-        CustomUserDetails customUserDetails = customUserDetailService.loadUserByEmail(email);
-
-        if (!passwordEncoder.matches(password, customUserDetails.getPasswordHash())) {
-            throw new ValidationFailureException(INVALID_PASSWORD, "아이디 또는 비밀번호가 일치하지 않습니다.");
+        if (!passwordEncoder.matches(password, customUserDetails.passwordHash)) {
+            throw ValidationFailureException(ResponseCode.INVALID_PASSWORD, "아이디 또는 비밀번호가 일치하지 않습니다.")
         }
 
-        Collection<? extends GrantedAuthority> authorities = customUserDetails.getAuthorities();
-        customUserDetails.setAuthorities(null);
-        return new UsernamePasswordAuthenticationToken(customUserDetails, null, authorities);
+        val authorities = customUserDetails.authorities
+        customUserDetails.authorities = emptyList()
+        return UsernamePasswordAuthenticationToken(customUserDetails, null, authorities)
     }
-
 }

@@ -1,27 +1,23 @@
-package com.oz.office_tastezip.domain.auth.service;
+package com.oz.office_tastezip.domain.auth.service
 
-import com.oz.office_tastezip.domain.user.User;
-import com.oz.office_tastezip.domain.user.repository.UserRepository;
-import com.oz.office_tastezip.global.exception.UserNotFoundException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import com.oz.office_tastezip.domain.user.User
+import com.oz.office_tastezip.domain.user.repository.UserRepository
+import com.oz.office_tastezip.global.exception.UserNotFoundException
+import mu.KotlinLogging
+import org.springframework.stereotype.Service
 
-@Slf4j
+private val log = KotlinLogging.logger {}
+
 @Service
-public class AuthService {
+class AuthService(
+    private val userRepository: UserRepository
+) {
 
-    private final UserRepository userRepository;
-
-    public AuthService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    fun updateLastLoginAt(uuid: String) {
+        userRepository.updateLastLoginAtByUserUUID(uuid)
     }
 
-    public void updateLastLoginAt(String uuid) {
-        userRepository.updateLastLoginAtByUserUUID(uuid);
+    fun selectUser(email: String): User {
+        return userRepository.findByEmail(email) ?: throw UserNotFoundException()
     }
-
-    public User selectUser(String email) {
-        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-    }
-
 }

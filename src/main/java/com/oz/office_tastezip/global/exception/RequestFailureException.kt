@@ -1,21 +1,10 @@
-package com.oz.office_tastezip.global.exception;
+package com.oz.office_tastezip.global.exception
 
-import com.oz.office_tastezip.global.response.ResponseCode;
+import com.oz.office_tastezip.global.response.ResponseCode
+import com.oz.office_tastezip.global.response.ResponseCode.FAIL
 
-import static com.oz.office_tastezip.global.response.ResponseCode.DUPLICATED_EMAIL;
-import static com.oz.office_tastezip.global.response.ResponseCode.FAIL;
-
-public class RequestFailureException extends GlobalException {
-
-    public RequestFailureException() {
-        super(FAIL);
-    }
-
-    public RequestFailureException(String message) {
-        super(FAIL, message);
-    }
-
-    public RequestFailureException(ResponseCode responseCode, String message) {
-        super(responseCode, message);
-    }
+class RequestFailureException : GlobalException {
+    constructor() : super(FAIL)
+    constructor(message: String) : super(FAIL, message)
+    constructor(responseCode: ResponseCode, message: String) : super(responseCode, message)
 }

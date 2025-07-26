@@ -1,85 +1,41 @@
-package com.oz.office_tastezip.global.security.dto;
+package com.oz.office_tastezip.global.security.dto
 
-import com.oz.office_tastezip.domain.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.oz.office_tastezip.domain.user.User
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import java.time.LocalDateTime
 
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-public class CustomUserDetails implements UserDetails {
-    private String uuid;
-    private String email;
-    private String passwordHash;
-    private String userIpAddress;
-    @Setter
-    private String remoteUserIpAddress;
-    private String nickname;
-    private String job;
-    private String position;
-    private String joinYear;
-    private String role;
-    private String status;
-    private String profileImageUrl;
-    private boolean marketingOptIn;
-    private LocalDateTime lastLoginAt;
-    @Setter
-    private Collection<? extends GrantedAuthority> authorities;
-
-    public CustomUserDetails(User user) {
-        this.uuid = user.getId().toString();
-        this.email = user.getEmail();
-        this.passwordHash = user.getPasswordHash();
-        this.userIpAddress = user.getLastLoginIp();
-        this.nickname = user.getNickname();
-        this.job = user.getJob().name();
-        this.position = user.getPosition().name();
-        this.joinYear = user.getJoinYear();
-        this.role = user.getRole().name();
-        this.status = user.getStatus().name();
-        this.profileImageUrl = user.getProfileImageUrl();
-        this.marketingOptIn = user.isMarketingOptIn();
-        this.lastLoginAt = user.getLastLoginAt();
-        this.authorities = Collections.singleton(new SimpleGrantedAuthority(this.role));
-    }
-
-    @Override
-    public String getPassword() {
-        return this.passwordHash;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.email;
-    }
-
-    @Override
-    public String toString() {
-        return "CustomUserDetail{" +
-                "uuid='" + uuid + '\'' +
-                ", email='" + email + '\'' +
-                ", passwordHash='" + passwordHash + '\'' +
-                ", userIpAddress='" + userIpAddress + '\'' +
-                ", remoteUserIpAddress='" + remoteUserIpAddress + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", job='" + job + '\'' +
-                ", position='" + position + '\'' +
-                ", joinYear='" + joinYear + '\'' +
-                ", role='" + role + '\'' +
-                ", status='" + status + '\'' +
-                ", profileImageUrl='" + profileImageUrl + '\'' +
-                ", marketingOptIn=" + marketingOptIn +
-                ", lastLoginAt=" + lastLoginAt +
-                ", authorities=" + authorities +
-                '}';
-    }
+class CustomUserDetails(
+    val uuid: String,
+    val email: String,
+    val passwordHash: String,
+    val userIpAddress: String?,
+    var remoteUserIpAddress: String? = null,
+    val nickname: String,
+    val job: String,
+    val position: String,
+    val joinYear: String,
+    val role: String,
+    val status: String,
+    val profileImageUrl: String?,
+    val marketingOptIn: Boolean,
+    val lastLoginAt: LocalDateTime?,
+    var authorities: Collection<GrantedAuthority> = listOf(SimpleGrantedAuthority(role))
+) {
+    constructor(user: User) : this(
+        uuid = user.id.toString(),
+        email = user.email,
+        passwordHash = user.passwordHash,
+        userIpAddress = user.lastLoginIp,
+        nickname = user.nickname,
+        job = user.job.name,
+        position = user.position.name,
+        joinYear = user.joinYear,
+        role = user.role.name,
+        status = user.status.name,
+        profileImageUrl = user.profileImageUrl,
+        marketingOptIn = user.marketingOptIn,
+        lastLoginAt = user.lastLoginAt,
+        authorities = listOf(SimpleGrantedAuthority(user.role.name))
+    )
 }

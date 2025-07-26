@@ -51,7 +51,7 @@ class UserRepositoryTest @Autowired constructor(
                 it.role shouldBe UserRole.ROLE_USER
                 it.status shouldBe UserStatus.ACTIVE
                 it.joinYear shouldBe "2025"
-                it.isMarketingOptIn.shouldBeFalse()
+                it.marketingOptIn.shouldBeFalse()
                 it.createdAt.shouldNotBeNull()
                 it.updatedAt.shouldNotBeNull()
                 it.deletedAt.shouldBeNull()
@@ -64,7 +64,7 @@ class UserRepositoryTest @Autowired constructor(
             val user = User.create(getUserInsertRequest(), passwordEncoder)
             val saved = userRepository.save(user)
 
-            val found = userRepository.findByUserUUID(saved.id.toString()).orElse(null)
+            val found = userRepository.findByUserUUID(saved.id.toString())
 
             found.shouldNotBeNull().let {
                 it.id shouldBe user.id
@@ -82,7 +82,7 @@ class UserRepositoryTest @Autowired constructor(
             userRepository.deleteByUserUUID(user.id.toString())
             em.clear()
 
-            val byUserUUID = userRepository.findById(user.id!!)
+            val byUserUUID = userRepository.findById(user.id)
             byUserUUID.shouldBePresent {
                 log.info("result user info: {}", it)
                 it.deletedAt.shouldNotBeNull()
@@ -100,7 +100,7 @@ class UserRepositoryTest @Autowired constructor(
             userRepository.updateByUserUUID(updateRequest)
             em.clear()
 
-            val updatedUser = userRepository.findById(user.id!!).orElse(null)
+            val updatedUser = userRepository.findById(user.id).orElse(null)
 
             updatedUser.shouldNotBeNull().let {
                 it.nickname shouldBe updateRequest.nickname

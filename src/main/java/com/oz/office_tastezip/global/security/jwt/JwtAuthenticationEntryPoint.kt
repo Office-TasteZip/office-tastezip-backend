@@ -1,21 +1,24 @@
-package com.oz.office_tastezip.global.security.jwt;
+package com.oz.office_tastezip.global.security.jwt
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.stereotype.Component;
+import mu.KotlinLogging
+import org.springframework.security.core.AuthenticationException
+import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.stereotype.Component
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import java.io.IOException
 
-import java.io.IOException;
+private val log = KotlinLogging.logger {}
 
-@Slf4j
 @Component
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+class JwtAuthenticationEntryPoint : AuthenticationEntryPoint {
 
-    @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException ex) throws IOException, ServletException {
-        log.error("Responding with access denied error. Message : {}", ex.getMessage());
+    @Throws(IOException::class)
+    override fun commence(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        ex: AuthenticationException
+    ) {
+        log.error("Responding with authentication error. Message: ${ex.message}")
     }
 }

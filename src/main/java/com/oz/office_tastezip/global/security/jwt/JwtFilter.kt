@@ -1,72 +1,67 @@
-package com.oz.office_tastezip.global.security.jwt;
+package com.oz.office_tastezip.global.security.jwt
 
-import com.oz.office_tastezip.global.security.dto.CustomUserDetails;
-import com.oz.office_tastezip.global.security.service.CustomUserDetailService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
-import org.springframework.web.filter.GenericFilterBean;
+import com.oz.office_tastezip.global.constant.AuthConstants.Header.AUTHORIZATION_HEADER
+import com.oz.office_tastezip.global.constant.AuthConstants.Header.JWT_TOKEN_PREFIX
+import com.oz.office_tastezip.global.security.dto.CustomUserDetails
+import com.oz.office_tastezip.global.security.service.CustomUserDetailService
+import mu.KotlinLogging
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.util.StringUtils
+import org.springframework.web.filter.GenericFilterBean
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
+import jakarta.servlet.http.HttpServletRequest
 
-import java.io.IOException;
+class JwtFilter(
+    private val customUserDetailService: CustomUserDetailService,
+    private val jwtTokenValidator: JwtTokenValidator
+) : GenericFilterBean() {
 
-import static com.oz.office_tastezip.global.constant.AuthConstants.Header.AUTHORIZATION_HEADER;
-import static com.oz.office_tastezip.global.constant.AuthConstants.Header.JWT_TOKEN_PREFIX;
+    private val log = KotlinLogging.logger {}
 
-@Slf4j
-public class JwtFilter extends GenericFilterBean {
+    override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
+        val request = servletRequest as HttpServletRequest
+        val token = resolveBearerToken(request.getHeader(AUTHORIZATION_HEADER))
 
-    private final CustomUserDetailService customUserDetailService;
-    private final JwtTokenValidator jwtTokenValidator;
+        jwtValidationCheck(request, token)
 
-    public JwtFilter(CustomUserDetailService customUserDetailService, JwtTokenValidator jwtTokenValidator) {
-        this.customUserDetailService = customUserDetailService;
-        this.jwtTokenValidator = jwtTokenValidator;
+        filterChain.doFilter(servletRequest, servletResponse)
     }
 
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-
-        jwtValidationCheck(request, resolveBearerToken(request.getHeader(AUTHORIZATION_HEADER)));
-
-        filterChain.doFilter(servletRequest, servletResponse);
+    private fun resolveBearerToken(authorizationHeader: String?): String? {
+        return if (!authorizationHeader.isNullOrBlank() && authorizationHeader.startsWith(JWT_TOKEN_PREFIX)) {
+            authorizationHeader.substring(JWT_TOKEN_PREFIX.length)
+        } else {
+            null
+        }
     }
 
-    private String resolveBearerToken(String authorizationHeader) {
-        if (!StringUtils.hasText(authorizationHeader) || !authorizationHeader.startsWith(JWT_TOKEN_PREFIX)) {
-            return null;
+    private fun jwtValidationCheck(request: HttpServletRequest, resolvedToken: String?) {
+        val uri = request.requestURI
+        val ip = request.remoteAddr
+        log.info { "$ip|Request uri: $uri" }
+
+        if (resolvedToken.isNullOrBlank() || !jwtTokenValidator.validateToken(resolvedToken)) {
+            log.debug { "$ip|유효한 JWT 토큰이 없습니다, uri: $uri" }
+            return
         }
 
-        return authorizationHeader.substring(JWT_TOKEN_PREFIX.length());
-    }
+        val authentication = jwtTokenValidator.getAuthentication(resolvedToken)
 
-    private void jwtValidationCheck(HttpServletRequest httpServletRequest, String resolvedToken) {
-        String requestUri = httpServletRequest.getRequestURI();
-        String remoteAddr = httpServletRequest.getRemoteAddr();
-        log.info("{}|Request uri: {}", remoteAddr, requestUri);
+        val authToken = UsernamePasswordAuthenticationToken(
+            authentication.principal,
+            authentication.credentials,
+            authentication.authorities
+        )
 
-        if (!StringUtils.hasText(resolvedToken) || !jwtTokenValidator.validateToken(resolvedToken)) {
-            log.debug("{}|유효한 JWT 토큰이 없습니다, uri: {}", remoteAddr, requestUri);
-            return;
-        }
+        val userDetails = customUserDetailService.loadUserByEmail(authentication.name)
+        userDetails.remoteUserIpAddress = ip
 
-        Authentication authentication = jwtTokenValidator.getAuthentication(resolvedToken);
+        authToken.details = userDetails
+        SecurityContextHolder.getContext().authentication = authToken
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                authentication.getPrincipal(), authentication.getCredentials(), authentication.getAuthorities());
-
-        CustomUserDetails customUserDetails = customUserDetailService.loadUserByEmail(authentication.getName());
-        customUserDetails.setRemoteUserIpAddress(remoteAddr);
-
-        authenticationToken.setDetails(customUserDetails);
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        log.debug("{}|Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", remoteAddr, authentication.getName(), requestUri);
+        log.debug { "$ip|Security Context에 '${authentication.name}' 인증 정보를 저장했습니다, uri: $uri" }
     }
 }

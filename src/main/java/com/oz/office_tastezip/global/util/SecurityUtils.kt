@@ -1,24 +1,21 @@
-package com.oz.office_tastezip.global.util;
+package com.oz.office_tastezip.global.util
 
-import com.oz.office_tastezip.global.exception.InvalidTokenException;
-import com.oz.office_tastezip.global.exception.RequestFailureException;
-import com.oz.office_tastezip.global.security.dto.CustomUserDetails;
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.oz.office_tastezip.global.exception.InvalidTokenException
+import com.oz.office_tastezip.global.exception.UserNotFoundException
+import com.oz.office_tastezip.global.exception.ValidationFailureException
+import com.oz.office_tastezip.global.security.dto.CustomUserDetails
+import org.springframework.security.core.context.SecurityContextHolder
 
-public class SecurityUtils {
+object SecurityUtils {
 
-    public static CustomUserDetails getAuthenticatedUserDetail() {
-        try {
-            Object userDetails = SecurityContextHolder.getContext().getAuthentication().getDetails();
+    fun getAuthenticatedUserDetail(): CustomUserDetails {
+        val authentication = SecurityContextHolder.getContext().authentication
+            ?: throw InvalidTokenException("인증 정보 없음")
 
-            if (userDetails instanceof CustomUserDetails) {
-                return (CustomUserDetails) userDetails;
-            }
+        val userDetails = authentication.details
+            ?: throw UserNotFoundException("인증 사용자 정보 없음")
 
-            throw new InvalidTokenException();
-        } catch (Exception e) {
-            throw new RequestFailureException("SecurityContextHolder parsed error.");
-        }
+        return userDetails as? CustomUserDetails
+            ?: throw ValidationFailureException("CustomUserDetails 타입이 아님")
     }
-
 }

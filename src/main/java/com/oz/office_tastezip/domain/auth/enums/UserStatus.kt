@@ -1,15 +1,14 @@
-package com.oz.office_tastezip.domain.auth.enums;
+package com.oz.office_tastezip.domain.auth.enums
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
-public enum UserStatus {
-
+enum class UserStatus(val displayName: String) {
     ACTIVE("활성"),
     SUSPENDED("정지"),
     WITHDRAWN("탈퇴");
 
-    private final String displayName;
+    companion object {
+        fun fromDisplayName(displayName: String): UserStatus {
+            return entries.firstOrNull { it.displayName == displayName }
+                ?: throw IllegalArgumentException("Invalid display name: $displayName")
+        }
+    }
 }

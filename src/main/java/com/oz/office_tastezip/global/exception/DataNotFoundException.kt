@@ -1,24 +1,10 @@
-package com.oz.office_tastezip.global.exception;
+package com.oz.office_tastezip.global.exception
 
-import com.oz.office_tastezip.global.response.ResponseCode;
+import com.oz.office_tastezip.global.response.ResponseCode
 
-import static com.oz.office_tastezip.global.response.ResponseCode.DATA_NOT_FOUND;
-
-public class DataNotFoundException extends GlobalException {
-
-    public DataNotFoundException() {
-        super(DATA_NOT_FOUND);
-    }
-
-    public DataNotFoundException(ResponseCode responseCode) {
-        super(responseCode, responseCode.getMessage());
-    }
-
-    public DataNotFoundException(String message) {
-        super(DATA_NOT_FOUND, message);
-    }
-
-    public DataNotFoundException(ResponseCode responseCode, String message) {
-        super(responseCode, message);
-    }
+class DataNotFoundException : GlobalException {
+    constructor() : super(ResponseCode.DATA_NOT_FOUND)
+    constructor(message: String) : super(ResponseCode.DATA_NOT_FOUND, message)
+    constructor(responseCode: ResponseCode) : super(responseCode)
+    constructor(responseCode: ResponseCode, message: String) : super(responseCode, message)
 }

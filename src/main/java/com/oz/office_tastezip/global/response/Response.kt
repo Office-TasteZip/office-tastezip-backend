@@ -1,67 +1,45 @@
-package com.oz.office_tastezip.global.response;
+package com.oz.office_tastezip.global.response
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 
-public abstract class Response<T> {
+abstract class Response<T> {
 
-    public record Body<T>(String code, String message, T data) {}
+    data class Body<T>(
+        val code: String,
+        val message: String,
+        val data: T?
+    )
 
-    protected abstract String resultCode();
-    protected abstract String resultMessage();
-    protected abstract HttpStatus resultHttpStatus();
+    protected abstract fun resultCode(): String
+    protected abstract fun resultMessage(): String
+    protected abstract fun resultHttpStatus(): HttpStatus
 
-    private Body<T> getBody(T data) {
-        return new Body<>(resultCode(), resultMessage(), data);
-    }
-
-    /**
-     * <p> 메세지만 가진 성공 응답을 반환</p>
-     * <pre>
-     *     {
-     *         "code" : 0000,
-     *         "message" : Success,
-     *         "data" : []
-     *     }
-     * </pre>
-     */
-    public ResponseEntity<Body<T>> success() {
-        return new ResponseEntity<>(getBody(null), HttpStatus.OK);
-    }
+    private fun getBody(data: T?): Body<T> =
+        Body(resultCode(), resultMessage(), data)
 
     /**
-     * <p> 메세지와 데이터를 포함한 성공 응답을 반환</p>
-     * <pre>
-     *     {
-     *         "code" : 0000,
-     *         "message" : Success,
-     *         "data" : [{data1}, {data2}...]
-     *     }
-     * </pre>
+     * 메시지만 가진 성공 응답을 반환
      */
-    public ResponseEntity<Body<T>> success(T data) {
-        return new ResponseEntity<>(getBody(data), HttpStatus.OK);
-    }
+    fun success(): ResponseEntity<Body<T>> =
+        ResponseEntity(getBody(null), HttpStatus.OK)
 
     /**
-     * <p> 메세지와 데이터, Header를 포함한 성공 응답을 반환</p>
+     * 메시지와 데이터를 포함한 성공 응답 반환
      */
-    public ResponseEntity<Body<T>> success(HttpHeaders headers, T data) {
-        return ResponseEntity.ok().headers(headers).body(getBody(data));
-    }
+    fun success(data: T): ResponseEntity<Body<T>> =
+        ResponseEntity(getBody(data), HttpStatus.OK)
 
     /**
-     * <p> 메세지만 가진 실패 응답을 반환한다.</p>
-     * <pre>
-     *     {
-     *         "code" : 0001,
-     *         "message" : Request failed to process.,
-     *         "data" : []
-     *     }
-     * </pre>
+     * 메시지와 데이터, Header를 포함한 성공 응답 반환
      */
-    public ResponseEntity<Body<T>> fail() {
-        return new ResponseEntity<>(getBody(null), resultHttpStatus());
-    }
+    fun success(headers: HttpHeaders, data: T): ResponseEntity<Body<T>> =
+        ResponseEntity.ok().headers(headers).body(getBody(data))
+
+    /**
+     * 메시지만 가진 실패 응답 반환
+     */
+    fun fail(): ResponseEntity<Body<T>> =
+        ResponseEntity(getBody(null), resultHttpStatus())
 }

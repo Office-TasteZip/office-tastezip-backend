@@ -19,9 +19,9 @@ class ResponseTest : StringSpec({
 
         result.statusCode shouldBe HttpStatus.OK
         result.body.shouldNotBeNull().let {
-            it.code() shouldBe ResponseCode.SUCCESS.code
-            it.message() shouldBe ResponseCode.SUCCESS.message
-            it.data().shouldBeNull()
+            it.code shouldBe ResponseCode.SUCCESS.code
+            it.message shouldBe ResponseCode.SUCCESS.message
+            it.data.shouldBeNull()
         }
     }
 
@@ -31,14 +31,14 @@ class ResponseTest : StringSpec({
         val result = response.success(data)
 
         result.statusCode shouldBe HttpStatus.OK
-        result.body.shouldNotBeNull().data() shouldBe data
+        result.body.shouldNotBeNull().data shouldBe data
     }
 
     "성공 응답 - 커스텀 메시지 포함" {
         val customMessage = "사용자 생성 완료"
         val result = ResponseSuccess<Void>(customMessage).success()
 
-        result.body.shouldNotBeNull().message() shouldBe customMessage
+        result.body.shouldNotBeNull().message shouldBe customMessage
     }
 
     "실패 응답 - 기본 메시지 사용" {
@@ -46,8 +46,8 @@ class ResponseTest : StringSpec({
 
         result.statusCode shouldBe HttpStatus.INTERNAL_SERVER_ERROR
         result.body.shouldNotBeNull().let {
-            it.code() shouldBe ResponseCode.INTERNAL_ERROR.code
-            it.message() shouldBe ResponseCode.INTERNAL_ERROR.message
+            it.code shouldBe ResponseCode.INTERNAL_ERROR.code
+            it.message shouldBe ResponseCode.INTERNAL_ERROR.message
         }
     }
 
@@ -56,8 +56,8 @@ class ResponseTest : StringSpec({
 
         result.statusCode shouldBe HttpStatus.UNAUTHORIZED
         result.body.shouldNotBeNull().let {
-            it.code() shouldBe ResponseCode.TOKEN_EXPIRED.code
-            it.message() shouldBe "토큰 인증 실패"
+            it.code shouldBe ResponseCode.TOKEN_EXPIRED.code
+            it.message shouldBe "토큰 인증 실패"
         }
     }
 })

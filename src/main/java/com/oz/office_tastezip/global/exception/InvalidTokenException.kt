@@ -1,20 +1,10 @@
-package com.oz.office_tastezip.global.exception;
+package com.oz.office_tastezip.global.exception
 
-import com.oz.office_tastezip.global.response.ResponseCode;
+import com.oz.office_tastezip.global.response.ResponseCode
+import com.oz.office_tastezip.global.response.ResponseCode.INVALID_TOKEN
 
-import static com.oz.office_tastezip.global.response.ResponseCode.INVALID_TOKEN;
-
-public class InvalidTokenException extends GlobalException {
-
-    public InvalidTokenException() {
-        super(INVALID_TOKEN);
-    }
-
-    public InvalidTokenException(String message) {
-        super(INVALID_TOKEN, message);
-    }
-
-    public InvalidTokenException(ResponseCode responseCode, String message) {
-        super(responseCode, message);
-    }
+class InvalidTokenException : GlobalException {
+    constructor() : super(INVALID_TOKEN)
+    constructor(message: String) : super(INVALID_TOKEN, message)
+    constructor(responseCode: ResponseCode, message: String) : super(responseCode, message)
 }

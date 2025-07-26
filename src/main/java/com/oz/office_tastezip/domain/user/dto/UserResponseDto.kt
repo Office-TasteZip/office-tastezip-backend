@@ -1,59 +1,35 @@
-package com.oz.office_tastezip.domain.user.dto;
+package com.oz.office_tastezip.domain.user.dto
 
-import com.oz.office_tastezip.domain.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.oz.office_tastezip.domain.user.User
+import com.oz.office_tastezip.global.constant.TimeFormat.SEC
+import java.util.UUID
 
-import java.util.UUID;
-
-import static com.oz.office_tastezip.global.constant.TimeFormat.SEC;
-
-@Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserResponseDto {
-    private UUID id;
-    private String email;
-    private String nickname;
-    private String job;
-    private String position;
-    private String joinYear;
-    private boolean marketingOptIn;
-    private String profileImageUrl;
-    private String lastLoginAt;
-    private String createdAt;
-
-    public static UserResponseDto of(User user) {
-        return UserResponseDto.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .nickname(user.getNickname())
-                .job(user.getJob().name())
-                .position(user.getPosition().name())
-                .joinYear(user.getJoinYear())
-                .marketingOptIn(user.isMarketingOptIn())
-                .profileImageUrl(user.getProfileImageUrl())
-                .lastLoginAt(SEC.getString(user.getLastLoginAt()))
-                .createdAt(SEC.getString(user.getCreatedAt()))
-                .build();
-    }
-
-    @Override
-    public String toString() {
-        return "UserResponseDto{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", job='" + job + '\'' +
-                ", position='" + position + '\'' +
-                ", joinYear='" + joinYear + '\'' +
-                ", marketingOptIn=" + marketingOptIn +
-                ", profileImageUrl='" + profileImageUrl + '\'' +
-                ", lastLoginAt=" + lastLoginAt +
-                ", createdAt=" + createdAt +
-                '}';
+data class UserResponseDto(
+    val id: UUID? = null,
+    val email: String? = null,
+    val nickname: String? = null,
+    val job: String? = null,
+    val position: String? = null,
+    val joinYear: String? = null,
+    val marketingOptIn: Boolean = false,
+    val profileImageUrl: String? = null,
+    val lastLoginAt: String? = null,
+    val createdAt: String? = null
+) {
+    companion object {
+        fun of(user: User): UserResponseDto {
+            return UserResponseDto(
+                id = user.id,
+                email = user.email,
+                nickname = user.nickname,
+                job = user.job.name,
+                position = user.position.name,
+                joinYear = user.joinYear,
+                marketingOptIn = user.marketingOptIn,
+                profileImageUrl = user.profileImageUrl,
+                lastLoginAt = SEC.getString(user.lastLoginAt),
+                createdAt = SEC.getString(user.createdAt)
+            )
+        }
     }
 }

@@ -1,162 +1,118 @@
-package com.oz.office_tastezip.global.util;
+package com.oz.office_tastezip.global.util
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import com.fasterxml.jackson.annotation.JsonAutoDetect
+import com.fasterxml.jackson.annotation.PropertyAccessor
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.google.gson.JsonParser
+import mu.KotlinLogging
+import org.apache.commons.lang3.StringUtils
+import java.io.File
+import java.io.InputStream
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+object JsonUtils {
 
-@Slf4j
-public class JsonUtils {
+    private val log = KotlinLogging.logger {}
 
-    private static final ObjectMapper objectMapper;
-    private static final ObjectMapper prettyMapper;
-    private static final TypeReference<List<Object>> typeRefList = new TypeReference<>() {
-    };
-    private static final TypeReference<Map<String, Object>> typeRefMap = new TypeReference<>() {
-    };
-
-    private JsonUtils() {
+    private val objectMapper: ObjectMapper = ObjectMapper().apply {
+        setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
+        setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+        configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        registerModules(JavaTimeModule(), Jdk8Module())
     }
 
-    static {
-        objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
-                .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-                .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                .registerModules(new JavaTimeModule(), new Jdk8Module());
-
-        prettyMapper = new ObjectMapper();
-        prettyMapper.enable(SerializationFeature.INDENT_OUTPUT)
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                .registerModules(new JavaTimeModule(), new Jdk8Module());
+    private val prettyMapper: ObjectMapper = ObjectMapper().apply {
+        enable(SerializationFeature.INDENT_OUTPUT)
+        disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        registerModules(JavaTimeModule(), Jdk8Module())
     }
 
-    public static String getJson(Object obj) {
-        try {
-            return objectMapper.writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
-            log.error("Json serialize error: {}", ExceptionUtils.getStackTrace(e));
-            return null;
-        }
+    private val typeRefList = object : TypeReference<List<Any>>() {}
+    private val typeRefMap = object : TypeReference<Map<String, Any>>() {}
+
+    fun getJson(obj: Any?): String? = try {
+        objectMapper.writeValueAsString(obj)
+    } catch (e: JsonProcessingException) {
+        log.error(e) { "Json serialize error" }
+        null
     }
 
-    public static <T> T getObject(String json, Class<T> clazz) {
-        try {
-            return objectMapper.readValue(json, clazz);
-        } catch (JsonProcessingException e) {
-            log.error("Json deserialize error: {}", ExceptionUtils.getStackTrace(e));
-            return null;
-        }
+    fun <T> getObject(json: String, clazz: Class<T>): T? = try {
+        objectMapper.readValue(json, clazz)
+    } catch (e: JsonProcessingException) {
+        log.error(e) { "Json deserialize error" }
+        null
     }
 
-    public static <T> T getObject(Map<String, Object> dataMap, Class<T> clazz) {
-        return objectMapper.convertValue(dataMap, clazz);
+    fun <T> getObject(dataMap: Map<String, Any>, clazz: Class<T>): T =
+        objectMapper.convertValue(dataMap, clazz)
+
+    fun toMap(json: String): Map<String, Any>? = try {
+        objectMapper.readValue(json, typeRefMap)
+    } catch (e: JsonProcessingException) {
+        log.error(e) { "Json toMap error" }
+        null
     }
 
-    public static Map<String, Object> toMap(String json) {
-        try {
-            return objectMapper.readValue(json, typeRefMap);
-        } catch (JsonProcessingException e) {
-            log.error("Json toMap error: {}", ExceptionUtils.getStackTrace(e));
-            return null;
-        }
+    fun toMap(obj: Any): Map<String, Any> = objectMapper.convertValue(obj, typeRefMap)
+
+    fun toList(json: String): List<Any>? = try {
+        objectMapper.readValue(json, typeRefList)
+    } catch (e: JsonProcessingException) {
+        log.error(e) { "Json toList error" }
+        null
     }
 
-    public static Map<String, Object> toMap(Object obj) {
-        return objectMapper.convertValue(obj, typeRefMap);
+    fun toList(jsonFile: File): List<Any>? = try {
+        objectMapper.readValue(jsonFile, typeRefList)
+    } catch (e: Exception) {
+        log.error(e) { "Json file toList error" }
+        null
     }
 
-    public static List<?> toList(String json) {
-        try {
-            return objectMapper.readValue(json, typeRefList);
-        } catch (JsonProcessingException e) {
-            log.error("Json toList error: {}", ExceptionUtils.getStackTrace(e));
-            return null;
-        }
+    fun toList(obj: Any): List<Any> = objectMapper.convertValue(obj, typeRefList)
+
+    fun toMap(jsonFile: File): Map<String, Any>? = try {
+        objectMapper.readValue(jsonFile, typeRefMap)
+    } catch (e: Exception) {
+        log.error(e) { "Json file toMap error" }
+        null
     }
 
-    public static List<Object> toList(File jsonFile) {
-        try {
-            return objectMapper.readValue(jsonFile, typeRefList);
-        } catch (IOException e) {
-            log.error("Json file toList error: {}", ExceptionUtils.getStackTrace(e));
-            return null;
-        }
+    fun toMap(jsonStream: InputStream): Map<String, Any>? = try {
+        objectMapper.readValue(jsonStream, typeRefMap)
+    } catch (e: Exception) {
+        log.error(e) { "Json stream toMap error" }
+        null
     }
 
-    public static List<?> toList(Object obj) {
-        return objectMapper.convertValue(obj, typeRefList);
+    fun <T> treeToValue(jsonNode: JsonNode, clazz: Class<T>): T? = try {
+        objectMapper.treeToValue(jsonNode, clazz)
+    } catch (e: Exception) {
+        log.error(e) { "Json treeToValue error" }
+        null
     }
 
-    public static Map<String, Object> toMap(File jsonFile) {
-        try {
-            return objectMapper.readValue(jsonFile, typeRefMap);
-        } catch (IOException e) {
-            log.error("Json file toMap error: {}", ExceptionUtils.getStackTrace(e));
-            return null;
-        }
-    }
-
-    public static Map<String, Object> toMap(InputStream jsonStream) {
-        try {
-            return objectMapper.readValue(jsonStream, typeRefMap);
-        } catch (IOException e) {
-            log.error("Json stream toMap error: {}", ExceptionUtils.getStackTrace(e));
-            return null;
-        }
-    }
-
-    public static <T> T treeToValue(JsonNode jsonNode, Class<T> clazz) {
-        try {
-            return objectMapper.treeToValue(jsonNode, clazz);
-        } catch (IOException e) {
-            log.error("Json treeToValue error: {}", ExceptionUtils.getStackTrace(e));
-            return null;
-        }
-    }
-
-    public static String prettyPrint(String jsonString) {
-        try {
-            Object jsonValue;
-            try {
-                jsonValue = prettyMapper.readValue(jsonString, Map.class);
-            } catch (JsonProcessingException ex) {
-                jsonValue = prettyMapper.readValue(jsonString, Collection.class);
+    fun prettyPrint(jsonString: String): String {
+        return try {
+            val jsonValue = try {
+                prettyMapper.readValue(jsonString, Map::class.java)
+            } catch (ex: JsonProcessingException) {
+                prettyMapper.readValue(jsonString, Collection::class.java)
             }
-            return prettyMapper.writeValueAsString(jsonValue);
-        } catch (JsonProcessingException e) {
-            log.error("prettyPrint error: {} - input: {}", e.getMessage(), jsonString);
-            return "{}";
+            prettyMapper.writeValueAsString(jsonValue)
+        } catch (e: Exception) {
+            log.error(e) { "prettyPrint error - input: $jsonString" }
+            "{}"
         }
     }
 
-    public static boolean isJsonFormat(String payload) {
-        try {
-            if (StringUtils.isBlank(payload)) return false;
-            JsonElement jsonElement = JsonParser.parseString(payload);
-            return jsonElement != null && jsonElement.isJsonObject();
-        } catch (Exception e) {
-            return false;
-        }
-    }
 }

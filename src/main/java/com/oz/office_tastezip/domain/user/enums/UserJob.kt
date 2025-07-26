@@ -1,14 +1,6 @@
-package com.oz.office_tastezip.domain.user.enums;
+package com.oz.office_tastezip.domain.user.enums
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-import java.util.Arrays;
-
-@Getter
-@AllArgsConstructor
-public enum UserJob {
-
+enum class UserJob(val displayName: String) {
     DEVELOPMENT("개발"),
     PLANNING("기획"),
     DESIGN("디자인"),
@@ -28,12 +20,10 @@ public enum UserJob {
     FREELANCER("프리랜서"),
     ETC("기타");
 
-    private final String displayName;
-
-    public static UserJob fromJobName(String job) {
-        return Arrays.stream(values())
-                .filter(userJob -> userJob.name().equalsIgnoreCase(job))
-                .findFirst()
-                .orElseThrow();
+    companion object {
+        fun fromJobName(job: String): UserJob {
+            return entries.firstOrNull { it.name.equals(job, ignoreCase = true) }
+                ?: throw IllegalArgumentException("Invalid job name: $job")
+        }
     }
 }

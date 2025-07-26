@@ -1,125 +1,104 @@
-package com.oz.office_tastezip.global.security.jwt;
+package com.oz.office_tastezip.global.security.jwt
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oz.office_tastezip.global.exception.DataNotFoundException;
-import com.oz.office_tastezip.global.exception.InvalidTokenException;
-import com.oz.office_tastezip.global.security.dto.TokenDto;
-import com.oz.office_tastezip.global.util.RedisUtils;
-import io.jsonwebtoken.*;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.oz.office_tastezip.global.exception.DataNotFoundException
+import com.oz.office_tastezip.global.exception.InvalidTokenException
+import com.oz.office_tastezip.global.security.dto.TokenDto
+import com.oz.office_tastezip.global.util.RedisUtils
+import io.jsonwebtoken.*
+import io.jsonwebtoken.security.Keys
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
+import java.util.Date
+import java.util.UUID
+import java.util.concurrent.TimeUnit
 
-import java.util.Date;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import com.oz.office_tastezip.global.constant.AuthConstants.Jwt.AUTHORITIES_KEY
+import com.oz.office_tastezip.global.constant.AuthConstants.Jwt.SERIAL_KEY
+import com.oz.office_tastezip.global.constant.AuthConstants.RedisKey.JWT_KEY_PREFIX
 
-import static com.oz.office_tastezip.global.constant.AuthConstants.Jwt.AUTHORITIES_KEY;
-import static com.oz.office_tastezip.global.constant.AuthConstants.Jwt.SERIAL_KEY;
-import static com.oz.office_tastezip.global.constant.AuthConstants.RedisKey.JWT_KEY_PREFIX;
-
-@Slf4j
 @Component
-public class JwtTokenProvider {
+class JwtTokenProvider(
+    private val redisUtils: RedisUtils,
+    private val objectMapper: ObjectMapper,
+    private val jwtTokenValidator: JwtTokenValidator,
+    @Value("\${jwt.access-token-expiration}") accessTokenValidityTime: Long,
+    @Value("\${jwt.refresh-token-expiration}") refreshTokenValidityTime: Long
+) {
 
-    private final RedisUtils redisUtils;
-    private final ObjectMapper objectMapper;
-    private final JwtTokenValidator jwtTokenValidator;
+    private val accessTokenValidityTimeMs = accessTokenValidityTime * 1000
+    private val refreshTokenValidityTimeMs = refreshTokenValidityTime * 1000
 
-    private final long accessTokenValidityTime;
-    private final long refreshTokenValidityTime;
+    private val log = LoggerFactory.getLogger(javaClass)
 
-    public JwtTokenProvider(
-            RedisUtils redisUtils,
-            ObjectMapper objectMapper,
-            JwtTokenValidator jwtTokenValidator,
-            @Value("${jwt.access-token-expiration}") long accessTokenValidityTime,
-            @Value("${jwt.refresh-token-expiration}") long refreshTokenValidityTime
-    ) {
-        this.redisUtils = redisUtils;
-        this.objectMapper = objectMapper;
-        this.jwtTokenValidator = jwtTokenValidator;
-        this.accessTokenValidityTime = accessTokenValidityTime * 1000;
-        this.refreshTokenValidityTime = refreshTokenValidityTime * 1000;
+    private fun getRedisTokenKey(email: String) = "$JWT_KEY_PREFIX$email"
+
+    fun generateToken(email: String, authority: String): TokenDto {
+        val accessSerial = UUID.randomUUID().toString()
+        val refreshSerial = UUID.randomUUID().toString()
+
+        storeTokenSerialsToRedis(email, accessSerial, refreshSerial)
+
+        return TokenDto(
+            accessToken = buildAccessToken(email, authority, accessSerial),
+            refreshToken = buildRefreshToken(email, refreshSerial)
+        )
     }
 
-    private String getRedisTokenKey(String email) {
-        return JWT_KEY_PREFIX + email;
-    }
-
-    public TokenDto generateToken(String email, String authority) {
-        String accessSerial = String.valueOf(UUID.randomUUID());
-        String refreshSerial = String.valueOf(UUID.randomUUID());
-
-        storeTokenSerialsToRedis(email, accessSerial, refreshSerial);
-
-        return TokenDto.builder()
-                .accessToken(buildAccessToken(email, authority, accessSerial))
-                .refreshToken(buildRefreshToken(email, refreshSerial))
-                .build();
-    }
-
-    private void storeTokenSerialsToRedis(String email, String accessSerial, String refreshSerial) {
+    private fun storeTokenSerialsToRedis(email: String, accessSerial: String, refreshSerial: String) {
         try {
-            String redisTokenKey = JWT_KEY_PREFIX + email;
-            String serialJson = objectMapper.writeValueAsString(new TokenDto.SerialDto(accessSerial, refreshSerial));
-
-            redisUtils.set(redisTokenKey, serialJson);
-            redisUtils.setExpiredTime(redisTokenKey, refreshTokenValidityTime, TimeUnit.SECONDS);
-        } catch (JsonProcessingException e) {
-            log.error("Failed to serialize TokenDto.SerialDto to JSON", e);
-            throw new IllegalStateException("Redis 저장 중 직렬화 실패", e);
+            val serialJson = objectMapper.writeValueAsString(TokenDto.SerialDto(accessSerial, refreshSerial))
+            val redisKey = getRedisTokenKey(email)
+            redisUtils.set(redisKey, serialJson)
+            redisUtils.setExpiredTime(redisKey, refreshTokenValidityTimeMs, TimeUnit.SECONDS)
+        } catch (e: Exception) {
+            log.error("Failed to serialize TokenDto.SerialDto to JSON", e)
+            throw IllegalStateException("Redis 저장 중 직렬화 실패", e)
         }
     }
 
-    public String refreshTokenValidCheck(String refreshToken) {
+    fun refreshTokenValidCheck(refreshToken: String): String {
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(jwtTokenValidator.getKey())
-                    .build()
-                    .parseClaimsJws(refreshToken)
-                    .getBody();
+            val claims = Jwts.parserBuilder()
+                .setSigningKey(jwtTokenValidator.key)
+                .build()
+                .parseClaimsJws(refreshToken)
+                .body
 
-            String email = claims.getSubject();
-            TokenDto.SerialDto serialDto = redisUtils.get(getRedisTokenKey(email), TokenDto.SerialDto.class)
-                    .orElseThrow(() -> new DataNotFoundException("세션이 만료되었습니다. 로그인이 필요합니다."));
+            val email = claims.subject
+            val serialDto = redisUtils.get(getRedisTokenKey(email), TokenDto.SerialDto::class.java)
+                ?: throw DataNotFoundException("세션이 만료되었습니다. 로그인이 필요합니다.")
 
-            if (serialDto == null || !String.valueOf(claims.get(SERIAL_KEY)).equals(serialDto.getRefreshSerial())) {
-                throw new InvalidTokenException("Refresh Token의 Serial이 일치하지 않습니다.");
-            }
+            serialDto.takeIf { claims[SERIAL_KEY].toString() == it.refreshSerial }
+                ?: throw InvalidTokenException("Refresh Token의 Serial이 일치하지 않습니다.")
 
-            return email;
-
-        } catch (ExpiredJwtException e) {
-            throw new InvalidTokenException("Refresh Token이 만료되었습니다.");
-        } catch (JwtException e) {
-            log.warn("JWT 검증 실패: {}", e.getMessage());
-            throw new InvalidTokenException("Refresh Token이 유효하지 않습니다.");
+            return email
+        } catch (e: ExpiredJwtException) {
+            log.warn("Token expired: ${e.message}")
+            throw InvalidTokenException("Refresh Token이 만료되었습니다.")
+        } catch (e: JwtException) {
+            log.warn("JWT 검증 실패: ${e.message}")
+            throw InvalidTokenException("Refresh Token이 유효하지 않습니다.")
         }
-
     }
 
-    private String buildAccessToken(String userId, String authority, String accessSerial) {
-        return Jwts.builder()
-                .setSubject(userId)
-                .claim(SERIAL_KEY, accessSerial)
-                .claim(AUTHORITIES_KEY, authority)
-                .signWith(jwtTokenValidator.getKey(), SignatureAlgorithm.HS512)
-                .setExpiration(getExpirationDate(accessTokenValidityTime))
-                .compact();
-    }
+    private fun buildAccessToken(userId: String, authority: String, accessSerial: String): String =
+        Jwts.builder()
+            .setSubject(userId)
+            .claim(SERIAL_KEY, accessSerial)
+            .claim(AUTHORITIES_KEY, authority)
+            .signWith(jwtTokenValidator.key, SignatureAlgorithm.HS512)
+            .setExpiration(getExpirationDate(accessTokenValidityTimeMs))
+            .compact()
 
-    private String buildRefreshToken(String userId, String refreshSerial) {
-        return Jwts.builder()
-                .setSubject(userId)
-                .claim(SERIAL_KEY, refreshSerial)
-                .signWith(jwtTokenValidator.getKey(), SignatureAlgorithm.HS512)
-                .setExpiration(getExpirationDate(refreshTokenValidityTime))
-                .compact();
-    }
+    private fun buildRefreshToken(userId: String, refreshSerial: String): String =
+        Jwts.builder()
+            .setSubject(userId)
+            .claim(SERIAL_KEY, refreshSerial)
+            .signWith(jwtTokenValidator.key, SignatureAlgorithm.HS512)
+            .setExpiration(getExpirationDate(refreshTokenValidityTimeMs))
+            .compact()
 
-    private Date getExpirationDate(long validityTime) {
-        return new Date((new Date()).getTime() + validityTime);
-    }
+    private fun getExpirationDate(validityTime: Long): Date = Date(System.currentTimeMillis() + validityTime)
 }

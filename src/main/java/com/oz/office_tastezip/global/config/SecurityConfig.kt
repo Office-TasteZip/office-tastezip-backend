@@ -1,109 +1,105 @@
-package com.oz.office_tastezip.global.config;
+package com.oz.office_tastezip.global.config
 
-import com.oz.office_tastezip.global.security.filter.CustomAuthenticationProvider;
-import com.oz.office_tastezip.global.security.jwt.JwtAccessDeniedHandler;
-import com.oz.office_tastezip.global.security.jwt.JwtAuthenticationEntryPoint;
-import com.oz.office_tastezip.global.security.jwt.JwtSecurityConfig;
-import com.oz.office_tastezip.global.security.jwt.JwtTokenValidator;
-import com.oz.office_tastezip.global.security.service.CustomUserDetailService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.util.Collections;
-import java.util.List;
+import com.oz.office_tastezip.global.security.filter.CustomAuthenticationProvider
+import com.oz.office_tastezip.global.security.jwt.JwtAccessDeniedHandler
+import com.oz.office_tastezip.global.security.jwt.JwtAuthenticationEntryPoint
+import com.oz.office_tastezip.global.security.jwt.JwtSecurityConfig
+import com.oz.office_tastezip.global.security.jwt.JwtTokenValidator
+import com.oz.office_tastezip.global.security.service.CustomUserDetailService
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer
+import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
 
 @Configuration
-@RequiredArgsConstructor
-public class SecurityConfig {
+open class SecurityConfig(
+    private val jwtTokenValidator: JwtTokenValidator,
+    private val jwtAccessDeniedHandler: JwtAccessDeniedHandler,
+    private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
+    private val customUserDetailService: CustomUserDetailService,
+    private val corsConfigProperties: CorsConfigProperties
+) {
 
-    private final JwtTokenValidator jwtTokenValidator;
-    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final CustomUserDetailService customUserDetailService;
-    private final CorsConfigProperties corsConfigProperties;
-
-    private static final String[] SYSTEM_WHITE_LIST_URL = {
+    companion object {
+        private val SYSTEM_WHITE_LIST_URL = arrayOf(
             "/v2/api-docs", "/v3/api-docs", "/v3/api-docs/**", "/configuration/ui", "/configuration/security",
             "/webjars/**", "/error", "/static/**", "/customError.css", "/errorIcon.svg", "/favicon.ico",
             "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources", "/swagger-resources/**"
-    };
-    private static final String[] OTZ_WHITE_LIST_URI = {
+        )
+
+        private val OTZ_WHITE_LIST_URI = arrayOf(
             "/api/v1/otz/auth/login", "/api/v1/otz/auth/rsa",
             "/api/v1/otz/users/register", "/api/v1/otz/users/email/verify", "/api/v1/otz/users/email/verify/check"
-    };
-    private static final String[] ALLOWED_HEADERS = {
+        )
+
+        private val ALLOWED_HEADERS = arrayOf(
             "Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "x-request-id",
             "Access-Control-Request-Headers", "Authorization", "Access-Control-Allow-Origin", "Content-Disposition"
-    };
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        )
     }
 
     @Bean
-    public AuthenticationProvider customAuthenticationProvider() {
-        return new CustomAuthenticationProvider(passwordEncoder(), customUserDetailService);
+    open fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
+
+    @Bean
+    open fun customAuthenticationProvider(): AuthenticationProvider =
+        CustomAuthenticationProvider(passwordEncoder(), customUserDetailService)
+
+    @Bean
+    @Throws(Exception::class)
+    open fun filterChain(http: HttpSecurity): SecurityFilterChain {
+        val builder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
+        builder.authenticationProvider(customAuthenticationProvider())
+        val authenticationManager: AuthenticationManager = builder.build()
+
+        return http
+            .httpBasic { obj: HttpBasicConfigurer<HttpSecurity> -> obj.disable() }
+            .cors { it.configurationSource(corsConfigurationSource()) }
+            .csrf { obj: AbstractHttpConfigurer<*, *> -> obj.disable() }
+            .formLogin { obj: AbstractHttpConfigurer<*, *> -> obj.disable() }
+            .authorizeHttpRequests {
+                it.requestMatchers(HttpMethod.HEAD).denyAll()
+                    .requestMatchers(HttpMethod.OPTIONS).denyAll()
+                    .requestMatchers(*SYSTEM_WHITE_LIST_URL).permitAll()
+                    .requestMatchers(*OTZ_WHITE_LIST_URI).permitAll()
+                    .anyRequest().permitAll() // TODO 향후 수정
+            }
+            .authenticationManager(authenticationManager)
+            .exceptionHandling {
+                it.accessDeniedHandler(jwtAccessDeniedHandler)
+                    .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            }
+            .headers {
+                it.frameOptions { headers: HeadersConfigurer<HttpSecurity>.FrameOptionsConfig -> headers.sameOrigin() }
+            }
+            .sessionManagement {
+                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
+            .with(JwtSecurityConfig(customUserDetailService, jwtTokenValidator)) {}
+            .build()
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        AuthenticationManagerBuilder sharedObject = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
-        sharedObject.authenticationProvider(customAuthenticationProvider());
-        AuthenticationManager authenticationManager = sharedObject.build();
-
-        return httpSecurity
-                .httpBasic(HttpBasicConfigurer::disable)
-                .cors(corsConfig -> corsConfig.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorizeRequest ->
-                        authorizeRequest
-                                .requestMatchers(HttpMethod.HEAD).denyAll()
-                                .requestMatchers(HttpMethod.OPTIONS).denyAll()
-                                .requestMatchers(SYSTEM_WHITE_LIST_URL).permitAll()
-                                .requestMatchers(OTZ_WHITE_LIST_URI).permitAll()
-                                .anyRequest().permitAll() // TODO 향후 수정
-                )
-                .authenticationManager(authenticationManager)
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .accessDeniedHandler(jwtAccessDeniedHandler)
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                )
-                .headers(headersConfigurer ->
-                        headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
-                )
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .with(new JwtSecurityConfig(customUserDetailService, jwtTokenValidator), customizer -> {
-                })
-                .build();
-    }
-
-    CorsConfigurationSource corsConfigurationSource() {
-        return request -> {
-            CorsConfiguration config = new CorsConfiguration();
-            config.setAllowedMethods(List.of(new String[]{"GET", "POST", "PUT", "DELETE"}));
-            config.setAllowedHeaders(List.of(ALLOWED_HEADERS));
-            config.setAllowedOrigins(corsConfigProperties.getAllowedOriginPattern());
-            config.setAllowCredentials(true);
-            return config;
-        };
+    open fun corsConfigurationSource(): CorsConfigurationSource {
+        return CorsConfigurationSource {
+            CorsConfiguration().apply {
+                allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
+                allowedHeaders = ALLOWED_HEADERS.toList()
+                allowedOrigins = corsConfigProperties.allowedOriginPattern
+                allowCredentials = true
+            }
+        }
     }
 }
