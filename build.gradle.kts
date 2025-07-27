@@ -34,11 +34,15 @@ repositories {
 dependencies {
     // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-configuration-processor")
+
+    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -56,7 +60,7 @@ dependencies {
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
 
-    // Jackson / ObjectMapper
+    // Jackson
     implementation("com.fasterxml.jackson.core:jackson-core:2.19.1")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.19.1")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.19.1")
@@ -73,17 +77,18 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     // QueryDSL
-    implementation("com.querydsl:querydsl-jpa:$querydslVersion:jakarta")
-    kapt("com.querydsl:querydsl-apt:$querydslVersion:jakarta")
     kapt("jakarta.annotation:jakarta.annotation-api")
     kapt("jakarta.persistence:jakarta.persistence-api")
+    kapt("com.querydsl:querydsl-apt:$querydslVersion:jakarta")
+    implementation("com.querydsl:querydsl-jpa:$querydslVersion:jakarta")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     // Kotest
+    testImplementation("io.mockk:mockk:1.13.9")
+    testImplementation("io.kotest:kotest-property:5.9.1")
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
     testImplementation("io.kotest:kotest-assertions-core:5.9.1")
-    testImplementation("io.kotest:kotest-property:5.9.1")
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
