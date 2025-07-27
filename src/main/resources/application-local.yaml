@@ -25,6 +25,12 @@ spring:
           jta:
             platform: org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ENC(emQRpDeEngOGgdW6LAeM6VZ06kFnITy344QfEDQtR3RbNCe6TJG1Ke5z9TPkALjBIgcyk8T8r+0Cw6DNWWdhIQ==)
+    password: ENC(7FK79Z/Ux7eQO0t3hOlGYatxOs6QykvyvucHcxQk1LS56h9CriShBCR2kSpx2I+V8Wj5+0d2evyAlz9kKaQxRQ==)
+
 cors-config:
   allowed-origin-pattern:
     - http://localhost:2999
@@ -37,5 +43,11 @@ jwt:
   access-token-expiration: 86400
   refresh-token-expiration: 1209600
 
-test:
-  server-url: 'http://localhost:'
+jasypt:
+  password: officezip.encrypt
+  encryptor:
+    bean: jasyptEncryptor
+    algorithm: PBEWithHMACSHA512AndAES_256
+    property:
+      prefix: ENC(
+      suffix: )

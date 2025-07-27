@@ -6,12 +6,14 @@ import io.kotest.matchers.shouldNotBe
 import io.mockk.*
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
+import org.thymeleaf.spring6.SpringTemplateEngine
 
 class MailClientTest : StringSpec({
 
     val mailSender = mockk<JavaMailSender>(relaxUnitFun = true)
     val mailProps = MailProperties(username = "test@example.com")
-    val mailClient = MailClient(mailSender, mailProps)
+    val templateEngine = mockk<SpringTemplateEngine>()
+    val mailClient = MailClient(mailSender, mailProps, templateEngine)
 
     "메일 전송" {
         val to = "recipient@example.com"

@@ -128,8 +128,7 @@ private fun getUserInsertRequest(email: String = "tester-${UUID.randomUUID()}@gm
         "production",
         "senior",
         "2025",
-        false,
-        null
+        false
     )
 }
 
