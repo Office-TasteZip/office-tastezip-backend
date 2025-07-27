@@ -77,8 +77,7 @@ class User(
                 joinYear = request.joinYear,
                 marketingOptIn = request.marketingOptIn,
                 role = UserRole.ROLE_USER,
-                status = UserStatus.ACTIVE,
-                profileImageUrl = request.profileImageUrl
+                status = UserStatus.ACTIVE
             )
         }
     }

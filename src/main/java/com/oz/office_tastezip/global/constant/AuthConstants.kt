@@ -8,8 +8,10 @@ object AuthConstants {
     }
 
     object RedisKey {
-        const val AUTH_KEY_PREFIX = "otz:%s:%s"
         const val JWT_KEY_PREFIX = "otz:token:"
+        const val EMAIL_KEY_PREFIX = "otz:email:"
+        const val EMAIL_ATTEMPT_KEY_PREFIX = "otz:attempt:email:"
+        const val EMAIL_VERIFY_KEY_PREFIX = "otz:verify:email:"
     }
 
     object Jwt {

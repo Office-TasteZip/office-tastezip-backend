@@ -35,8 +35,6 @@ object UserRequestDto {
         val joinYear: String,
 
         val marketingOptIn: Boolean = false,
-
-        val profileImageUrl: String? = null
     )
 
     data class UserUpdateRequest(

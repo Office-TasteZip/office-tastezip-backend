@@ -3,7 +3,7 @@ package com.oz.office_tastezip.domain.auth.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.oz.office_tastezip.domain.auth.dto.LoginDto
 import com.oz.office_tastezip.domain.auth.service.AuthService
-import com.oz.office_tastezip.global.constant.AuthConstants.RedisKey
+import com.oz.office_tastezip.global.constant.AuthConstants.RedisKey.JWT_KEY_PREFIX
 import com.oz.office_tastezip.global.exception.DataNotFoundException
 import com.oz.office_tastezip.global.exception.InvalidTokenException
 import com.oz.office_tastezip.global.response.Response
@@ -25,7 +25,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 private val log = KotlinLogging.logger {}
 
@@ -110,7 +109,7 @@ class AuthController(
             throw InvalidTokenException()
         }
 
-        val redisKey = RedisKey.JWT_KEY_PREFIX + email
+        val redisKey = "$JWT_KEY_PREFIX$email"
         if (redisUtils.getOrNull(redisKey) == null) {
             throw InvalidTokenException("이미 로그아웃된 사용자이거나 세션이 만료되었습니다.")
         }

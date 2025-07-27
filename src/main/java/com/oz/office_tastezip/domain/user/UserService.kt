@@ -3,7 +3,7 @@ package com.oz.office_tastezip.domain.user
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto
 import com.oz.office_tastezip.domain.user.repository.UserRepository
 import com.oz.office_tastezip.global.exception.UserNotFoundException
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -14,15 +14,13 @@ open class UserService(
     private val passwordEncoder: PasswordEncoder
 ) {
 
-    private val log = LoggerFactory.getLogger(this::class.java)
+    private val log = KotlinLogging.logger {}
 
     @Transactional
     open fun register(userInsertRequest: UserRequestDto.UserInsertRequest) {
         val user = User.create(userInsertRequest, passwordEncoder)
-        log.info("Insert user info: {}", user)
+        log.info { "Insert user info: $user" }
         userRepository.save(user)
-
-        // TODO image > s3
     }
 
     fun countByEmail(email: String): Boolean {

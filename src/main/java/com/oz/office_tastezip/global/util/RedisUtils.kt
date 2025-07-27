@@ -4,7 +4,6 @@ import mu.KotlinLogging
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.stereotype.Component
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Component
@@ -26,8 +25,8 @@ class RedisUtils(
         valueOperations.set(key, value, timeout, timeUnit)
     }
 
-    fun get(key: String): Optional<Any> {
-        return Optional.ofNullable(valueOperations.get(key))
+    fun get(key: String): Any? {
+        return valueOperations.get(key)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -57,6 +56,10 @@ class RedisUtils(
 
     fun setExpiredTime(key: String, tokenValidityTime: Long, timeUnit: TimeUnit) {
         redisTemplate.expire(key, tokenValidityTime, timeUnit)
+    }
+
+    fun getExpire(key: String, timeunit: TimeUnit): Long {
+        return redisTemplate.getExpire(key, timeunit)
     }
 
     fun delete(key: String) {

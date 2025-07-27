@@ -74,8 +74,7 @@ class JwtTokenValidator(
     }
 
     private fun serialCodeValidCheck(userId: String, claimsJws: Jws<Claims>) {
-        val redisKey = JWT_KEY_PREFIX + userId
-        val serialDto = redisUtils.get(redisKey, TokenDto.SerialDto::class.java)
+        val serialDto = redisUtils.get("$JWT_KEY_PREFIX$userId", TokenDto.SerialDto::class.java)
             ?: throw DataNotFoundException(ResponseCode.UNAUTHORIZED, "로그인하지 않은 사용자입니다.")
 
         serialDto.takeIf { serialDto.accessSerial == claimsJws.body[SERIAL_KEY] }
