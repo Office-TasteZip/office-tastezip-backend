@@ -129,3 +129,15 @@ allOpen {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/generated")
+        }
+    }
+}
+
+tasks.clean {
+    delete("src/main/generated")
+}

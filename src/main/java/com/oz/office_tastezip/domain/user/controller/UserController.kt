@@ -73,7 +73,7 @@ class UserController(
     fun withdraw(httpServletRequest: HttpServletRequest): ResponseEntity<Response.Body<String>> {
         val userDetails = getAuthenticatedUserDetail()
         log.info { "${httpServletRequest.remoteAddr}|Withdraw user uuid: ${userDetails.uuid}, email: ${userDetails.email}" }
-        userService.withdraw("") // TODO
+        userService.withdraw(userDetails.uuid)
         return ResponseSuccess<String>().success("회원 탈퇴 되었습니다.")
     }
 }
