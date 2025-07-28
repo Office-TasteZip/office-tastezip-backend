@@ -16,7 +16,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.optional.shouldBePresent
 import io.kotest.matchers.shouldBe
 import jakarta.persistence.EntityManager
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -33,7 +33,7 @@ class UserRepositoryTest @Autowired constructor(
     private val em: EntityManager,
 ) : FunSpec({
 
-    val log = LoggerFactory.getLogger(this::class.java)
+    val log = KotlinLogging.logger {}
 
     context("회원 가입") {
         test("사용자 저장 테스트") {
@@ -84,7 +84,7 @@ class UserRepositoryTest @Autowired constructor(
 
             val byUserUUID = userRepository.findById(user.id)
             byUserUUID.shouldBePresent {
-                log.info("result user info: {}", it)
+                log.info { "result user info: $it" }
                 it.deletedAt.shouldNotBeNull()
                 it.status shouldBe UserStatus.WITHDRAWN
             }

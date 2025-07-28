@@ -64,8 +64,7 @@ class AuthController(
         httpServletRequest: HttpServletRequest,
         httpServletResponse: HttpServletResponse
     ): ResponseEntity<Response.Body<TokenResponse>> {
-        val remoteAddr = httpServletRequest.remoteAddr
-        log.info("{}|Input login payload: {}", remoteAddr, loginDto)
+        log.info { "${httpServletRequest.remoteAddr}|Input login payload: $loginDto" }
         loginDto.password = RSAUtils.decrypt(loginDto.password, privateKey!!)
 
         val authenticationToken =

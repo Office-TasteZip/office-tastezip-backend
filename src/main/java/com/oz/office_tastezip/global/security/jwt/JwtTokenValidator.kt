@@ -12,7 +12,7 @@ import io.jsonwebtoken.*
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SecurityException
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -30,7 +30,7 @@ class JwtTokenValidator(
 ) : InitializingBean {
 
     lateinit var key: Key
-    private val log = LoggerFactory.getLogger(javaClass)
+    private val log = KotlinLogging.logger {}
 
     override fun afterPropertiesSet() {
         val keyBytes = Decoders.BASE64.decode(secret)
@@ -56,19 +56,19 @@ class JwtTokenValidator(
             serialCodeValidCheck(claimsJws.body.subject, claimsJws)
             true
         } catch (e: SecurityException) {
-            log.info("잘못된 JWT 서명입니다.")
+            log.warn { "잘못된 JWT 서명입니다. message: ${e.message}" }
             false
         } catch (e: MalformedJwtException) {
-            log.info("잘못된 JWT 토큰입니다.")
+            log.warn { "잘못된 JWT 토큰입니다. message: ${e.message}" }
             false
         } catch (e: ExpiredJwtException) {
-            log.info("만료된 JWT 토큰입니다.")
+            log.warn { "만료된 JWT 토큰입니다. message: ${e.message}" }
             false
         } catch (e: UnsupportedJwtException) {
-            log.info("지원되지 않는 JWT 토큰입니다.")
+            log.warn { "지원되지 않는 JWT 토큰입니다. message: ${e.message}" }
             false
         } catch (e: IllegalArgumentException) {
-            log.info("JWT 토큰이 잘못되었습니다.")
+            log.warn { "JWT 토큰이 잘못되었습니다. message: ${e.message}" }
             false
         }
     }
