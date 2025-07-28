@@ -16,6 +16,20 @@ java {
     }
 }
 
+tasks.register<Jar>("customJar") {
+    manifest {
+        attributes["Main-Class"] = "com.oz.office_tastezip.OfficeTasteZipApplicationKt"
+    }
+    archiveFileName.set("app.jar")
+    from(sourceSets.main.get().output)
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath.get()
+            .filter { it.name.endsWith("jar") }
+            .map { zipTree(it) }
+    })
+}
+
 val querydslVersion = "5.1.0"
 
 tasks.withType<Jar> {
@@ -50,7 +64,7 @@ dependencies {
 
     // Logging
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    runtimeOnly("ch.qos.logback:logback-classic:1.4.14")
+//    runtimeOnly("ch.qos.logback:logback-classic:1.4.14")
 
     // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")

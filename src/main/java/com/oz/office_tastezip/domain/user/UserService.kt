@@ -23,11 +23,6 @@ open class UserService(
         userRepository.save(user)
     }
 
-    fun countByEmail(email: String): Boolean {
-        log.info("count by email, target: {}", email)
-        return userRepository.countByEmail(email) == 0
-    }
-
     fun findByUserUUID(id: String): User {
         return userRepository.findByUserUUID(id) ?: throw UserNotFoundException()
     }

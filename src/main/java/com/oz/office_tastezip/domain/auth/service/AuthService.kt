@@ -20,4 +20,9 @@ class AuthService(
     fun selectUser(email: String): User {
         return userRepository.findByEmail(email) ?: throw UserNotFoundException()
     }
+
+    fun countByEmail(email: String): Boolean {
+        log.info("count by email, target: {}", email)
+        return userRepository.countByEmail(email) == 0
+    }
 }
