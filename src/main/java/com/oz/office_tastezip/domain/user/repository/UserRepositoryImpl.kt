@@ -17,7 +17,7 @@ private val log = KotlinLogging.logger {}
 
 @Repository
 @Transactional
-open class UserRepositoryImpl(
+class UserRepositoryImpl(
     private val queryFactory: JPAQueryFactory
 ) : UserRepositoryCustom {
 

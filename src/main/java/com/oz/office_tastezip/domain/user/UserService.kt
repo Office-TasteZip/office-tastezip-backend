@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-open class UserService(
+class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder
 ) {
@@ -17,7 +17,7 @@ open class UserService(
     private val log = KotlinLogging.logger {}
 
     @Transactional
-    open fun register(userInsertRequest: UserRequestDto.UserInsertRequest) {
+    fun register(userInsertRequest: UserRequestDto.UserInsertRequest) {
         val user = User.create(userInsertRequest, passwordEncoder)
         log.info { "Insert user info: $user" }
         userRepository.save(user)
@@ -28,13 +28,13 @@ open class UserService(
     }
 
     @Transactional
-    open fun withdraw(id: String) {
+    fun withdraw(id: String) {
         log.info("withdraw user, id: {}", id)
         userRepository.deleteByUserUUID(id)
     }
 
     @Transactional
-    open fun update(userUpdateRequest: UserRequestDto.UserUpdateRequest) {
+    fun update(userUpdateRequest: UserRequestDto.UserUpdateRequest) {
         log.info("update user info: {}", userUpdateRequest)
         userRepository.updateByUserUUID(userUpdateRequest)
     }

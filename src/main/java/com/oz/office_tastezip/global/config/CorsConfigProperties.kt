@@ -5,6 +5,6 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @ConfigurationProperties(prefix = "cors-config")
-open class CorsConfigProperties {
+class CorsConfigProperties {
     var allowedOriginPattern: List<String> = emptyList()
 }

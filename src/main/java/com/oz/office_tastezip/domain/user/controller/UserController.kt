@@ -44,7 +44,7 @@ class UserController(
         ) { throw RequestFailureException("이메일 인증이 완료되지 않았습니다.") }
 
         userService.register(userInsertRequest)
-        return ResponseSuccess<String>().success("회원 가입 되었습니다.")
+        return ResponseSuccess<String>().success("회원가입 되었습니다.")
     }
 
     @Operation(summary = "내정보 조회")

@@ -24,7 +24,7 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 
 @Configuration
-open class SecurityConfig(
+class SecurityConfig(
     private val jwtTokenValidator: JwtTokenValidator,
     private val jwtAccessDeniedHandler: JwtAccessDeniedHandler,
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
@@ -51,15 +51,15 @@ open class SecurityConfig(
     }
 
     @Bean
-    open fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
-    open fun customAuthenticationProvider(): AuthenticationProvider =
+    fun customAuthenticationProvider(): AuthenticationProvider =
         CustomAuthenticationProvider(passwordEncoder(), customUserDetailService)
 
     @Bean
     @Throws(Exception::class)
-    open fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
         val builder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
         builder.authenticationProvider(customAuthenticationProvider())
         val authenticationManager: AuthenticationManager = builder.build()
@@ -92,7 +92,7 @@ open class SecurityConfig(
     }
 
     @Bean
-    open fun corsConfigurationSource(): CorsConfigurationSource {
+    fun corsConfigurationSource(): CorsConfigurationSource {
         return CorsConfigurationSource {
             CorsConfiguration().apply {
                 allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
