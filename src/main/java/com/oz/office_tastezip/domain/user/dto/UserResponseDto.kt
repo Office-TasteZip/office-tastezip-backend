@@ -11,7 +11,7 @@ data class UserResponseDto(
     val job: String? = null,
     val position: String? = null,
     val joinYear: String? = null,
-    val marketingOptIn: Boolean = false,
+    val marketingAgree: Boolean = false,
     val profileImageUrl: String? = null,
     val lastLoginAt: String? = null,
     val createdAt: String? = null
@@ -25,7 +25,7 @@ data class UserResponseDto(
                 job = user.job.name,
                 position = user.position.name,
                 joinYear = user.joinYear,
-                marketingOptIn = user.marketingOptIn,
+                marketingAgree = user.marketingAgree,
                 profileImageUrl = user.profileImageUrl,
                 lastLoginAt = SEC.format(user.lastLoginAt),
                 createdAt = SEC.format(user.createdAt)

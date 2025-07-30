@@ -51,7 +51,9 @@ class UserRepositoryTest @Autowired constructor(
                 it.role shouldBe UserRole.ROLE_USER
                 it.status shouldBe UserStatus.ACTIVE
                 it.joinYear shouldBe "2025"
-                it.marketingOptIn.shouldBeFalse()
+                it.termsAgree.shouldBeTrue()
+                it.privacyAgree.shouldBeTrue()
+                it.marketingAgree.shouldBeFalse()
                 it.createdAt.shouldNotBeNull()
                 it.updatedAt.shouldNotBeNull()
                 it.deletedAt.shouldBeNull()
@@ -128,7 +130,9 @@ private fun getUserInsertRequest(email: String = "tester-${UUID.randomUUID()}@gm
         "production",
         "senior",
         "2025",
-        false
+        false,
+        privacyAgree = true,
+        termsAgree = true
     )
 }
 

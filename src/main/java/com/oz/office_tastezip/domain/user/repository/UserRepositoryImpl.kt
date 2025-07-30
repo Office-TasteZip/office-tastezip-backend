@@ -54,7 +54,7 @@ class UserRepositoryImpl(
             .set(user.job, UserJob.fromJobName(userUpdateRequest.job))
             .set(user.position, UserPosition.fromPositionName(userUpdateRequest.position))
             .set(user.joinYear, userUpdateRequest.joinYear)
-            .set(user.marketingOptIn, userUpdateRequest.marketingOptIn)
+            .set(user.marketingAgree, userUpdateRequest.marketingAgree)
             .set(user.updatedAt, LocalDateTime.now())
             .where(user.deletedAt.isNull.and(user.id.eq(UUID.fromString(userUpdateRequest.id))))
             .execute()

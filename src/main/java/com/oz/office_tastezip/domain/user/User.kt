@@ -37,8 +37,14 @@ class User(
     @Column(name = "join_year", nullable = false, length = 4)
     val joinYear: String,
 
-    @Column(name = "marketing_opt_in")
-    val marketingOptIn: Boolean,
+    @Column(name = "terms_agree")
+    val termsAgree: Boolean,    // 서비스 이용약관 동의 여부(필수)
+
+    @Column(name = "privacy_agree")
+    val privacyAgree: Boolean,  // 개인정보 수집 및 이용 동의 여부(필수)
+
+    @Column(name = "marketing_agree")
+    val marketingAgree: Boolean,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
@@ -75,7 +81,9 @@ class User(
                 job = UserJob.fromJobName(request.job),
                 position = UserPosition.fromPositionName(request.position),
                 joinYear = request.joinYear,
-                marketingOptIn = request.marketingOptIn,
+                termsAgree = request.termsAgree,
+                privacyAgree = request.privacyAgree,
+                marketingAgree = request.marketingAgree,
                 role = UserRole.ROLE_USER,
                 status = UserStatus.ACTIVE
             )

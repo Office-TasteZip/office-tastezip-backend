@@ -18,7 +18,7 @@ class CustomUserDetails(
     val role: String,
     val status: String,
     val profileImageUrl: String?,
-    val marketingOptIn: Boolean,
+    val marketingAgree: Boolean,
     val lastLoginAt: LocalDateTime?,
     var authorities: Collection<GrantedAuthority> = listOf(SimpleGrantedAuthority(role))
 ) {
@@ -34,7 +34,7 @@ class CustomUserDetails(
         role = user.role.name,
         status = user.status.name,
         profileImageUrl = user.profileImageUrl,
-        marketingOptIn = user.marketingOptIn,
+        marketingAgree = user.marketingAgree,
         lastLoginAt = user.lastLoginAt,
         authorities = listOf(SimpleGrantedAuthority(user.role.name))
     )
