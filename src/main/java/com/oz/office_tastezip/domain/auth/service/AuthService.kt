@@ -31,7 +31,7 @@ class AuthService(
     @Transactional(readOnly = true)
     fun countByEmail(email: String): Boolean {
         log.info { "count by email, target: $email" }
-        return userRepository.countByEmail(email) == 0
+        return userRepository.countByEmail(email) != 0
     }
 
     @Transactional

@@ -197,14 +197,9 @@ class AuthController(
 
         val isEmailRegistered = authService.countByEmail(email)
 
-        if (emailVerificationPurpose == SIGNUP) {
-            if (!isEmailRegistered) {
-                throw DataExistsException(ResponseCode.DUPLICATED_EMAIL)
-            }
-        } else {
-            if (isEmailRegistered) {
-                throw DataNotFoundException("가입된 이메일이 아닙니다.")
-            }
+        when (emailVerificationPurpose) {
+            SIGNUP -> if (isEmailRegistered) throw DataExistsException(ResponseCode.DUPLICATED_EMAIL)
+            RESET_PASSWORD -> if (!isEmailRegistered) throw DataNotFoundException("가입된 이메일이 아닙니다.")
         }
 
         mailService.sendVerificationEmail(email, emailVerificationPurpose, requestUri)
