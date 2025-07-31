@@ -40,8 +40,10 @@ class SecurityConfig(
         )
 
         private val OTZ_WHITE_LIST_URI = arrayOf(
-            "/api/v1/otz/auth/login", "/api/v1/otz/auth/rsa",
-            "/api/v1/otz/users/register", "/api/v1/otz/users/email/verify", "/api/v1/otz/users/email/verify/check"
+            "/api/v1/otz/auth/login", "/api/v1/otz/auth/rsa", "/api/v1/otz/auth/email/verify",
+            "/api/v1/otz/auth/email/verify/check", "/api/v1/otz/auth/reset-password",
+            "/api/v1/otz/auth/reset-password/email/verify", "/api/v1/otz/auth/reset-password/email/verify/check",
+            "/api/v1/otz/users/register",
         )
 
         private val ALLOWED_HEADERS = arrayOf(

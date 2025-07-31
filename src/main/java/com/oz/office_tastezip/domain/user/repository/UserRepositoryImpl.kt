@@ -17,9 +17,7 @@ private val log = KotlinLogging.logger {}
 
 @Repository
 @Transactional
-class UserRepositoryImpl(
-    private val queryFactory: JPAQueryFactory
-) : UserRepositoryCustom {
+class UserRepositoryImpl(private val queryFactory: JPAQueryFactory) : UserRepositoryCustom {
 
     private val user = QUser.user
 
@@ -68,6 +66,16 @@ class UserRepositoryImpl(
         queryFactory.update(user)
             .set(user.lastLoginAt, LocalDateTime.now())
             .where(user.deletedAt.isNull.and(user.id.eq(UUID.fromString(uuid))))
+            .execute()
+    }
+
+    override fun resetPassword(uuid: UUID, passwordHash: String) {
+        log.info { "Reset password, target user uuid is [$uuid], password is [$passwordHash]" }
+
+        queryFactory.update(user)
+            .set(user.passwordUpdatedAt, LocalDateTime.now())
+            .set(user.passwordHash, passwordHash)
+            .where(user.deletedAt.isNull.and(user.id.eq(uuid)))
             .execute()
     }
 }

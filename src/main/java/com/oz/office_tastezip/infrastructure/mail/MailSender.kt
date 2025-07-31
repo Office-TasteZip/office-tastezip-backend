@@ -1,5 +1,6 @@
 package com.oz.office_tastezip.infrastructure.mail
 
+import com.oz.office_tastezip.domain.auth.enums.EmailVerificationPurpose
 import com.oz.office_tastezip.global.exception.RequestFailureException
 import com.oz.office_tastezip.global.util.MailProperties
 import jakarta.mail.internet.InternetAddress
@@ -9,9 +10,9 @@ import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Component
-import java.io.File
 import org.thymeleaf.context.Context
 import org.thymeleaf.spring6.SpringTemplateEngine
+import java.io.File
 
 private val log = KotlinLogging.logger {}
 
@@ -40,9 +41,10 @@ class MailClient(
         }
     }
 
-    fun sendMimeMail(to: String, subject: String, code: String) {
+    fun sendMimeMail(to: String, code: String, purpose: EmailVerificationPurpose) {
+        val subject = purpose.subject
         try {
-            val content = buildVerificationMail(to, code)
+            val content = buildVerificationMail(to, code, purpose)
 
             val message = MimeMessageHelper(mailSender.createMimeMessage(), true, "UTF-8").apply {
                 setFrom(InternetAddress(mailProperties.username, "오피스맛집"))
@@ -86,10 +88,11 @@ class MailClient(
         }
     }
 
-    fun buildVerificationMail(email: String, code: String): String {
+    fun buildVerificationMail(email: String, code: String, purpose: EmailVerificationPurpose): String {
         val context = Context().apply {
             setVariable("userEmail", email)
             setVariable("verificationCode", code)
+            setVariable("purpose", purpose.name)
         }
         return templateEngine.process("email-verification", context)
     }

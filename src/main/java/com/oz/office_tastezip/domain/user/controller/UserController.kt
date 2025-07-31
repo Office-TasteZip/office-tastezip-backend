@@ -1,10 +1,10 @@
 package com.oz.office_tastezip.domain.user.controller
 
+import com.oz.office_tastezip.domain.auth.enums.EmailVerificationPurpose.SIGNUP
 import com.oz.office_tastezip.domain.user.UserService
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto.UserInsertRequest
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto.UserUpdateRequest
 import com.oz.office_tastezip.domain.user.dto.UserResponseDto
-import com.oz.office_tastezip.global.constant.AuthConstants.RedisKey.EMAIL_VERIFY_KEY_PREFIX
 import com.oz.office_tastezip.global.exception.RequestFailureException
 import com.oz.office_tastezip.global.response.Response
 import com.oz.office_tastezip.global.response.ResponseSuccess
@@ -40,7 +40,7 @@ class UserController(
         }
 
         require(
-            redisUtils.get("$EMAIL_VERIFY_KEY_PREFIX${userInsertRequest.email}") as? String == "complete"
+            redisUtils.get("${SIGNUP.verifyKeyPrefix}${userInsertRequest.email}") as? String == "complete"
         ) { throw RequestFailureException("이메일 인증이 완료되지 않았습니다.") }
 
         userService.register(userInsertRequest)
