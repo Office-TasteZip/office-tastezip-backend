@@ -1,4 +1,4 @@
-package com.oz.office_tastezip.global.util
+package com.oz.office_tastezip.infrastructure.s3
 
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
@@ -9,7 +9,7 @@ import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
-import java.util.*
+import java.util.UUID
 
 @Component
 @Transactional

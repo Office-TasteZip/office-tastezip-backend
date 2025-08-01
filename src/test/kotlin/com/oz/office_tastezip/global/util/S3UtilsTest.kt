@@ -1,5 +1,6 @@
 package com.oz.office_tastezip.global.util
 
+import com.oz.office_tastezip.infrastructure.s3.S3Utils
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldStartWith

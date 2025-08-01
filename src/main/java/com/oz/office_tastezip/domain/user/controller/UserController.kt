@@ -10,7 +10,7 @@ import com.oz.office_tastezip.global.response.Response
 import com.oz.office_tastezip.global.response.ResponseSuccess
 import com.oz.office_tastezip.global.util.FileValidationUtils
 import com.oz.office_tastezip.global.util.RedisUtils
-import com.oz.office_tastezip.global.util.S3Utils
+import com.oz.office_tastezip.infrastructure.s3.S3Utils
 import com.oz.office_tastezip.global.util.SecurityUtils.getAuthenticatedUserDetail
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag

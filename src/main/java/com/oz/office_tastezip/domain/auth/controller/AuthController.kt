@@ -23,7 +23,6 @@ import com.oz.office_tastezip.global.security.dto.TokenDto.TokenResponse
 import com.oz.office_tastezip.global.security.jwt.JwtTokenProvider
 import com.oz.office_tastezip.global.util.RSAUtils
 import com.oz.office_tastezip.global.util.RedisUtils
-import com.oz.office_tastezip.infrastructure.mail.MailClient
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
@@ -44,7 +43,6 @@ private val log = KotlinLogging.logger {}
 @RequestMapping("/api/v1/otz/auth")
 class AuthController(
     private val redisUtils: RedisUtils,
-    private val mailClient: MailClient,
     private val authService: AuthService,
     private val mailService: MailService,
     private val objectMapper: ObjectMapper,
