@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import java.util.*
 
@@ -37,10 +38,12 @@ class S3Utils(
 
     fun delete(key: String) {
         log.info { "Deleted file key: $key" }
-
-        s3Client.deleteObject { builder ->
-            builder.bucket(bucket)
+        s3Client.deleteObject(
+            DeleteObjectRequest.builder()
+                .bucket(bucket)
                 .key(key)
-        }
+                .build()
+        )
     }
+
 }
