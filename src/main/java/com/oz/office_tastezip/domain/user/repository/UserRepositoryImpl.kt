@@ -78,4 +78,14 @@ class UserRepositoryImpl(private val queryFactory: JPAQueryFactory) : UserReposi
             .where(user.deletedAt.isNull.and(user.id.eq(uuid)))
             .execute()
     }
+
+    override fun updateProfileImage(uuid: UUID, imagePath: String?) {
+        log.info { "Update profile image by user uuid: $uuid"}
+
+        queryFactory.update(user)
+            .set(user.profileImageUrl, imagePath)
+            .set(user.updatedAt, LocalDateTime.now())
+            .where(user.deletedAt.isNull.and(user.id.eq(uuid)))
+            .execute()
+    }
 }

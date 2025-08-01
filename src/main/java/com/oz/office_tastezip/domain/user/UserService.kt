@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 @Transactional
@@ -39,4 +40,9 @@ class UserService(
         log.info { "update user info: $userUpdateRequest" }
         userRepository.updateByUserUUID(userUpdateRequest)
     }
+
+    fun updateProfileImage(userId: UUID, imageKey: String?) {
+        userRepository.updateProfileImage(userId, imageKey)
+    }
+
 }

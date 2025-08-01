@@ -11,4 +11,5 @@ interface UserRepositoryCustom {
     fun updateByUserUUID(userUpdateRequest: UserRequestDto.UserUpdateRequest)
     fun updateLastLoginAtByUserUUID(uuid: String)
     fun resetPassword(uuid : UUID, passwordHash: String)
+    fun updateProfileImage(uuid: UUID, imagePath: String?)
 }

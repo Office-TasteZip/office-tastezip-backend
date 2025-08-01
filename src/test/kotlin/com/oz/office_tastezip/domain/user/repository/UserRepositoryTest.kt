@@ -111,12 +111,7 @@ class UserRepositoryTest @Autowired constructor(
                 it.joinYear shouldBe updateRequest.joinYear
             }
         }
-
-        test("프로필 이미지 수정 테스트") {
-            // TODO
-        }
     }
-
 }) {
     override fun extensions() = listOf(SpringExtension)
 }

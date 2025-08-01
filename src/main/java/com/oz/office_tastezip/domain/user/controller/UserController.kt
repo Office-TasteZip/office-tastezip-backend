@@ -8,7 +8,9 @@ import com.oz.office_tastezip.domain.user.dto.UserResponseDto
 import com.oz.office_tastezip.global.exception.RequestFailureException
 import com.oz.office_tastezip.global.response.Response
 import com.oz.office_tastezip.global.response.ResponseSuccess
+import com.oz.office_tastezip.global.util.FileValidationUtils
 import com.oz.office_tastezip.global.util.RedisUtils
+import com.oz.office_tastezip.global.util.S3Utils
 import com.oz.office_tastezip.global.util.SecurityUtils.getAuthenticatedUserDetail
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -17,6 +19,8 @@ import jakarta.validation.Valid
 import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
+import java.util.*
 
 private val log = KotlinLogging.logger {}
 
@@ -24,8 +28,9 @@ private val log = KotlinLogging.logger {}
 @RestController
 @RequestMapping("/api/v1/otz/users")
 class UserController(
-    private val userService: UserService,
-    private val redisUtils: RedisUtils
+    private val s3Utils: S3Utils,
+    private val redisUtils: RedisUtils,
+    private val userService: UserService
 ) {
 
     @Operation(summary = "회원 가입")
@@ -76,4 +81,50 @@ class UserController(
         userService.withdraw(userDetails.uuid)
         return ResponseSuccess<String>().success("회원 탈퇴 되었습니다.")
     }
+
+    @Operation(summary = "사용자 프로필 사진 등록(수정)")
+    @PutMapping("/update/profile-image")
+    fun updateProfileImage(
+        @RequestParam multipartFile: MultipartFile,
+        httpServletRequest: HttpServletRequest
+    ): ResponseEntity<Response.Body<String>> {
+        val userDetails = getAuthenticatedUserDetail()
+        val userId = UUID.fromString(userDetails.uuid)
+        val currentImagePath = userDetails.profileImageUrl
+
+        log.info { "${httpServletRequest.remoteAddr}|Update profile image, user uuid: $userId, email: ${userDetails.email}" }
+
+        FileValidationUtils.validateImageFile(multipartFile)
+
+        val newKey = s3Utils.upload(multipartFile)
+
+        deleteIfExists(currentImagePath)
+        userService.updateProfileImage(userId, newKey)
+
+        return ResponseSuccess<String>().success("프로필 이미지가 수정 되었습니다.")
+    }
+
+
+    @Operation(summary = "사용자 프로필 사진 삭제")
+    @DeleteMapping("/update/profile-image")
+    fun deleteProfileImage(httpServletRequest: HttpServletRequest): ResponseEntity<Response.Body<String>> {
+        val userDetails = getAuthenticatedUserDetail()
+        val userId = UUID.fromString(userDetails.uuid)
+        val currentImagePath = userDetails.profileImageUrl
+
+        log.info { "${httpServletRequest.remoteAddr}|Delete profile image, user uuid: $userId, email: ${userDetails.email}" }
+
+        deleteIfExists(currentImagePath)
+        userService.updateProfileImage(userId, null)
+
+        return ResponseSuccess<String>().success("프로필 이미지가 삭제 되었습니다.")
+    }
+
+    private fun deleteIfExists(path: String?) {
+        path?.takeIf { it.isNotBlank() }?.let {
+            runCatching { s3Utils.delete(it) }
+                .onFailure { e -> log.warn("기존 이미지 삭제 실패: $e") }
+        }
+    }
+
 }
