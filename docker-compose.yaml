@@ -29,3 +29,20 @@ services:
     ports:
       - "6379:6379"
     restart: always
+
+  minio:
+    container_name: minio_local
+    image: quay.io/minio/minio
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # MinIO Console
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    restart: always
+
+volumes:
+  minio_data:

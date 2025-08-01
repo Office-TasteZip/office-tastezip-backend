@@ -71,6 +71,8 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
+    implementation("software.amazon.awssdk:s3:2.32.11")
+
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
 

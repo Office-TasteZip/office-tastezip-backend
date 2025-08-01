@@ -43,6 +43,12 @@ jwt:
   access-token-expiration: 86400
   refresh-token-expiration: 1209600
 
+s3:
+  url: http://localhost:9000 # AWS S3 EndPoint
+  access-key: admin
+  secret-key: admin123
+  bucket: officezip
+
 jasypt:
   password: officezip.encrypt
   encryptor:
