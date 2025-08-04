@@ -1,5 +1,6 @@
 package com.oz.office_tastezip.domain.organization
 
+import com.oz.office_tastezip.domain.organization.dto.SearchOrganizationNameDto
 import com.oz.office_tastezip.domain.organization.repository.OrganizationRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,7 +20,7 @@ class OrganizationService(
         return organizationRepository.findById(organization.id).orElse(null)
     }
 
-    fun findOrganizationByName(name: String): List<String> {
+    fun findOrganizationByName(name: String): List<SearchOrganizationNameDto> {
         return organizationRepository.findOrganizationByName(name)
     }
 }

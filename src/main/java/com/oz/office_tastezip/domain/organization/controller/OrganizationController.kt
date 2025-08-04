@@ -1,6 +1,7 @@
 package com.oz.office_tastezip.domain.organization.controller;
 
 import com.oz.office_tastezip.domain.organization.OrganizationService
+import com.oz.office_tastezip.domain.organization.dto.SearchOrganizationNameDto
 import com.oz.office_tastezip.global.response.Response
 import com.oz.office_tastezip.global.response.ResponseSuccess
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,9 +28,10 @@ class OrganizationController(
     fun searchOrganizationName(
         @RequestParam(name = "name") name: String,
         httpServletRequest: HttpServletRequest
-    ): ResponseEntity<Response.Body<List<String>>> {
+    ): ResponseEntity<Response.Body<List<SearchOrganizationNameDto>>> {
         log.info { "${httpServletRequest.remoteAddr}|search organization name: $name" }
-        return ResponseSuccess<List<String>>().success(organizationService.findOrganizationByName(name))
+        val response = organizationService.findOrganizationByName(name)
+        return ResponseSuccess<List<SearchOrganizationNameDto>>().success(response)
     }
 
 

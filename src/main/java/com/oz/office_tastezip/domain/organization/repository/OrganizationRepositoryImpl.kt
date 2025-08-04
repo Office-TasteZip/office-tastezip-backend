@@ -1,6 +1,8 @@
 package com.oz.office_tastezip.domain.organization.repository
 
 import com.oz.office_tastezip.domain.organization.QOrganization
+import com.oz.office_tastezip.domain.organization.dto.SearchOrganizationNameDto
+import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -12,9 +14,15 @@ class OrganizationRepositoryImpl(private val queryFactory: JPAQueryFactory) : Or
     private val organization = QOrganization.organization
 
     @Transactional(readOnly = true)
-    override fun findOrganizationByName(name: String): List<String> {
+    override fun findOrganizationByName(name: String): List<SearchOrganizationNameDto> {
         return queryFactory
-            .select(organization.organizationName)
+            .select(
+                Projections.constructor(
+                    SearchOrganizationNameDto::class.java,
+                    organization.id,
+                    organization.organizationName.`as`("name")
+                )
+            )
             .from(organization)
             .where(
                 organization.deletedAt.isNull,
