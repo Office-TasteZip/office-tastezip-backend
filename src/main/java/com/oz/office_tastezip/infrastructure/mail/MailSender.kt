@@ -14,14 +14,14 @@ import org.thymeleaf.context.Context
 import org.thymeleaf.spring6.SpringTemplateEngine
 import java.io.File
 
-private val log = KotlinLogging.logger {}
-
 @Component
 class MailClient(
     private val mailSender: JavaMailSender,
     private val mailProperties: MailProperties,
     private val templateEngine: SpringTemplateEngine
 ) {
+
+    private val log = KotlinLogging.logger {}
 
     fun sendSimpleMail(to: String, subject: String, content: String) {
         try {

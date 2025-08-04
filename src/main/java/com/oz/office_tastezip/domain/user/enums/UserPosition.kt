@@ -18,7 +18,7 @@ enum class UserPosition(val displayName: String) {
     companion object {
         fun fromPositionName(position: String): UserPosition {
             return entries.firstOrNull { it.name.equals(position, ignoreCase = true) }
-                ?: throw DataNotFoundException("[$position]은 존재하지 않는 직급입니다.")
+                ?: throw DataNotFoundException("[$position]은(는) 존재하지 않는 직급입니다.")
         }
     }
 }

@@ -7,6 +7,7 @@ import com.oz.office_tastezip.domain.auth.enums.EmailVerificationPurpose.RESET_P
 import com.oz.office_tastezip.domain.auth.enums.EmailVerificationPurpose.SIGNUP
 import com.oz.office_tastezip.domain.auth.service.AuthService
 import com.oz.office_tastezip.domain.auth.service.MailService
+import com.oz.office_tastezip.domain.domainrule.EmailDomainRuleService
 import com.oz.office_tastezip.domain.user.dto.EmailVerificationCheckDto
 import com.oz.office_tastezip.domain.user.dto.EmailVerificationRequestDto
 import com.oz.office_tastezip.global.constant.AuthConstants.RedisKey.JWT_KEY_PREFIX
@@ -33,8 +34,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 
-private val log = KotlinLogging.logger {}
-
 @Tag(name = "인증 컨트롤러", description = "AUTH CONTROLLER")
 @RestController
 @RequestMapping("/api/v1/otz/auth")
@@ -44,8 +43,10 @@ class AuthController(
     private val mailService: MailService,
     private val objectMapper: ObjectMapper,
     private val jwtTokenProvider: JwtTokenProvider,
+    private val emailDomainRuleService: EmailDomainRuleService,
     private val authenticationManagerBuilder: AuthenticationManagerBuilder
 ) {
+    private val log = KotlinLogging.logger {}
 
     private var privateKey: String? = null
 
@@ -132,10 +133,11 @@ class AuthController(
         @RequestBody @Valid emailVerificationRequestDto: EmailVerificationRequestDto,
         request: HttpServletRequest
     ): ResponseEntity<Response.Body<String>> {
-        // TODO Email BlackList Check
+        val email = emailVerificationRequestDto.email
+        emailDomainRuleService.checkDomainAvailable(email.substringAfter("@"))
 
         authService.checkEmailForSendMail(request, SIGNUP, emailVerificationRequestDto)
-        mailService.sendVerificationEmail(emailVerificationRequestDto.email, SIGNUP, request.requestURI)
+        mailService.sendVerificationEmail(email, SIGNUP, request.requestURI)
         return ResponseSuccess<String>().success("인증번호가 전송되었습니다. 5분 이내에 인증을 완료하여 주십시오.")
     }
 

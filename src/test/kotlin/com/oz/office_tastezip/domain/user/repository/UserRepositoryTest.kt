@@ -145,5 +145,5 @@ private fun getUserUpdateRequest(id: String?): UserUpdateRequest {
 }
 
 private fun getOrganization() :  Organization {
-    return Organization("gmail.com", "구글")
+    return Organization("gmail.com", "google")
 }

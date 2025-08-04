@@ -25,7 +25,7 @@ enum class UserJob(val displayName: String) {
     companion object {
         fun fromJobName(job: String): UserJob {
             return entries.firstOrNull { it.name.equals(job, true) }
-                ?: throw DataNotFoundException("[$job]은 존재하지 않는 직업입니다.")
+                ?: throw DataNotFoundException("[$job]은(는) 존재하지 않는 직업입니다.")
         }
     }
 }
