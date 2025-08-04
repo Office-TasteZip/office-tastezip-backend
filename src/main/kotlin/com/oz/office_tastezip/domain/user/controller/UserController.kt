@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
-private val log = KotlinLogging.logger {}
-
 @Tag(name = "사용자 관련 컨트롤러", description = "USER CONTROLLER")
 @RestController
 @RequestMapping("/api/v1/otz/users")
@@ -34,6 +32,8 @@ class UserController(
     private val userService: UserService,
     private val organizationService: OrganizationService
 ) {
+
+    private val log = KotlinLogging.logger {}
 
     @Operation(summary = "회원 가입")
     @PostMapping("/register")
