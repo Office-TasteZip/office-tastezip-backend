@@ -132,6 +132,8 @@ class AuthController(
         @RequestBody @Valid emailVerificationRequestDto: EmailVerificationRequestDto,
         request: HttpServletRequest
     ): ResponseEntity<Response.Body<String>> {
+        // TODO Email BlackList Check
+
         authService.checkEmailForSendMail(request, SIGNUP, emailVerificationRequestDto)
         mailService.sendVerificationEmail(emailVerificationRequestDto.email, SIGNUP, request.requestURI)
         return ResponseSuccess<String>().success("인증번호가 전송되었습니다. 5분 이내에 인증을 완료하여 주십시오.")

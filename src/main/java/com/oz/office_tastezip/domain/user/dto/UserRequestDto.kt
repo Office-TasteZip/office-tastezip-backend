@@ -34,6 +34,9 @@ object UserRequestDto {
         @field:Pattern(regexp = "^[0-9]{4}$", message = "입사년도는 4자리 숫자여야 합니다.")
         val joinYear: String,
 
+        @field:NotBlank(message = "기업명은 필수입니다.")
+        val organizationName: String,
+
         val marketingAgree: Boolean = false,
         val privacyAgree: Boolean = false,  // 개인정보 수집 및 이용 동의 여부(필수)
         val termsAgree: Boolean = false,    // 서비스 이용약관 동의 여부(필수)

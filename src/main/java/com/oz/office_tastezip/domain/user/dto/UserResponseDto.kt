@@ -2,7 +2,7 @@ package com.oz.office_tastezip.domain.user.dto
 
 import com.oz.office_tastezip.domain.user.User
 import com.oz.office_tastezip.global.constant.TimeFormat.SEC
-import java.util.UUID
+import java.util.*
 
 data class UserResponseDto(
     val id: UUID? = null,
@@ -14,10 +14,11 @@ data class UserResponseDto(
     val marketingAgree: Boolean = false,
     val profileImageUrl: String? = null,
     val lastLoginAt: String? = null,
-    val createdAt: String? = null
+    val createdAt: String? = null,
+    val organizationName: String? = null
 ) {
     companion object {
-        fun of(user: User): UserResponseDto {
+        fun of(user: User, organizationName: String): UserResponseDto {
             return UserResponseDto(
                 id = user.id,
                 email = user.email,
@@ -28,7 +29,8 @@ data class UserResponseDto(
                 marketingAgree = user.marketingAgree,
                 profileImageUrl = user.profileImageUrl,
                 lastLoginAt = SEC.format(user.lastLoginAt),
-                createdAt = SEC.format(user.createdAt)
+                createdAt = SEC.format(user.createdAt),
+                organizationName = organizationName
             )
         }
     }

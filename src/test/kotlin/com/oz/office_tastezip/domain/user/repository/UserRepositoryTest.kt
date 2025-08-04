@@ -2,6 +2,7 @@ package com.oz.office_tastezip.domain.user.repository
 
 import com.oz.office_tastezip.domain.auth.enums.UserRole
 import com.oz.office_tastezip.domain.auth.enums.UserStatus
+import com.oz.office_tastezip.domain.organization.Organization
 import com.oz.office_tastezip.domain.user.User
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto.UserUpdateRequest
@@ -38,7 +39,7 @@ class UserRepositoryTest @Autowired constructor(
     context("회원 가입") {
         test("사용자 저장 테스트") {
             val randomEmail = "tester-${UUID.randomUUID()}@gmail.com"
-            val user = User.create(getUserInsertRequest(randomEmail), passwordEncoder)
+            val user = User.create(getUserInsertRequest(randomEmail), passwordEncoder, getOrganization())
             val saved = userRepository.save(user)
             val result = userRepository.findById(saved.id).orElse(null)
 
@@ -63,7 +64,7 @@ class UserRepositoryTest @Autowired constructor(
 
     context("정보 조회") {
         test("사용자 정보(내정보) 조회 테스트") {
-            val user = User.create(getUserInsertRequest(), passwordEncoder)
+            val user = User.create(getUserInsertRequest(), passwordEncoder, getOrganization())
             val saved = userRepository.save(user)
 
             val found = userRepository.findByUserUUID(saved.id.toString())
@@ -79,7 +80,7 @@ class UserRepositoryTest @Autowired constructor(
 
     context("회원 탈퇴") {
         test("회원 탈퇴 테스트") {
-            val user = User.create(getUserInsertRequest(), passwordEncoder)
+            val user = User.create(getUserInsertRequest(), passwordEncoder, getOrganization())
             userRepository.save(user)
             userRepository.deleteByUserUUID(user.id.toString())
             em.clear()
@@ -95,7 +96,7 @@ class UserRepositoryTest @Autowired constructor(
 
     context("정보 수정") {
         test("사용자 수정 테스트") {
-            val user = User.create(getUserInsertRequest(), passwordEncoder)
+            val user = User.create(getUserInsertRequest(), passwordEncoder, getOrganization())
             userRepository.save(user)
 
             val updateRequest = getUserUpdateRequest(user.id.toString())
@@ -125,6 +126,7 @@ private fun getUserInsertRequest(email: String = "tester-${UUID.randomUUID()}@gm
         "production",
         "senior",
         "2025",
+        organizationName = "",
         false,
         privacyAgree = true,
         termsAgree = true
@@ -140,4 +142,8 @@ private fun getUserUpdateRequest(id: String?): UserUpdateRequest {
         "2024",
         false
     )
+}
+
+private fun getOrganization() :  Organization {
+    return Organization("gmail.com", "구글")
 }

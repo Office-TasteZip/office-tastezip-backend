@@ -1,6 +1,7 @@
 package com.oz.office_tastezip.domain.user.controller
 
 import com.oz.office_tastezip.domain.auth.enums.EmailVerificationPurpose.SIGNUP
+import com.oz.office_tastezip.domain.organization.OrganizationService
 import com.oz.office_tastezip.domain.user.UserService
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto.UserInsertRequest
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto.UserUpdateRequest
@@ -10,8 +11,8 @@ import com.oz.office_tastezip.global.response.Response
 import com.oz.office_tastezip.global.response.ResponseSuccess
 import com.oz.office_tastezip.global.util.FileValidationUtils
 import com.oz.office_tastezip.global.util.RedisUtils
-import com.oz.office_tastezip.infrastructure.s3.S3Utils
 import com.oz.office_tastezip.global.util.SecurityUtils.getAuthenticatedUserDetail
+import com.oz.office_tastezip.infrastructure.s3.S3Utils
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
@@ -30,7 +31,8 @@ private val log = KotlinLogging.logger {}
 class UserController(
     private val s3Utils: S3Utils,
     private val redisUtils: RedisUtils,
-    private val userService: UserService
+    private val userService: UserService,
+    private val organizationService: OrganizationService
 ) {
 
     @Operation(summary = "회원 가입")
@@ -44,11 +46,14 @@ class UserController(
             throw RequestFailureException("비밀번호와 비밀번호 확인이 일치하지 않습니다.")
         }
 
+        val email = userInsertRequest.email
         require(
-            redisUtils.get("${SIGNUP.verifyKeyPrefix}${userInsertRequest.email}") as? String == "complete"
+            redisUtils.get("${SIGNUP.verifyKeyPrefix}$email") as? String == "complete"
         ) { throw RequestFailureException("이메일 인증이 완료되지 않았습니다.") }
 
-        userService.register(userInsertRequest)
+        val organization =
+            organizationService.findOrCreateOrganization(email.split("@")[1], userInsertRequest.organizationName)
+        userService.register(userInsertRequest, organization)
         return ResponseSuccess<String>().success("회원가입 되었습니다.")
     }
 
@@ -58,7 +63,14 @@ class UserController(
         val userDetails = getAuthenticatedUserDetail()
         val uuid = userDetails.uuid
         log.info { "${httpServletRequest.remoteAddr}|Select my-info, user uuid: $uuid, email: ${userDetails.email}" }
-        return ResponseSuccess<UserResponseDto>().success(UserResponseDto.of(userService.findByUserUUID(uuid)))
+
+        val user = userService.findByUserUUID(uuid)
+        return ResponseSuccess<UserResponseDto>().success(
+            UserResponseDto.of(
+                user,
+                organizationService.findOrganization(user.organization).organizationName
+            )
+        )
     }
 
     @Operation(summary = "사용자 정보 수정")

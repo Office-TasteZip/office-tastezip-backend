@@ -1,5 +1,6 @@
 package com.oz.office_tastezip.domain.user
 
+import com.oz.office_tastezip.domain.organization.Organization
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto
 import com.oz.office_tastezip.domain.user.repository.UserRepository
 import com.oz.office_tastezip.global.exception.UserNotFoundException
@@ -8,7 +9,7 @@ import mu.KotlinLogging
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import java.util.*
 
 @Service
 @Transactional
@@ -19,8 +20,8 @@ class UserService(
 
     private val log = KotlinLogging.logger {}
 
-    fun register(userInsertRequest: UserRequestDto.UserInsertRequest) {
-        val user = User.create(userInsertRequest, passwordEncoder)
+    fun register(userInsertRequest: UserRequestDto.UserInsertRequest, organization: Organization) {
+        val user = User.create(userInsertRequest, passwordEncoder, organization)
         log.info { "Insert user info: $user" }
         userRepository.save(user)
     }

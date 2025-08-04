@@ -3,6 +3,7 @@ package com.oz.office_tastezip.domain.user
 import com.oz.office_tastezip.domain.BaseEntity
 import com.oz.office_tastezip.domain.auth.enums.UserRole
 import com.oz.office_tastezip.domain.auth.enums.UserStatus
+import com.oz.office_tastezip.domain.organization.Organization
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto.UserInsertRequest
 import com.oz.office_tastezip.domain.user.enums.UserJob
 import com.oz.office_tastezip.domain.user.enums.UserPosition
@@ -67,12 +68,16 @@ class User(
     val loginFailCount: Int = 0,
 
     @Column(name = "profile_image_url", columnDefinition = "TEXT")
-    val profileImageUrl: String? = null
+    val profileImageUrl: String? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    var organization: Organization
 
 ) : BaseEntity() {
 
     companion object {
-        fun create(request: UserInsertRequest, passwordEncoder: PasswordEncoder): User {
+        fun create(request: UserInsertRequest, passwordEncoder: PasswordEncoder, organization: Organization): User {
             return User(
                 email = request.email,
                 passwordHash = passwordEncoder.encode(request.password),
@@ -85,7 +90,8 @@ class User(
                 privacyAgree = request.privacyAgree,
                 marketingAgree = request.marketingAgree,
                 role = UserRole.ROLE_USER,
-                status = UserStatus.ACTIVE
+                status = UserStatus.ACTIVE,
+                organization = organization
             )
         }
     }
