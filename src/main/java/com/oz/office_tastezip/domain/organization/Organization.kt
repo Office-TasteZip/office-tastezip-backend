@@ -15,6 +15,4 @@ class Organization(
     @Column(name = "organization_name", nullable = false, length = 100)
     val organizationName: String,
 
-    ) : BaseEntity() {
-
-}
+    ) : BaseEntity()

@@ -12,7 +12,7 @@ import jakarta.persistence.Table
 @Table(name = "TBL_OTZ_EMAIL_DOMAIN_RULE")
 class EmailDomainRule (
 
-    @Column(name = "domain", nullable = false)
+    @Column(name = "domain", nullable = false, unique = true)
     val domain: String,
 
     @Enumerated(EnumType.STRING)

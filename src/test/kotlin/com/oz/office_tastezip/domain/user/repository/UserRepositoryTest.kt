@@ -3,6 +3,7 @@ package com.oz.office_tastezip.domain.user.repository
 import com.oz.office_tastezip.domain.auth.enums.UserRole
 import com.oz.office_tastezip.domain.auth.enums.UserStatus
 import com.oz.office_tastezip.domain.organization.Organization
+import com.oz.office_tastezip.domain.organization.repository.OrganizationRepository
 import com.oz.office_tastezip.domain.user.User
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto
 import com.oz.office_tastezip.domain.user.dto.UserRequestDto.UserUpdateRequest
@@ -30,6 +31,7 @@ import java.util.*
 @SpringBootTest
 class UserRepositoryTest @Autowired constructor(
     private val userRepository: UserRepository,
+    private val organizationRepository: OrganizationRepository,
     private val passwordEncoder: PasswordEncoder,
     private val em: EntityManager,
 ) : FunSpec({
@@ -39,7 +41,8 @@ class UserRepositoryTest @Autowired constructor(
     context("회원 가입") {
         test("사용자 저장 테스트") {
             val randomEmail = "tester-${UUID.randomUUID()}@gmail.com"
-            val user = User.create(getUserInsertRequest(randomEmail), passwordEncoder, getOrganization())
+            val org = organizationRepository.save(getOrganization())
+            val user = User.create(getUserInsertRequest(randomEmail), passwordEncoder, org)
             val saved = userRepository.save(user)
             val result = userRepository.findById(saved.id).orElse(null)
 
@@ -64,7 +67,8 @@ class UserRepositoryTest @Autowired constructor(
 
     context("정보 조회") {
         test("사용자 정보(내정보) 조회 테스트") {
-            val user = User.create(getUserInsertRequest(), passwordEncoder, getOrganization())
+            val org = organizationRepository.save(getOrganization())
+            val user = User.create(getUserInsertRequest(), passwordEncoder, org)
             val saved = userRepository.save(user)
 
             val found = userRepository.findByUserUUID(saved.id.toString())
@@ -80,7 +84,8 @@ class UserRepositoryTest @Autowired constructor(
 
     context("회원 탈퇴") {
         test("회원 탈퇴 테스트") {
-            val user = User.create(getUserInsertRequest(), passwordEncoder, getOrganization())
+            val org = organizationRepository.save(getOrganization())
+            val user = User.create(getUserInsertRequest(), passwordEncoder, org)
             userRepository.save(user)
             userRepository.deleteByUserUUID(user.id.toString())
             em.clear()
@@ -96,7 +101,8 @@ class UserRepositoryTest @Autowired constructor(
 
     context("정보 수정") {
         test("사용자 수정 테스트") {
-            val user = User.create(getUserInsertRequest(), passwordEncoder, getOrganization())
+            val org = organizationRepository.save(getOrganization())
+            val user = User.create(getUserInsertRequest(), passwordEncoder, org)
             userRepository.save(user)
 
             val updateRequest = getUserUpdateRequest(user.id.toString())
@@ -144,6 +150,6 @@ private fun getUserUpdateRequest(id: String?): UserUpdateRequest {
     )
 }
 
-private fun getOrganization() :  Organization {
-    return Organization("gmail.com", "google")
+private fun getOrganization(): Organization {
+    return Organization("tester.com", "tester")
 }
