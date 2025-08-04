@@ -43,6 +43,7 @@ class SecurityConfig(
             "/api/v1/otz/auth/login", "/api/v1/otz/auth/rsa", "/api/v1/otz/auth/email/verify",
             "/api/v1/otz/auth/email/verify/check", "/api/v1/otz/auth/reset-password",
             "/api/v1/otz/auth/reset-password/email/verify", "/api/v1/otz/users/register",
+            "/api/v1/otz/organizations/name-search"
         )
 
         private val ALLOWED_HEADERS = arrayOf(

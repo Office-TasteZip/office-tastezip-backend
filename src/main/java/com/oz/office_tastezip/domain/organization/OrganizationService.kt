@@ -19,4 +19,7 @@ class OrganizationService(
         return organizationRepository.findById(organization.id).orElse(null)
     }
 
+    fun findOrganizationByName(name: String): List<String> {
+        return organizationRepository.findOrganizationByName(name)
+    }
 }

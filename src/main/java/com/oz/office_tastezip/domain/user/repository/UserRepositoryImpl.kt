@@ -13,11 +13,11 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.UUID
 
-private val log = KotlinLogging.logger {}
-
 @Repository
 @Transactional
 class UserRepositoryImpl(private val queryFactory: JPAQueryFactory) : UserRepositoryCustom {
+
+    private val log = KotlinLogging.logger {}
 
     private val user = QUser.user
 

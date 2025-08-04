@@ -4,6 +4,6 @@ import com.oz.office_tastezip.domain.organization.Organization
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
-interface OrganizationRepository : JpaRepository<Organization, UUID> {
+interface OrganizationRepository : JpaRepository<Organization, UUID>, OrganizationRepositoryCustom {
     fun findByDomain(domain: String): Organization?
 }
