@@ -51,8 +51,11 @@ class UserController(
             redisUtils.get("${SIGNUP.verifyKeyPrefix}$email") as? String == "complete"
         ) { throw RequestFailureException("이메일 인증이 완료되지 않았습니다.") }
 
-        val organization =
-            organizationService.findOrCreateOrganization(email.split("@")[1], userInsertRequest.organizationName)
+        val organization = organizationService.findOrCreateOrganization(
+            email.substringAfter("@"),
+            userInsertRequest.organizationName
+        )
+
         userService.register(userInsertRequest, organization)
         return ResponseSuccess<String>().success("회원가입 되었습니다.")
     }
