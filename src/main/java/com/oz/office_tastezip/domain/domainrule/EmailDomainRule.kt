@@ -2,15 +2,11 @@ package com.oz.office_tastezip.domain.domainrule
 
 import com.oz.office_tastezip.domain.BaseEntity
 import com.oz.office_tastezip.domain.domainrule.enums.DomainType
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "TBL_OTZ_EMAIL_DOMAIN_RULE")
-class EmailDomainRule (
+class EmailDomainRule(
 
     @Column(name = "domain", nullable = false, unique = true)
     val domain: String,
@@ -24,6 +20,6 @@ class EmailDomainRule (
 
     @Column(name = "memo", columnDefinition = "TEXT")
     val memo: String? = null
-) : BaseEntity() {
-}
+
+) : BaseEntity()
 
