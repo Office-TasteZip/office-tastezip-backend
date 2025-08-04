@@ -9,6 +9,9 @@ data class ResetPasswordDto(
     @field:Email(message = "이메일 형식이 아닙니다.")
     val email: String,
 
+    @field:NotBlank(message = "인증 코드는 필수 입력값입니다.")
+    val code: String,
+
     @field:NotBlank(message = "비밀번호는 필수 입력값입니다.")
     @field:Size(min = 8, max = 20, message = "비밀번호는 8자 이상 20자 이하로 입력해주세요.")
     val password: String,

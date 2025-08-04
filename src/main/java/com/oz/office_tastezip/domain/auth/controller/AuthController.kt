@@ -3,7 +3,6 @@ package com.oz.office_tastezip.domain.auth.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.oz.office_tastezip.domain.auth.dto.LoginDto
 import com.oz.office_tastezip.domain.auth.dto.ResetPasswordDto
-import com.oz.office_tastezip.domain.auth.enums.EmailVerificationPurpose
 import com.oz.office_tastezip.domain.auth.enums.EmailVerificationPurpose.RESET_PASSWORD
 import com.oz.office_tastezip.domain.auth.enums.EmailVerificationPurpose.SIGNUP
 import com.oz.office_tastezip.domain.auth.service.AuthService
@@ -11,7 +10,6 @@ import com.oz.office_tastezip.domain.auth.service.MailService
 import com.oz.office_tastezip.domain.user.dto.EmailVerificationCheckDto
 import com.oz.office_tastezip.domain.user.dto.EmailVerificationRequestDto
 import com.oz.office_tastezip.global.constant.AuthConstants.RedisKey.JWT_KEY_PREFIX
-import com.oz.office_tastezip.global.exception.DataExistsException
 import com.oz.office_tastezip.global.exception.DataNotFoundException
 import com.oz.office_tastezip.global.exception.InvalidTokenException
 import com.oz.office_tastezip.global.exception.ValidationFailureException
@@ -34,7 +32,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
-import java.util.concurrent.TimeUnit
 
 private val log = KotlinLogging.logger {}
 
@@ -135,7 +132,9 @@ class AuthController(
         @RequestBody @Valid emailVerificationRequestDto: EmailVerificationRequestDto,
         request: HttpServletRequest
     ): ResponseEntity<Response.Body<String>> {
-        return sendVerificationEmail(request, SIGNUP, emailVerificationRequestDto)
+        authService.checkEmailForSendMail(request, SIGNUP, emailVerificationRequestDto)
+        mailService.sendVerificationEmail(emailVerificationRequestDto.email, SIGNUP, request.requestURI)
+        return ResponseSuccess<String>().success("인증번호가 전송되었습니다. 5분 이내에 인증을 완료하여 주십시오.")
     }
 
     @Operation(summary = "이메일 인증 확인")
@@ -144,7 +143,14 @@ class AuthController(
         @RequestBody @Valid emailVerificationCheckDto: EmailVerificationCheckDto,
         httpServletRequest: HttpServletRequest
     ): ResponseEntity<Response.Body<String>> {
-        return checkVerificationEmail(emailVerificationCheckDto, SIGNUP, httpServletRequest)
+        authService.checkVerificationEmail(
+            emailVerificationCheckDto.email,
+            emailVerificationCheckDto.code,
+            SIGNUP,
+            httpServletRequest
+        )
+
+        return ResponseSuccess<String>().success("인증되었습니다.")
     }
 
     @Operation(summary = "비밀번호 초기화 인증 메일 발송")
@@ -153,79 +159,33 @@ class AuthController(
         @RequestBody @Valid emailVerificationRequestDto: EmailVerificationRequestDto,
         request: HttpServletRequest
     ): ResponseEntity<Response.Body<String>> {
-        return sendVerificationEmail(request, RESET_PASSWORD, emailVerificationRequestDto)
+        authService.checkEmailForSendMail(request, RESET_PASSWORD, emailVerificationRequestDto)
+        mailService.sendVerificationEmail(emailVerificationRequestDto.email, RESET_PASSWORD, request.requestURI)
+        return ResponseSuccess<String>().success("인증번호가 전송되었습니다. 5분 이내에 인증을 완료하여 주십시오.")
     }
 
-    @Operation(summary = "비밀번호 초기화 인증 확인")
-    @PostMapping("/reset-password/email/verify/check")
-    fun checkResetPasswordEmailVerification(
-        @RequestBody @Valid emailVerificationCheckDto: EmailVerificationCheckDto,
-        httpServletRequest: HttpServletRequest
-    ): ResponseEntity<Response.Body<String>> {
-        return checkVerificationEmail(emailVerificationCheckDto, RESET_PASSWORD, httpServletRequest)
-    }
-
-    @Operation(summary = "비밀번호 초기화")
+    @Operation(summary = "비밀번호 초기화 인증번호 확인 및 비밀번호 초기화")
     @PostMapping("/reset-password")
     fun resetPassword(
         @RequestBody @Valid resetPasswordDto: ResetPasswordDto,
-        request: HttpServletRequest
+        httpServletRequest: HttpServletRequest
     ): ResponseEntity<Response.Body<String>> {
-        log.info { "${request.remoteAddr}|ResetPassword, target: $resetPasswordDto" }
+        log.info { "${httpServletRequest.remoteAddr}|ResetPassword, target: $resetPasswordDto" }
 
         val email = resetPasswordDto.email
+        authService.checkVerificationEmail(
+            email,
+            resetPasswordDto.code,
+            RESET_PASSWORD,
+            httpServletRequest
+        )
+
         require(
             redisUtils.get("${RESET_PASSWORD.verifyKeyPrefix}$email") as? String == "complete"
         ) { throw ValidationFailureException("이메일 인증이 완료되지 않았습니다.") }
 
         authService.resetPassword(email, resetPasswordDto.password)
         return ResponseSuccess<String>().success("비밀번호가 변경되었습니다.");
-    }
-
-    private fun sendVerificationEmail(
-        request: HttpServletRequest,
-        emailVerificationPurpose: EmailVerificationPurpose,
-        emailVerificationRequestDto: EmailVerificationRequestDto
-    ): ResponseEntity<Response.Body<String>> {
-        val remoteAddr = request.remoteAddr
-        val requestUri = request.requestURI
-        val email = emailVerificationRequestDto.email
-
-        log.info { "$requestUri|$remoteAddr|이메일 인증 발송 요청: $email, purpose: $emailVerificationPurpose" }
-
-        val isEmailRegistered = authService.countByEmail(email)
-
-        when (emailVerificationPurpose) {
-            SIGNUP -> if (isEmailRegistered) throw DataExistsException(ResponseCode.DUPLICATED_EMAIL)
-            RESET_PASSWORD -> if (!isEmailRegistered) throw DataNotFoundException("가입된 이메일이 아닙니다.")
-        }
-
-        mailService.sendVerificationEmail(email, emailVerificationPurpose, requestUri)
-        return ResponseSuccess<String>().success("인증번호가 전송되었습니다. 5분 이내에 인증을 완료하여 주십시오.")
-    }
-
-    private fun checkVerificationEmail(
-        emailVerificationCheckDto: EmailVerificationCheckDto,
-        emailVerificationPurpose: EmailVerificationPurpose,
-        httpServletRequest: HttpServletRequest
-    ): ResponseEntity<Response.Body<String>> {
-        val requestEmail = emailVerificationCheckDto.email
-        val requestUri = httpServletRequest.requestURI
-        val remoteAddr = httpServletRequest.remoteAddr
-        log.info { "$requestUri|$remoteAddr|이메일 인증 확인 요청: $requestEmail" }
-
-        val originCode = redisUtils.get("${emailVerificationPurpose.codeKeyPrefix}$requestEmail") as String?
-            ?: throw DataNotFoundException("인증번호가 만료되었습니다. 다시 요청해주시기 바랍니다.")
-
-        val requestCode = emailVerificationCheckDto.code
-        log.info { "email: $requestEmail, origin code: $originCode, request code: $requestCode" }
-
-        if (originCode != requestCode) {
-            throw ValidationFailureException("인증번호가 일치하지 않습니다.")
-        }
-
-        redisUtils.set("${emailVerificationPurpose.verifyKeyPrefix}$requestEmail", "complete", 30, TimeUnit.MINUTES)
-        return ResponseSuccess<String>().success("인증되었습니다.")
     }
 
     private fun extractRefreshTokenFromCookie(request: HttpServletRequest): String {
