@@ -1,18 +1,14 @@
 package com.oz.office_tastezip.global.security.jwt
 
-import com.oz.office_tastezip.global.constant.AuthConstants.Header.AUTHORIZATION_HEADER
-import com.oz.office_tastezip.global.constant.AuthConstants.Header.JWT_TOKEN_PREFIX
-import com.oz.office_tastezip.global.security.dto.CustomUserDetails
 import com.oz.office_tastezip.global.security.service.CustomUserDetailService
-import mu.KotlinLogging
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.util.StringUtils
-import org.springframework.web.filter.GenericFilterBean
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
+import mu.KotlinLogging
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.filter.GenericFilterBean
 
 class JwtFilter(
     private val customUserDetailService: CustomUserDetailService,
@@ -20,6 +16,11 @@ class JwtFilter(
 ) : GenericFilterBean() {
 
     private val log = KotlinLogging.logger {}
+
+    companion object {
+        private const val JWT_TOKEN_PREFIX = "Bearer "
+        private const val AUTHORIZATION_HEADER = "Authorization"
+    }
 
     override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
         val request = servletRequest as HttpServletRequest
