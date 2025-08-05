@@ -13,7 +13,8 @@ data class NoticeResponse(
     val author: String,
     val viewCount: Int,
     val createdAt: String? = null,
-    val updatedAt: String
+    val updatedAt: String,
+    val isPinned: Boolean
 ) {
     companion object {
         fun of(notice: Notice, sequence: Int): NoticeResponse {
@@ -23,7 +24,8 @@ data class NoticeResponse(
                 title = notice.title,
                 author = notice.author,
                 viewCount = notice.viewCount,
-                updatedAt = TimeFormat.SEC.format(notice.updatedAt)
+                updatedAt = TimeFormat.SEC.format(notice.updatedAt),
+                isPinned = notice.isPinned
             )
         }
 
@@ -35,7 +37,8 @@ data class NoticeResponse(
                 author = notice.author,
                 viewCount = notice.viewCount,
                 createdAt = TimeFormat.SEC.format(notice.createdAt),
-                updatedAt = TimeFormat.SEC.format(notice.updatedAt)
+                updatedAt = TimeFormat.SEC.format(notice.updatedAt),
+                isPinned = notice.isPinned
             )
         }
     }

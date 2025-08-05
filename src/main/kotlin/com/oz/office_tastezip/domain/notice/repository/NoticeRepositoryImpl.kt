@@ -2,6 +2,7 @@ package com.oz.office_tastezip.domain.notice.repository
 
 import com.oz.office_tastezip.domain.notice.Notice
 import com.oz.office_tastezip.domain.notice.QNotice
+import com.oz.office_tastezip.domain.notice.dto.NoticeUpdateDto
 import com.oz.office_tastezip.domain.notice.enums.SearchType
 import com.oz.office_tastezip.global.exception.DataNotFoundException
 import com.oz.office_tastezip.global.support.toOrderSpecifiers
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 import java.util.*
 
 @Repository
@@ -64,6 +66,34 @@ class NoticeRepositoryImpl(private val queryFactory: JPAQueryFactory) : NoticeRe
 
         if (updatedRows == 0L) {
             log.warn("조회수 증가 실패 - 존재하지 않는 ID: $id")
+        }
+    }
+
+    override fun updateNotice(id: UUID, author: String, noticeUpdateDto: NoticeUpdateDto) {
+        val updatedRows = queryFactory
+            .update(notice)
+            .set(notice.title, noticeUpdateDto.title)
+            .set(notice.content, noticeUpdateDto.content)
+            .set(notice.isPinned, noticeUpdateDto.isPinned)
+            .set(notice.author, author)
+            .set(notice.updatedAt, LocalDateTime.now())
+            .where(notice.id.eq(id))
+            .execute()
+
+        if (updatedRows == 0L) {
+            log.warn("공지 업데이트 실패 - 존재하지 않는 ID: $id")
+        }
+    }
+
+    override fun updatePinnedStatus(id: UUID, isPinned: Boolean) {
+        val updatedRows = queryFactory
+            .update(notice)
+            .set(notice.isPinned, isPinned)
+            .where(notice.id.eq(id))
+            .execute()
+        
+        if (updatedRows == 0L) {
+            log.warn("공지 상단 고정 실패 - 존재하지 않는 ID: $id")
         }
     }
 

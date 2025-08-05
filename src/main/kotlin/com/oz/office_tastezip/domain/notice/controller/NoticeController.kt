@@ -4,7 +4,6 @@ import com.oz.office_tastezip.domain.notice.Notice
 import com.oz.office_tastezip.domain.notice.NoticeService
 import com.oz.office_tastezip.domain.notice.dto.NoticeResponse
 import com.oz.office_tastezip.domain.notice.dto.NoticeUpdateDto
-import com.oz.office_tastezip.domain.notice.dto.SetPinRequest
 import com.oz.office_tastezip.domain.notice.enums.SearchType
 import com.oz.office_tastezip.global.aspect.AdminOnly
 import com.oz.office_tastezip.global.response.Response
@@ -67,23 +66,32 @@ class NoticeController(
 
     @Operation(summary = "공지 수정")
     @AdminOnly
-    @PutMapping
-    fun updateNotice(@RequestBody @Valid noticeUpdateDto: NoticeUpdateDto): ResponseEntity<Response.Body<String>> {
-        return ResponseSuccess<String>().success()
+    @PatchMapping("/{id}")
+    fun updateNotice(
+        @PathVariable(name = "id") id: String,
+        @RequestBody @Valid noticeUpdateDto: NoticeUpdateDto
+    ): ResponseEntity<Response.Body<String>> {
+        val userDetails = getAuthenticatedUserDetail()
+        noticeService.updateNotice(UUID.fromString(id), userDetails.nickname, noticeUpdateDto)
+        return ResponseSuccess<String>().success("공지가 수정되었습니다.")
     }
 
     @Operation(summary = "공지 삭제")
     @AdminOnly
     @DeleteMapping("/{id}")
     fun deleteNotice(@PathVariable(name = "id") id: String): ResponseEntity<Response.Body<String>> {
+        noticeService.deleteNotice(UUID.fromString(id))
         return ResponseSuccess<String>().success("공지가 삭제되었습니다.")
     }
 
-    @Operation(summary = "핀 설정(상단 노출)")
+    @Operation(summary = "핀 설정 상태 변경(상단 노출 여부)")
     @AdminOnly
-    @PatchMapping("pin")
-    fun setPinByOrgId(@RequestBody setPinRequest: SetPinRequest): ResponseEntity<Response.Body<String>> {
-
+    @PatchMapping("/{id}/pin")
+    fun setPinByOrgId(
+        @PathVariable(name = "id") id: String,
+        @RequestParam(name = "isPinned") isPinned: Boolean
+    ): ResponseEntity<Response.Body<String>> {
+        noticeService.updatePinnedStatus(UUID.fromString(id), isPinned)
         return ResponseSuccess<String>().success("상단 노출이 설정되었습니다.")
     }
 }
