@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 @Transactional
@@ -15,6 +16,12 @@ class NoticeService(
 
     fun searchNotices(searchType: SearchType, searchContent: String, pageable: Pageable): Page<Notice> {
         return noticeRepository.searchNotices(searchType, searchContent, pageable)
+    }
+
+    fun searchNotice(id: UUID): Notice {
+        val result = noticeRepository.searchNoticeById(id)
+        noticeRepository.updateViewCount(id, result.viewCount)
+        return result
     }
 
 }

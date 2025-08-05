@@ -3,21 +3,26 @@ package com.oz.office_tastezip.domain.notice.repository
 import com.oz.office_tastezip.domain.notice.Notice
 import com.oz.office_tastezip.domain.notice.QNotice
 import com.oz.office_tastezip.domain.notice.enums.SearchType
+import com.oz.office_tastezip.global.exception.DataNotFoundException
 import com.oz.office_tastezip.global.support.toOrderSpecifiers
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
+import mu.KotlinLogging
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Repository
 @Transactional
 class NoticeRepositoryImpl(private val queryFactory: JPAQueryFactory) : NoticeRepositoryCustom {
+    private val log = KotlinLogging.logger {}
 
     private val notice = QNotice.notice
 
+    @Transactional(readOnly = true)
     override fun searchNotices(searchType: SearchType, searchContent: String, pageable: Pageable): Page<Notice> {
         val predicate = searchCondition(searchType, searchContent)
 
@@ -46,6 +51,25 @@ class NoticeRepositoryImpl(private val queryFactory: JPAQueryFactory) : NoticeRe
         return PageImpl(content, pageable, total)
     }
 
+    override fun searchNoticeById(id: UUID): Notice {
+        return queryFactory
+            .selectFrom(notice)
+            .where(notice.id.eq(id))
+            .fetchOne() ?: throw DataNotFoundException()
+    }
+
+    override fun updateViewCount(id: UUID, viewCount: Int) {
+        val updatedRows = queryFactory
+            .update(notice)
+            .set(notice.viewCount, viewCount + 1)
+            .where(notice.id.eq(id))
+            .execute()
+
+        if (updatedRows == 0L) {
+            log.warn("조회수 증가 실패 - 존재하지 않는 ID: $id")
+        }
+    }
+
     private fun searchCondition(searchType: SearchType, searchContent: String): BooleanExpression? {
         val keyword = searchContent
         return when (searchType) {
@@ -56,4 +80,5 @@ class NoticeRepositoryImpl(private val queryFactory: JPAQueryFactory) : NoticeRe
                 .or(notice.content.containsIgnoreCase(keyword))
         }
     }
+
 }

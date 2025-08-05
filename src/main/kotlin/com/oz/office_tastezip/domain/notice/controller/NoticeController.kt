@@ -1,7 +1,7 @@
 package com.oz.office_tastezip.domain.notice.controller
 
 import com.oz.office_tastezip.domain.notice.NoticeService
-import com.oz.office_tastezip.domain.notice.dto.NoticeDto.NoticeResponse
+import com.oz.office_tastezip.domain.notice.dto.NoticeResponse
 import com.oz.office_tastezip.domain.notice.dto.NoticeUpdateDto
 import com.oz.office_tastezip.domain.notice.dto.SetPinRequest
 import com.oz.office_tastezip.domain.notice.enums.SearchType
@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @Tag(name = "공지 관련 컨트롤러", description = "NOTICE CONTROLLER")
 @RestController
@@ -49,8 +50,8 @@ class NoticeController(
     @Operation(summary = "공지 상세 조회 + 조회 수 증가")
     @GetMapping("{id}/detail")
     fun getNoticeDetail(@PathVariable(name = "id") id: String): ResponseEntity<Response.Body<NoticeResponse>> {
-
-        return ResponseSuccess<NoticeResponse>().success()
+        val notice = noticeService.searchNotice(UUID.fromString(id))
+        return ResponseSuccess<NoticeResponse>().success(NoticeResponse.of(notice))
     }
 
     @Operation(summary = "공지 등록")
