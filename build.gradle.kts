@@ -30,15 +30,19 @@ tasks.register<Jar>("customJar") {
     })
 }
 
-val querydslVersion = "5.1.0"
-
 tasks.withType<Jar> {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+configurations.all {
+    exclude(group = "commons-logging", module = "commons-logging")
 }
 
 tasks.bootJar {
     archiveFileName.set("app.jar")
 }
+
+val querydslVersion = "5.1.0"
 
 repositories {
     mavenLocal()
@@ -48,6 +52,7 @@ repositories {
 dependencies {
     // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")

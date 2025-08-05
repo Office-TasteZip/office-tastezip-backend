@@ -18,4 +18,12 @@ object SecurityUtils {
         return userDetails as? CustomUserDetails
             ?: throw ValidationFailureException("CustomUserDetails 타입이 아님")
     }
+
+    fun getCurrentUserOrNull(): CustomUserDetails? {
+        val authentication = SecurityContextHolder.getContext().authentication
+        return if (authentication?.principal is CustomUserDetails)
+            authentication.principal as CustomUserDetails
+        else null
+    }
+
 }
