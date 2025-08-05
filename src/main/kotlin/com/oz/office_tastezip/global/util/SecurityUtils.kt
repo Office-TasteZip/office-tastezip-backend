@@ -5,6 +5,7 @@ import com.oz.office_tastezip.global.exception.UserNotFoundException
 import com.oz.office_tastezip.global.exception.ValidationFailureException
 import com.oz.office_tastezip.global.security.dto.CustomUserDetails
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.User
 
 object SecurityUtils {
 
@@ -19,10 +20,10 @@ object SecurityUtils {
             ?: throw ValidationFailureException("인증 정보 없음")
     }
 
-    fun getCurrentUserOrNull(): CustomUserDetails? {
+    fun getCurrentUserOrNull(): User? {
         val authentication = SecurityContextHolder.getContext().authentication
-        return if (authentication?.principal is CustomUserDetails)
-            authentication.principal as CustomUserDetails
+        return if (authentication?.principal is User)
+            authentication.principal as User
         else null
     }
 

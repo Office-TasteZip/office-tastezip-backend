@@ -19,7 +19,7 @@ class AdminOnlyAspect() {
     fun checkAdminAccess(joinPoint: JoinPoint) {
         val userDetails = getAuthenticatedUserDetail()
 
-        if (UserRole.fromLabel(userDetails.role) != UserRole.ROLE_ADMIN) {
+        if (userDetails.role != UserRole.ROLE_ADMIN.name) {
             val methodName = joinPoint.signature.name
             val className = joinPoint.signature.declaringTypeName
             log.warn("관리자 권한 없이 [$className.$methodName] 접근 시도")
