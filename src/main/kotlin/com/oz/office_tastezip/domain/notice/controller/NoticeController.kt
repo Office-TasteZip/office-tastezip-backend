@@ -1,5 +1,6 @@
 package com.oz.office_tastezip.domain.notice.controller
 
+import com.oz.office_tastezip.domain.notice.NoticeService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
@@ -8,7 +9,9 @@ import org.springframework.web.bind.annotation.*
 @Tag(name = "공지 관련 컨트롤러", description = "NOTICE CONTROLLER")
 @RestController
 @RequestMapping("/api/v1/otz/notices")
-class NoticeController() {
+class NoticeController(
+    private val noticeService: NoticeService
+) {
 
     private val log = KotlinLogging.logger {}
 
@@ -42,8 +45,8 @@ class NoticeController() {
 
     }
 
-    @Operation(summary = "핀 설정(특정 조직에게만 노출)")
-    @PostMapping("/update/pin")
+    @Operation(summary = "핀 설정(상단 노출)")
+    @PostMapping("/pin")
     fun setPinByOrgId() {
 
     }
