@@ -97,7 +97,7 @@ class SecurityConfig(
     fun corsConfigurationSource(): CorsConfigurationSource {
         return CorsConfigurationSource {
             CorsConfiguration().apply {
-                allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
+                allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE")
                 allowedHeaders = ALLOWED_HEADERS.toList()
                 allowedOrigins = corsConfigProperties.allowedOriginPattern
                 allowCredentials = true

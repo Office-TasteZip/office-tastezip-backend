@@ -16,7 +16,7 @@ object SecurityUtils {
             ?: throw UserNotFoundException("인증 사용자 정보 없음")
 
         return userDetails as? CustomUserDetails
-            ?: throw ValidationFailureException("CustomUserDetails 타입이 아님")
+            ?: throw ValidationFailureException("인증 정보 없음")
     }
 
     fun getCurrentUserOrNull(): CustomUserDetails? {

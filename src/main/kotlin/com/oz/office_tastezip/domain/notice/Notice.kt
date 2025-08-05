@@ -15,10 +15,15 @@ class Notice(
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     val content: String,
 
+    @Column(name = "author", nullable = false)
+    val author: String,
+
     @Column(name = "is_pinned")
     val isPinned: Boolean,  // 상단 고정 여부
 
     @Column(name = "view_count", columnDefinition = "int default 0")
     val viewCount: Int = 0
+
+    // TODO 첨부파일 추가..
 
 ) : BaseEntity()
