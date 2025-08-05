@@ -5,15 +5,12 @@ import com.oz.office_tastezip.domain.organization.dto.SearchOrganizationNameDto
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
 
 @Repository
-@Transactional
 class OrganizationRepositoryImpl(private val queryFactory: JPAQueryFactory) : OrganizationRepositoryCustom {
 
     private val organization = QOrganization.organization
 
-    @Transactional(readOnly = true)
     override fun findOrganizationByName(name: String): List<SearchOrganizationNameDto> {
         return queryFactory
             .select(

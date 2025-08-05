@@ -9,26 +9,22 @@ import com.oz.office_tastezip.domain.user.enums.UserPosition
 import com.querydsl.jpa.impl.JPAQueryFactory
 import mu.KotlinLogging
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.UUID
 
 @Repository
-@Transactional
 class UserRepositoryImpl(private val queryFactory: JPAQueryFactory) : UserRepositoryCustom {
 
     private val log = KotlinLogging.logger {}
 
     private val user = QUser.user
 
-    @Transactional(readOnly = true)
     override fun findByUserUUID(uuid: String): User? {
         return queryFactory.selectFrom(user)
             .where(user.deletedAt.isNull.and(user.id.eq(UUID.fromString(uuid))))
             .fetchOne()
     }
 
-    @Transactional(readOnly = true)
     override fun countByEmail(email: String): Int {
         return queryFactory.selectFrom(user)
             .where(user.email.eq(email))

@@ -12,17 +12,14 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Repository
-@Transactional
 class NoticeRepositoryImpl(private val queryFactory: JPAQueryFactory) : NoticeRepositoryCustom {
     private val log = KotlinLogging.logger {}
 
     private val notice = QNotice.notice
 
-    @Transactional(readOnly = true)
     override fun searchNotices(searchType: SearchType, searchContent: String, pageable: Pageable): Page<Notice> {
         val predicate = searchCondition(searchType, searchContent)
 

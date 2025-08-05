@@ -1,6 +1,7 @@
 package com.oz.office_tastezip.domain.notice
 
 import com.oz.office_tastezip.domain.BaseEntity
+import com.oz.office_tastezip.domain.notice.dto.NoticeUpdateDto
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
@@ -26,4 +27,15 @@ class Notice(
 
     // TODO 첨부파일 추가..
 
-) : BaseEntity()
+) : BaseEntity() {
+    companion object {
+        fun from(request: NoticeUpdateDto, author: String): Notice {
+            return Notice(
+                title = request.title,
+                content = request.content,
+                author = author,
+                isPinned = request.isPinned
+            )
+        }
+    }
+}

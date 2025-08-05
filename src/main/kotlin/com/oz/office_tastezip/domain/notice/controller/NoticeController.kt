@@ -1,5 +1,6 @@
 package com.oz.office_tastezip.domain.notice.controller
 
+import com.oz.office_tastezip.domain.notice.Notice
 import com.oz.office_tastezip.domain.notice.NoticeService
 import com.oz.office_tastezip.domain.notice.dto.NoticeResponse
 import com.oz.office_tastezip.domain.notice.dto.NoticeUpdateDto
@@ -8,10 +9,10 @@ import com.oz.office_tastezip.domain.notice.enums.SearchType
 import com.oz.office_tastezip.global.aspect.AdminOnly
 import com.oz.office_tastezip.global.response.Response
 import com.oz.office_tastezip.global.response.ResponseSuccess
+import com.oz.office_tastezip.global.util.SecurityUtils.getAuthenticatedUserDetail
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import mu.KotlinLogging
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
@@ -25,7 +26,6 @@ import java.util.*
 class NoticeController(
     private val noticeService: NoticeService
 ) {
-    private val log = KotlinLogging.logger {}
 
     @Operation(summary = "공지 조회")
     @GetMapping
@@ -58,6 +58,10 @@ class NoticeController(
     @AdminOnly
     @PostMapping
     fun insertNotice(@RequestBody @Valid noticeUpdateDto: NoticeUpdateDto): ResponseEntity<Response.Body<String>> {
+        val userDetails = getAuthenticatedUserDetail()
+        val notice = Notice.from(noticeUpdateDto, userDetails.nickname)
+
+        noticeService.insertNotice(notice)
         return ResponseSuccess<String>().success("공지가 등록되었습니다.")
     }
 

@@ -8,4 +8,6 @@ data class NoticeUpdateDto(
 
     @field:NotBlank(message = "본문 내용은 필수 입력값입니다.")
     val content: String,
+
+    val isPinned: Boolean,
 )

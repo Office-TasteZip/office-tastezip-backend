@@ -2,6 +2,7 @@ package com.oz.office_tastezip.domain.notice
 
 import com.oz.office_tastezip.domain.notice.enums.SearchType
 import com.oz.office_tastezip.domain.notice.repository.NoticeRepository
+import mu.KotlinLogging
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -13,6 +14,7 @@ import java.util.*
 class NoticeService(
     private val noticeRepository: NoticeRepository
 ) {
+    private val log = KotlinLogging.logger {}
 
     fun searchNotices(searchType: SearchType, searchContent: String, pageable: Pageable): Page<Notice> {
         return noticeRepository.searchNotices(searchType, searchContent, pageable)
@@ -24,4 +26,8 @@ class NoticeService(
         return result
     }
 
+    fun insertNotice(notice: Notice) {
+        val result = noticeRepository.save(notice)
+        log.info { "공지 등록 완료 - id: ${result.id}, title: ${result.title}" }
+    }
 }
