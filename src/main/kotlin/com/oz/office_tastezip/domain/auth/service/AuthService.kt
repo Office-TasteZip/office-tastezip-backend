@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.concurrent.TimeUnit
 
-private val log = KotlinLogging.logger {}
-
 @Service
 @Transactional
 class AuthService(
@@ -29,6 +27,8 @@ class AuthService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder
 ) {
+
+    private val log = KotlinLogging.logger {}
 
     fun updateLastLoginAt(uuid: String) {
         userRepository.updateLastLoginAtByUserUUID(uuid)

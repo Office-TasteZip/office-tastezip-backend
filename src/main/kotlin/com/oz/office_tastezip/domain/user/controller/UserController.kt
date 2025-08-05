@@ -15,7 +15,6 @@ import com.oz.office_tastezip.global.util.SecurityUtils.getAuthenticatedUserDeta
 import com.oz.office_tastezip.infrastructure.s3.S3Utils
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
@@ -62,12 +61,8 @@ class UserController(
 
     @Operation(summary = "내정보 조회")
     @GetMapping("/my-info")
-    fun getMyInfo(httpServletRequest: HttpServletRequest): ResponseEntity<Response.Body<UserResponseDto>> {
-        val userDetails = getAuthenticatedUserDetail()
-        val uuid = userDetails.uuid
-        log.info { "${httpServletRequest.remoteAddr}|Select my-info, user uuid: $uuid, email: ${userDetails.email}" }
-
-        val user = userService.findByUserUUID(uuid)
+    fun getMyInfo(): ResponseEntity<Response.Body<UserResponseDto>> {
+        val user = userService.findByUserUUID(getAuthenticatedUserDetail().uuid)
         return ResponseSuccess<UserResponseDto>().success(
             UserResponseDto.of(
                 user,
@@ -78,36 +73,24 @@ class UserController(
 
     @Operation(summary = "사용자 정보 수정")
     @PutMapping("/update")
-    fun update(
-        @RequestBody @Valid userUpdateRequest: UserUpdateRequest,
-        httpServletRequest: HttpServletRequest
-    ): ResponseEntity<Response.Body<String>> {
-        val userDetails = getAuthenticatedUserDetail()
-        log.info { "${httpServletRequest.remoteAddr}|Update my-info, user uuid: ${userDetails.uuid}, email: ${userDetails.email}" }
+    fun update(@RequestBody @Valid userUpdateRequest: UserUpdateRequest): ResponseEntity<Response.Body<String>> {
         userService.update(userUpdateRequest)
         return ResponseSuccess<String>().success("정보 수정 되었습니다.")
     }
 
     @Operation(summary = "회원 탈퇴")
     @DeleteMapping("/withdraw")
-    fun withdraw(httpServletRequest: HttpServletRequest): ResponseEntity<Response.Body<String>> {
-        val userDetails = getAuthenticatedUserDetail()
-        log.info { "${httpServletRequest.remoteAddr}|Withdraw user uuid: ${userDetails.uuid}, email: ${userDetails.email}" }
-        userService.withdraw(userDetails.uuid)
+    fun withdraw(): ResponseEntity<Response.Body<String>> {
+        userService.withdraw(getAuthenticatedUserDetail().uuid)
         return ResponseSuccess<String>().success("회원 탈퇴 되었습니다.")
     }
 
     @Operation(summary = "사용자 프로필 사진 등록(수정)")
     @PutMapping("/update/profile-image")
-    fun updateProfileImage(
-        @RequestParam multipartFile: MultipartFile,
-        httpServletRequest: HttpServletRequest
-    ): ResponseEntity<Response.Body<String>> {
+    fun updateProfileImage(@RequestParam multipartFile: MultipartFile): ResponseEntity<Response.Body<String>> {
         val userDetails = getAuthenticatedUserDetail()
         val userId = UUID.fromString(userDetails.uuid)
         val currentImagePath = userDetails.profileImageUrl
-
-        log.info { "${httpServletRequest.remoteAddr}|Update profile image, user uuid: $userId, email: ${userDetails.email}" }
 
         FileValidationUtils.validateImageFile(multipartFile)
 
@@ -122,12 +105,10 @@ class UserController(
 
     @Operation(summary = "사용자 프로필 사진 삭제")
     @DeleteMapping("/update/profile-image")
-    fun deleteProfileImage(httpServletRequest: HttpServletRequest): ResponseEntity<Response.Body<String>> {
+    fun deleteProfileImage(): ResponseEntity<Response.Body<String>> {
         val userDetails = getAuthenticatedUserDetail()
         val userId = UUID.fromString(userDetails.uuid)
         val currentImagePath = userDetails.profileImageUrl
-
-        log.info { "${httpServletRequest.remoteAddr}|Delete profile image, user uuid: $userId, email: ${userDetails.email}" }
 
         deleteIfExists(currentImagePath)
         userService.updateProfileImage(userId, null)
