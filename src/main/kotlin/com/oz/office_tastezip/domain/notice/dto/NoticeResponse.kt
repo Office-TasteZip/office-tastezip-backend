@@ -6,7 +6,6 @@ import com.oz.office_tastezip.global.constant.TimeFormat
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class NoticeResponse(
-    val sequence: Int? = null,
     val id: String,
     val title: String,
     val content: String? = null,
@@ -17,9 +16,8 @@ data class NoticeResponse(
     val isPinned: Boolean
 ) {
     companion object {
-        fun of(notice: Notice, sequence: Int): NoticeResponse {
+        fun summaryOf(notice: Notice): NoticeResponse {
             return NoticeResponse(
-                sequence = sequence,
                 id = notice.id.toString(),
                 title = notice.title,
                 author = notice.author,
@@ -29,7 +27,7 @@ data class NoticeResponse(
             )
         }
 
-        fun of(notice: Notice): NoticeResponse {
+        fun detailOf(notice: Notice): NoticeResponse {
             return NoticeResponse(
                 id = notice.id.toString(),
                 title = notice.title,
@@ -42,5 +40,6 @@ data class NoticeResponse(
             )
         }
     }
+
 }
 

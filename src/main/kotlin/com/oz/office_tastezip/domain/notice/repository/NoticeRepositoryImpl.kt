@@ -27,7 +27,7 @@ class NoticeRepositoryImpl(private val queryFactory: JPAQueryFactory) : NoticeRe
 
         val orderSpecifiers = pageable.toOrderSpecifiers { property ->
             when (property) {
-                "updatedAt" -> notice.createdAt
+                "updatedAt" -> notice.updatedAt
                 "title" -> notice.title
                 else -> null
             }
@@ -38,7 +38,10 @@ class NoticeRepositoryImpl(private val queryFactory: JPAQueryFactory) : NoticeRe
             .where(predicate)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
-            .orderBy(*orderSpecifiers.toTypedArray())
+            .orderBy(
+                notice.isPinned.desc(),
+                *orderSpecifiers.toTypedArray()
+            )
             .fetch()
 
         val total = queryFactory
@@ -91,7 +94,7 @@ class NoticeRepositoryImpl(private val queryFactory: JPAQueryFactory) : NoticeRe
             .set(notice.isPinned, isPinned)
             .where(notice.id.eq(id))
             .execute()
-        
+
         if (updatedRows == 0L) {
             log.warn("공지 상단 고정 실패 - 존재하지 않는 ID: $id")
         }

@@ -35,12 +35,8 @@ class NoticeController(
     ): ResponseEntity<Response.Body<List<NoticeResponse>>> {
         val notices = noticeService.searchNotices(searchType, searchContent, pageable)
 
-        val total = notices.totalElements
-        val offset = pageable.offset
-
-        val noticeResponses = notices.content.mapIndexed { index, notice ->
-            val sequence = (total - offset - index).toInt()
-            NoticeResponse.of(notice, sequence)
+        val noticeResponses = notices.content.map { notice ->
+            NoticeResponse.summaryOf(notice)
         }
 
         return ResponseSuccess<List<NoticeResponse>>().success(noticeResponses)
@@ -50,7 +46,7 @@ class NoticeController(
     @GetMapping("{id}/detail")
     fun getNoticeDetail(@PathVariable(name = "id") id: String): ResponseEntity<Response.Body<NoticeResponse>> {
         val notice = noticeService.searchNotice(UUID.fromString(id))
-        return ResponseSuccess<NoticeResponse>().success(NoticeResponse.of(notice))
+        return ResponseSuccess<NoticeResponse>().success(NoticeResponse.detailOf(notice))
     }
 
     @Operation(summary = "공지 등록")
