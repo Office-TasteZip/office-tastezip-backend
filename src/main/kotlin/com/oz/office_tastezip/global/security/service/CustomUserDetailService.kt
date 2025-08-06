@@ -5,11 +5,8 @@ import com.oz.office_tastezip.global.exception.UserNotFoundException
 import com.oz.office_tastezip.global.exception.ValidationFailureException
 import com.oz.office_tastezip.global.response.ResponseCode
 import com.oz.office_tastezip.global.security.dto.CustomUserDetails
-import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-
-private val log = KotlinLogging.logger {}
 
 @Service
 class CustomUserDetailService(
@@ -19,7 +16,7 @@ class CustomUserDetailService(
     @Transactional(readOnly = true)
     fun loadUserByEmail(email: String): CustomUserDetails {
         val user = userRepository.findByEmail(email)
-            ?: throw UserNotFoundException("아이디 또는 비밀번호가 일치하지 않습니다.")
+            ?: throw UserNotFoundException("이메일 또는 비밀번호가 일치하지 않습니다.")
 
         val loginFailLimitCnt = 10
         if (user.loginFailCount >= loginFailLimitCnt) {
@@ -30,5 +27,13 @@ class CustomUserDetailService(
         }
 
         return CustomUserDetails(user)
+    }
+
+    @Transactional
+    fun updateLoginFailureCount(email: String) {
+        val user = userRepository.findByEmail(email)
+            ?: throw UserNotFoundException("이메일 또는 비밀번호가 일치하지 않습니다.")
+
+        userRepository.updateLoginFailureCount(user.id, user.loginFailCount)
     }
 }

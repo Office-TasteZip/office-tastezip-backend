@@ -10,7 +10,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import mu.KotlinLogging
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @Repository
 class UserRepositoryImpl(private val queryFactory: JPAQueryFactory) : UserRepositoryCustom {
@@ -76,12 +76,25 @@ class UserRepositoryImpl(private val queryFactory: JPAQueryFactory) : UserReposi
     }
 
     override fun updateProfileImage(uuid: UUID, imagePath: String?) {
-        log.info { "Update profile image by user uuid: $uuid"}
+        log.info { "Update profile image by user uuid: $uuid" }
 
         queryFactory.update(user)
             .set(user.profileImageUrl, imagePath)
             .set(user.updatedAt, LocalDateTime.now())
             .where(user.deletedAt.isNull.and(user.id.eq(uuid)))
             .execute()
+    }
+
+    override fun updateLoginFailureCount(uuid: UUID, loginFailCount: Int) {
+        log.info { "Update login fail count, target uuid: $uuid, current login fail count: $loginFailCount" }
+
+        val updatedRows = queryFactory.update(user)
+            .set(user.loginFailCount, loginFailCount + 1)
+            .where(user.id.eq(uuid))
+            .execute()
+
+        if (updatedRows == 0L) {
+            log.warn("로그인 실패 횟수 증가 실패 - 존재하지 않는 ID: $uuid")
+        }
     }
 }

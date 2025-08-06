@@ -12,4 +12,5 @@ interface UserRepositoryCustom {
     fun updateLastLoginAtByUserUUID(uuid: String)
     fun resetPassword(uuid : UUID, passwordHash: String)
     fun updateProfileImage(uuid: UUID, imagePath: String?)
+    fun updateLoginFailureCount(uuid: UUID, loginFailCount: Int)
 }

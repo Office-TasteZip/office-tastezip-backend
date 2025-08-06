@@ -27,7 +27,8 @@ class CustomAuthenticationProvider(
         val customUserDetails: CustomUserDetails = customUserDetailService.loadUserByEmail(email)
 
         if (!passwordEncoder.matches(password, customUserDetails.passwordHash)) {
-            throw ValidationFailureException(ResponseCode.INVALID_PASSWORD, "아이디 또는 비밀번호가 일치하지 않습니다.")
+            customUserDetailService.updateLoginFailureCount(email)
+            throw ValidationFailureException(ResponseCode.INVALID_PASSWORD, "이메일 또는 비밀번호가 일치하지 않습니다.")
         }
 
         val authorities = customUserDetails.authorities
