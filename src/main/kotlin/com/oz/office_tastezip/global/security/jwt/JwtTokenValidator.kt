@@ -25,7 +25,7 @@ import java.security.Key
 
 @Component
 class JwtTokenValidator(
-    @Value("\${jwt.secret}") private val secret: String,
+    @param:Value("\${jwt.secret}") private val secret: String,
     private val redisUtils: RedisUtils
 ) : InitializingBean {
 
