@@ -36,8 +36,8 @@ class AuthService(
 
     @Transactional(readOnly = true)
     fun selectUser(email: String): User {
-        return userRepository.findByEmail(email)
-            ?: throw UserNotFoundException("${USER_NOT_FOUND.message}, email: $email")
+        log.info { "select user, target email: $email" }
+        return userRepository.findByEmail(email) ?: throw UserNotFoundException()
     }
 
     @Transactional(readOnly = true)
