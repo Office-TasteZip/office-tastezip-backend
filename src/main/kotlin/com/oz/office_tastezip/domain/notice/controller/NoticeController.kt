@@ -19,7 +19,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
-@Tag(name = "공지 관련 컨트롤러", description = "NOTICE CONTROLLER")
+@Tag(name = "공지 컨트롤러", description = "NOTICE CONTROLLER")
 @RestController
 @RequestMapping("/api/v1/otz/notices")
 class NoticeController(

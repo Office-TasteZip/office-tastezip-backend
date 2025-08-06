@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
-@Tag(name = "사용자 관련 컨트롤러", description = "USER CONTROLLER")
+@Tag(name = "사용자 컨트롤러", description = "USER CONTROLLER")
 @RestController
 @RequestMapping("/api/v1/otz/users")
 class UserController(
