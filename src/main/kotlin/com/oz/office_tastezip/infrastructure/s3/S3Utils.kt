@@ -13,7 +13,7 @@ import java.util.*
 @Component
 class S3Utils(
     private val s3Client: S3Client,
-    @Value("\${s3.bucket}") private val bucket: String
+    private val s3Properties: S3Properties
 ) {
 
     private val log = KotlinLogging.logger {}
@@ -23,7 +23,7 @@ class S3Utils(
 
         s3Client.putObject(
             PutObjectRequest.builder()
-                .bucket(bucket)
+                .bucket(s3Properties.bucket)
                 .key(key)
                 .contentType(file.contentType)
                 .build(),
@@ -38,7 +38,7 @@ class S3Utils(
         log.info { "Deleted file key: $key" }
         s3Client.deleteObject(
             DeleteObjectRequest.builder()
-                .bucket(bucket)
+                .bucket(s3Properties.bucket)
                 .key(key)
                 .build()
         )
