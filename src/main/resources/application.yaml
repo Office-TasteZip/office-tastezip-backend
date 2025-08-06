@@ -17,9 +17,11 @@ spring:
 
 logging:
   level:
+    com.oz.office_tastezip: DEBUG
     com.zaxxer.hikari: INFO
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: OFF
     org.springframework.orm.jpa: DEBUG
     org.springframework.transaction: DEBUG
     p6spy: DEBUG
+  config: classpath:logback/logback-spring.xml

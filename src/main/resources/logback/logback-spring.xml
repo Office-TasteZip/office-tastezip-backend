@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <property name="LOGS_PATH" value="${user.home}/office-taste-zip/logs" />
+
+    <!-- Logback 색상/강조 컨버터 등록 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <conversionRule conversionWord="faint" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <conversionRule conversionWord="bold" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+
+    <property name="FILE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX, ${logback.timezone:-Asia/Seoul}}  %-5level ${PID:- } --- [  %thread] %logger{36} - %msg%n" />
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX, ${logback.timezone:-Asia/Seoul}}  %clr(%-5level) %magenta(${PID:- }) --- [  %thread] %cyan(%logger{36}) - %msg%n" />
+
+    <!-- OfficeZip 전용 로그 -->
+    <appender name="OFFICEZIP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_PATH}/office-taste-zip.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_PATH}/office-taste-zip.%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Spring 관련 로그 -->
+    <appender name="SPRING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_PATH}/spring.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_PATH}/spring.%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 콘솔 로그 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Spring 로그 레벨 적용 -->
+    <logger name="org.springframework" level="INFO">
+        <appender-ref ref="SPRING"/>
+    </logger>
+
+    <!-- 루트 로그 -->
+    <root level="INFO">
+        <appender-ref ref="OFFICEZIP"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

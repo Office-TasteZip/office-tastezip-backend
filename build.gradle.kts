@@ -69,8 +69,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     // Logging
+    implementation("org.springframework.boot:spring-boot-starter-logging")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-//    runtimeOnly("ch.qos.logback:logback-classic:1.4.14")
 
     // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
