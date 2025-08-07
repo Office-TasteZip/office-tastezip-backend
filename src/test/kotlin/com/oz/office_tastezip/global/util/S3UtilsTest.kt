@@ -1,9 +1,11 @@
 package com.oz.office_tastezip.global.util
 
+import com.oz.office_tastezip.infrastructure.s3.S3Properties
 import com.oz.office_tastezip.infrastructure.s3.S3Utils
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldStartWith
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -17,8 +19,10 @@ import java.util.*
 class S3UtilsTest : StringSpec({
 
     val s3Client = mockk<S3Client>(relaxed = true)
-    val bucket = "test-bucket"
-    val s3Utils = S3Utils(s3Client, bucket)
+    val s3Properties = mockk<S3Properties>(relaxed = true)
+    every { s3Properties.bucket } returns "test-bucket"
+
+    val s3Utils = S3Utils(s3Client, s3Properties)
 
     "이미지 업로드" {
         val content = "Image upload test".toByteArray()
@@ -31,7 +35,7 @@ class S3UtilsTest : StringSpec({
         verify(exactly = 1) {
             s3Client.putObject(
                 withArg<PutObjectRequest> {
-                    it.bucket() shouldBe bucket
+                    it.bucket() shouldBe s3Properties.bucket
                     it.key() shouldBe resultKey
                     it.contentType() shouldBe "image/png"
                 },
