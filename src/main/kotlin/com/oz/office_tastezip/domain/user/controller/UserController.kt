@@ -93,14 +93,6 @@ class UserController(
         summary = "사용자 프로필 사진 등록(수정)",
         description = "프로필 이미지를 multipart/form-data로 업로드합니다."
     )
-    @Parameters(
-        Parameter(
-            name = "multipartFile",
-            description = "업로드할 프로필 이미지 파일",
-            required = true,
-            content = [Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)]
-        )
-    )
     @PutMapping("/profile-image")
     fun updateProfileImage(@RequestParam multipartFile: MultipartFile): ResponseEntity<Response.Body<String>> {
         val userDetails = getAuthenticatedUserDetail()
