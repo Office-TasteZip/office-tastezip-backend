@@ -1,5 +1,6 @@
 package com.oz.office_tastezip.global.security.jwt
 
+import com.oz.office_tastezip.global.config.SecurityConfig.Companion.OTZ_WHITE_LIST_URI
 import com.oz.office_tastezip.global.security.service.CustomUserDetailService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletRequest
@@ -24,9 +25,11 @@ class JwtFilter(
 
     override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
         val request = servletRequest as HttpServletRequest
-        val token = resolveBearerToken(request.getHeader(AUTHORIZATION_HEADER))
 
-        jwtValidationCheck(request, token)
+        if (!OTZ_WHITE_LIST_URI.contains(request.requestURI)) {
+            val token = resolveBearerToken(request.getHeader(AUTHORIZATION_HEADER))
+            jwtValidationCheck(request, token)
+        }
 
         filterChain.doFilter(servletRequest, servletResponse)
     }
@@ -43,7 +46,6 @@ class JwtFilter(
         val uri = request.requestURI
         val ip = request.remoteAddr
         val httpMethod = request.method
-        log.info { "$ip | $httpMethod $uri " }
 
         if (resolvedToken.isNullOrBlank() || !jwtTokenValidator.validateToken(resolvedToken)) {
             log.debug { "$ip | $httpMethod $uri | 유효한 JWT 토큰이 없습니다." }

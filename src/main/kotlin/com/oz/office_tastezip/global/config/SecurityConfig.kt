@@ -33,17 +33,17 @@ class SecurityConfig(
 ) {
 
     companion object {
-        private val SYSTEM_WHITE_LIST_URL = arrayOf(
-            "/v2/api-docs", "/v3/api-docs", "/v3/api-docs/**", "/configuration/ui", "/configuration/security",
-            "/webjars/**", "/error", "/static/**", "/customError.css", "/errorIcon.svg", "/favicon.ico",
-            "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources", "/swagger-resources/**"
-        )
-
-        private val OTZ_WHITE_LIST_URI = arrayOf(
+        val OTZ_WHITE_LIST_URI = arrayOf(
             "/api/v1/otz/auth/login", "/api/v1/otz/auth/rsa", "/api/v1/otz/auth/email/verify",
             "/api/v1/otz/auth/email/verify/check", "/api/v1/otz/auth/reset-password",
             "/api/v1/otz/auth/reset-password/email/verify", "/api/v1/otz/users/register",
             "/api/v1/otz/organizations/name-search"
+        )
+
+        private val SYSTEM_WHITE_LIST_URL = arrayOf(
+            "/v2/api-docs", "/v3/api-docs", "/v3/api-docs/**", "/configuration/ui", "/configuration/security",
+            "/webjars/**", "/error", "/static/**", "/customError.css", "/errorIcon.svg", "/favicon.ico",
+            "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources", "/swagger-resources/**"
         )
 
         private val ALLOWED_HEADERS = arrayOf(
