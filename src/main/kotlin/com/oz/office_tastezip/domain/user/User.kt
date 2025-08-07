@@ -12,7 +12,13 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "TBL_OTZ_USER")
+@Table(
+    name = "TBL_OTZ_USER",
+    indexes = [
+        Index(name = "IDX_OTZ_USER_ORG", columnList = "organization_id"),
+        Index(name = "IDX_OTZ_USER_DELETED_AT", columnList = "deleted_at")
+    ]
+)
 class User(
 
     @Column(name = "email", nullable = false, unique = true, length = 100)

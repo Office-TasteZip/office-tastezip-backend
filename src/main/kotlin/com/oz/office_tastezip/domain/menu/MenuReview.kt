@@ -7,7 +7,14 @@ import com.oz.office_tastezip.domain.user.User
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "TBL_OTZ_MENU_REVIEW")
+@Table(
+    name = "TBL_OTZ_MENU_REVIEW", indexes = [
+        Index(name = "IDX_OTZ_REVIEW_MENU", columnList = "menu_id"),
+        Index(name = "IDX_OTZ_REVIEW_REST", columnList = "restaurant_id"),
+        Index(name = "IDX_OTZ_REVIEW_USER", columnList = "user_id"),
+        Index(name = "IDX_OTZ_REVIEW_ORG", columnList = "organization_id"),
+    ]
+)
 class MenuReview(
 
     @Column(name = "content")

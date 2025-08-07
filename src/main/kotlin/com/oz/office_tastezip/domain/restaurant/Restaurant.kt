@@ -6,7 +6,10 @@ import jakarta.persistence.*
 import java.util.*
 
 @Entity
-@Table(name = "TBL_OTZ_RESTAURANT")
+@Table(
+    name = "TBL_OTZ_RESTAURANT",
+    indexes = [Index(name = "IDX_OTZ_REST_ORG", columnList = "organization_id")]
+)
 class Restaurant(
 
     @Column(name = "name", nullable = false, length = 100)

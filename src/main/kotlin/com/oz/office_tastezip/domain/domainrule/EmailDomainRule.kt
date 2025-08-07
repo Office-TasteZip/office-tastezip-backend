@@ -5,7 +5,13 @@ import com.oz.office_tastezip.domain.domainrule.enums.DomainType
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "TBL_OTZ_EMAIL_DOMAIN_RULE")
+@Table(
+    name = "TBL_OTZ_EMAIL_DOMAIN_RULE",
+    indexes = [
+        Index(name = "IDX_OTZ_EMAIL_DOMAIN", columnList = "domain"),
+        Index(name = "IDX_OTZ_EMAIL_TYPE", columnList = "domain_type")
+    ]
+)
 class EmailDomainRule(
 
     @Column(name = "domain", nullable = false, unique = true)

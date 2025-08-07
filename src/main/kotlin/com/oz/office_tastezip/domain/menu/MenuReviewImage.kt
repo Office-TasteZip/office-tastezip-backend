@@ -4,7 +4,10 @@ import com.oz.office_tastezip.domain.BaseEntity
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "TBL_OTZ_MENU_REVIEW_IMAGE")
+@Table(
+    name = "TBL_OTZ_MENU_REVIEW_IMAGE",
+    indexes = [Index(name = "IDX_OTZ_REVIEW_IMAGE_RID", columnList = "review_id")]
+)
 class MenuReviewImage(
 
     @Column(name = "image_url", nullable = false)

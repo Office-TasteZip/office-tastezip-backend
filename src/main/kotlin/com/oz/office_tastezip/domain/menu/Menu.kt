@@ -5,7 +5,10 @@ import com.oz.office_tastezip.domain.restaurant.Restaurant
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "TBL_OTZ_MENU")
+@Table(
+    name = "TBL_OTZ_MENU",
+    indexes = [Index(name = "IDX_OTZ_MENU_REST", columnList = "restaurant_id")]
+)
 class Menu(
 
     @Column(name = "menu", nullable = false, length = 100)
