@@ -42,10 +42,11 @@ class JwtFilter(
     private fun jwtValidationCheck(request: HttpServletRequest, resolvedToken: String?) {
         val uri = request.requestURI
         val ip = request.remoteAddr
-        log.info { "$ip|Request uri: $uri" }
+        val httpMethod = request.method
+        log.info { "$ip | $httpMethod $uri " }
 
         if (resolvedToken.isNullOrBlank() || !jwtTokenValidator.validateToken(resolvedToken)) {
-            log.debug { "$ip|유효한 JWT 토큰이 없습니다, uri: $uri" }
+            log.debug { "$ip | $httpMethod $uri | 유효한 JWT 토큰이 없습니다." }
             return
         }
 
@@ -63,6 +64,6 @@ class JwtFilter(
         authToken.details = userDetails
         SecurityContextHolder.getContext().authentication = authToken
 
-        log.debug { "$ip|Security Context에 '${authentication.name}' 인증 정보를 저장했습니다, uri: $uri" }
+        log.debug { "$ip | $httpMethod $uri | Security Context에 '${authentication.name}' 인증 정보를 저장했습니다." }
     }
 }
