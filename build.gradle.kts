@@ -94,6 +94,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.1")
     implementation("com.google.guava:guava:33.4.8-jre")
     implementation("org.apache.commons:commons-configuration2:2.12.0")
+    implementation("com.vladmihalcea:hibernate-types-60:2.21.1")
 
     // 설정파일 암호화
     implementation("org.bouncycastle:bcprov-jdk15to18:1.81")
