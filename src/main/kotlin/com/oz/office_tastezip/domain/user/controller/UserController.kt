@@ -14,9 +14,13 @@ import com.oz.office_tastezip.global.util.RedisUtils
 import com.oz.office_tastezip.global.util.SecurityUtils.getAuthenticatedUserDetail
 import com.oz.office_tastezip.infrastructure.s3.S3Utils
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.Parameters
+import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import mu.KotlinLogging
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -85,8 +89,19 @@ class UserController(
         return ResponseSuccess<String>().success("회원 탈퇴 되었습니다.")
     }
 
-    @Operation(summary = "사용자 프로필 사진 등록(수정)")
-    @PutMapping("/update/profile-image")
+    @Operation(
+        summary = "사용자 프로필 사진 등록(수정)",
+        description = "프로필 이미지를 multipart/form-data로 업로드합니다."
+    )
+    @Parameters(
+        Parameter(
+            name = "multipartFile",
+            description = "업로드할 프로필 이미지 파일",
+            required = true,
+            content = [Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)]
+        )
+    )
+    @PutMapping("/profile-image")
     fun updateProfileImage(@RequestParam multipartFile: MultipartFile): ResponseEntity<Response.Body<String>> {
         val userDetails = getAuthenticatedUserDetail()
         val userId = UUID.fromString(userDetails.uuid)
@@ -104,7 +119,7 @@ class UserController(
 
 
     @Operation(summary = "사용자 프로필 사진 삭제")
-    @DeleteMapping("/update/profile-image")
+    @DeleteMapping("/profile-image")
     fun deleteProfileImage(): ResponseEntity<Response.Body<String>> {
         val userDetails = getAuthenticatedUserDetail()
         val userId = UUID.fromString(userDetails.uuid)
