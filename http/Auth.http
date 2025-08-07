@@ -1,0 +1,47 @@
+### RSA
+GET http://localhost:8080/api/v1/otz/auth/rsa
+
+### 로그인
+POST http://localhost:8080/api/v1/otz/auth/login
+Content-Type: application/json
+
+{
+  "email": "string",
+  "password": "string(encrypted by rsa)"
+}
+
+### 이메일 인증번호 전송
+POST http://localhost:8080/api/v1/otz/auth/email/verify
+Content-Type: application/json
+
+{
+  "email": "string"
+}
+
+### 이메일 인증번호 확인
+POST http://localhost:8080/api/v1/otz/auth/email/verify/check
+Content-Type: application/json
+
+{
+  "email": "string",
+  "code": "string"
+}
+
+### 비밀번호 초기화 이메일 인증번호 전송
+POST http://localhost:8080/api/v1/otz/auth/reset-password/email/verify
+Content-Type: application/json
+
+{
+  "email": "string"
+}
+
+### 비밀번호 초기화 이메일 인증번호 확인 및 비밀번호 초기화
+POST http://localhost:8080/api/v1/otz/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "string",
+  "code": "string",
+  "password": "string",
+  "confirmPassword": "string"
+}

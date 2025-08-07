@@ -1,0 +1,57 @@
+### 이메일 중복체크
+GET http://localhost:8080/api/v1/otz/users/exists/email?email=tester4@example.com
+Accept: application/json
+
+### 회원가입
+POST http://localhost:8080/api/v1/otz/users/register
+Content-Type: application/json
+
+{
+  "email": "string",
+  "password": "stringst",
+  "confirmPassword": "stringst",
+  "nickname": "string",
+  "job": "string",
+  "position": "string",
+  "joinYear": "2978",
+  "organizationName": "string",
+  "marketingAgree": true,
+  "privacyAgree": true,
+  "termsAgree": true
+}
+
+### 내 정보 조회
+GET http://localhost:8080/api/v1/otz/users/my-info
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsZWV3Zzk3QGdtYWlsLmNvbSIsInNlcmlhbCI6IjAwYWJlODIyLWIyNDktNGRiNC1iZTIzLWQzNGQ1MTQ3MWRhNyIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3NTQzNzQzNDB9.hh4Omtg8_G0YMMqgUu60NYLhetHT-hvZHzSWx7CJ-1PlxB2EpBQpsMJgJcS_XK2uWwXBUyWqy9rBuXvOP2SXcg
+Accept: application/json
+
+### 회원 탈퇴(Soft delete)
+DELETE http://localhost:8080/api/v1/otz/users/withdraw
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsZWV3Zzk3QGdtYWlsLmNvbSIsInNlcmlhbCI6IjAwYWJlODIyLWIyNDktNGRiNC1iZTIzLWQzNGQ1MTQ3MWRhNyIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3NTQzNzQzNDB9.hh4Omtg8_G0YMMqgUu60NYLhetHT-hvZHzSWx7CJ-1PlxB2EpBQpsMJgJcS_XK2uWwXBUyWqy9rBuXvOP2SXcg
+Accept: application/json
+
+### 내 정보 수정
+PUT http://localhost:8080/api/v1/otz/users/update
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsZWV3Zzk3QGdtYWlsLmNvbSIsInNlcmlhbCI6IjAwYWJlODIyLWIyNDktNGRiNC1iZTIzLWQzNGQ1MTQ3MWRhNyIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3NTQzNzQzNDB9.hh4Omtg8_G0YMMqgUu60NYLhetHT-hvZHzSWx7CJ-1PlxB2EpBQpsMJgJcS_XK2uWwXBUyWqy9rBuXvOP2SXcg
+Content-Type: application/json
+
+{
+  "id": "string",
+  "nickname": "string",
+  "job": "string",
+  "position": "string",
+  "joinYear": "8783",
+  "marketingAgree": true
+}
+
+### 프로필 이미지 등록(수정)
+PUT http://localhost:8080/api/v1/otz/users/profile-image
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsZWV3Zzk3QGdtYWlsLmNvbSIsInNlcmlhbCI6IjAwYWJlODIyLWIyNDktNGRiNC1iZTIzLWQzNGQ1MTQ3MWRhNyIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3NTQzNzQzNDB9.hh4Omtg8_G0YMMqgUu60NYLhetHT-hvZHzSWx7CJ-1PlxB2EpBQpsMJgJcS_XK2uWwXBUyWqy9rBuXvOP2SXcg
+Content-Type: multipart/form-data
+file: ./profile.png
+
+### 프로필 이미지 삭제
+DELETE http://localhost:8080/api/v1/otz/users/profile-image
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsZWV3Zzk3QGdtYWlsLmNvbSIsInNlcmlhbCI6IjAwYWJlODIyLWIyNDktNGRiNC1iZTIzLWQzNGQ1MTQ3MWRhNyIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3NTQzNzQzNDB9.hh4Omtg8_G0YMMqgUu60NYLhetHT-hvZHzSWx7CJ-1PlxB2EpBQpsMJgJcS_XK2uWwXBUyWqy9rBuXvOP2SXcg
+Content-Type: application/json
+

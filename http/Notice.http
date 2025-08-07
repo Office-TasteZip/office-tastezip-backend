@@ -1,0 +1,48 @@
+@id =123e4567-e89b-12d3-a456-426614174000
+
+### 공지 조회
+GET http://localhost:8080/api/v1/otz/notices?searchType=TOTAL?searchContent=?&page=0&size=15&sort=title
+Accept: application/json
+
+### 공지 상세 조회 + 조회 수 증가
+GET http://localhost:8080/api/v1/otz/notices/{{id}}/detail
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsZWV3Zzk3QGdtYWlsLmNvbSIsInNlcmlhbCI6IjAwYWJlODIyLWIyNDktNGRiNC1iZTIzLWQzNGQ1MTQ3MWRhNyIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3NTQzNzQzNDB9.hh4Omtg8_G0YMMqgUu60NYLhetHT-hvZHzSWx7CJ-1PlxB2EpBQpsMJgJcS_XK2uWwXBUyWqy9rBuXvOP2SXcg
+Accept: application/json
+
+### 공지 등록
+POST http://localhost:8080/api/v1/otz/notices
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsZWV3Zzk3QGdtYWlsLmNvbSIsInNlcmlhbCI6IjAwYWJlODIyLWIyNDktNGRiNC1iZTIzLWQzNGQ1MTQ3MWRhNyIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3NTQzNzQzNDB9.hh4Omtg8_G0YMMqgUu60NYLhetHT-hvZHzSWx7CJ-1PlxB2EpBQpsMJgJcS_XK2uWwXBUyWqy9rBuXvOP2SXcg
+Content-Type: application/json
+
+{
+  "title": "string",
+  "content": "string",
+  "isPinned": true
+}
+
+### 공지 삭제
+DELETE http://localhost:8080/api/v1/otz/notices/{{id}}
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsZWV3Zzk3QGdtYWlsLmNvbSIsInNlcmlhbCI6IjAwYWJlODIyLWIyNDktNGRiNC1iZTIzLWQzNGQ1MTQ3MWRhNyIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3NTQzNzQzNDB9.hh4Omtg8_G0YMMqgUu60NYLhetHT-hvZHzSWx7CJ-1PlxB2EpBQpsMJgJcS_XK2uWwXBUyWqy9rBuXvOP2SXcg
+Content-Type: application/json
+
+### 공지 수정
+PATCH http://localhost:8080/api/v1/otz/notices/{{id}}
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsZWV3Zzk3QGdtYWlsLmNvbSIsInNlcmlhbCI6IjAwYWJlODIyLWIyNDktNGRiNC1iZTIzLWQzNGQ1MTQ3MWRhNyIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3NTQzNzQzNDB9.hh4Omtg8_G0YMMqgUu60NYLhetHT-hvZHzSWx7CJ-1PlxB2EpBQpsMJgJcS_XK2uWwXBUyWqy9rBuXvOP2SXcg
+Content-Type: application/json
+
+{
+  "title": "string",
+  "content": "string",
+  "isPinned": true
+}
+
+### 핀 설정 상태 변경(상단 노출 여부)
+PATCH http://localhost:8080/api/v1/notice/{{id}}/pin?isPinned=true
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsZWV3Zzk3QGdtYWlsLmNvbSIsInNlcmlhbCI6IjAwYWJlODIyLWIyNDktNGRiNC1iZTIzLWQzNGQ1MTQ3MWRhNyIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3NTQzNzQzNDB9.hh4Omtg8_G0YMMqgUu60NYLhetHT-hvZHzSWx7CJ-1PlxB2EpBQpsMJgJcS_XK2uWwXBUyWqy9rBuXvOP2SXcg
+Accept: application/json
+
+### 핀 설정 상태 변경(상단 노출 여부)
+PATCH http://localhost:8080/api/v1/notice/{{id}}/pin?isPinned=true
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsZWV3Zzk3QGdtYWlsLmNvbSIsInNlcmlhbCI6IjAwYWJlODIyLWIyNDktNGRiNC1iZTIzLWQzNGQ1MTQ3MWRhNyIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3NTQzNzQzNDB9.hh4Omtg8_G0YMMqgUu60NYLhetHT-hvZHzSWx7CJ-1PlxB2EpBQpsMJgJcS_XK2uWwXBUyWqy9rBuXvOP2SXcg
+Accept: application/json
+
